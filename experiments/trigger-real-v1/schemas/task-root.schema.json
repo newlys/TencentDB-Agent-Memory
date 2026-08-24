@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/newlys/TencentDB-Agent-Memory/experiments/trigger-real-v1/schemas/task-root.schema.json",
+  "title": "Real task root",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["root_id", "source_dataset", "source_revision", "instance_id", "repo", "issue_url", "pull_request_url", "base_commit", "created_at", "language", "repository_license", "dataset_license", "problem_statement", "native_trajectory_ids", "evaluator", "execution_result", "content_hashes", "family_id", "family_confidence", "chronological_split", "boundary_annotations", "skill_events"],
+  "properties": {
+    "root_id": {"type": "string", "pattern": "^real-[0-9a-f]{20}$"},
+    "source_dataset": {"type": "string", "minLength": 1},
+    "source_revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "instance_id": {"type": "string", "minLength": 3},
+    "repo": {"type": "string", "pattern": "^[^/]+/[^/]+$"},
+    "issue_url": {"type": ["string", "null"], "format": "uri"},
+    "pull_request_url": {"type": ["string", "null"], "format": "uri"},
+    "base_commit": {"type": "string", "pattern": "^[0-9a-f]{7,64}$"},
+    "created_at": {"type": "string", "minLength": 10},
+    "language": {"type": "string", "minLength": 1},
+    "repository_license": {"type": "string", "minLength": 1},
+    "dataset_license": {"type": "string", "minLength": 1},
+    "problem_statement": {"type": "string", "minLength": 20},
+    "native_trajectory_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "evaluator": {"type": "object", "required": ["fail_to_pass", "pass_to_pass", "image_name"], "properties": {"fail_to_pass": {"type": "array"}, "pass_to_pass": {"type": "array"}, "image_name": {"type": "string"}}, "additionalProperties": false},
+    "execution_result": {"type": "object", "required": ["native_resolved_rollouts", "native_failed_rollouts", "status"], "properties": {"native_resolved_rollouts": {"type": "integer", "minimum": 0}, "native_failed_rollouts": {"type": "integer", "minimum": 0}, "status": {"enum": ["native_success", "native_failure", "mixed"]}}, "additionalProperties": false},
+    "content_hashes": {"type": "object", "required": ["task_sha256", "provenance_sha256"], "properties": {"task_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "provenance_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "additionalProperties": false},
+    "family_id": {"type": ["string", "null"]},
+    "family_confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+    "chronological_split": {"enum": ["discovery", "development", "lifecycle_test", "zero_shot_holdout", "unassigned"]},
+    "boundary_annotations": {"type": "array", "items": {"type": "object"}},
+    "skill_events": {"type": "array", "items": {"type": "object"}}
+  }
+}

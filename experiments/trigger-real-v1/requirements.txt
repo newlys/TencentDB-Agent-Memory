@@ -1,0 +1,6 @@
+duckdb==1.4.3
+huggingface-hub>=0.34,<2
+jsonschema>=4.20,<5
+numpy>=2.0,<3
+pandas>=2.2,<3
+scikit-learn>=1.6,<2

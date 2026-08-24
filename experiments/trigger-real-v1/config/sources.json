@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "accessed_at": "2026-08-24",
+  "sources": [
+    {
+      "id": "swe-rebench",
+      "kind": "task_roots",
+      "repository": "nebius/SWE-rebench",
+      "url": "https://huggingface.co/datasets/nebius/SWE-rebench",
+      "revision": "89cdfbab4ab1bd8f5a658bb212d1b63624f4f881",
+      "dataset_license": "CC-BY-4.0",
+      "status": "enabled",
+      "files": ["data/filtered-00000-of-00001.parquet"],
+      "notes": "This is the exact task-root release referenced by the public OpenHands trajectory dataset."
+    },
+    {
+      "id": "swe-rebench-v2",
+      "kind": "candidate_task_roots",
+      "repository": "PrimeIntellect/SWE-rebench-V2",
+      "url": "https://huggingface.co/datasets/PrimeIntellect/SWE-rebench-V2",
+      "revision": "8851474cc41be8bce981362d1363d9f92e247b4b",
+      "dataset_license": "CC-BY-4.0",
+      "status": "registered_unjoined",
+      "notes": "The selected OpenHands trajectory release does not share instance IDs with V2; do not cross-join these releases.",
+      "files": ["data/train-00000-of-00006.parquet", "data/train-00001-of-00006.parquet", "data/train-00002-of-00006.parquet", "data/train-00003-of-00006.parquet", "data/train-00004-of-00006.parquet", "data/train-00005-of-00006.parquet"]
+    },
+    {
+      "id": "swe-rebench-openhands",
+      "kind": "native_trajectories",
+      "repository": "nebius/SWE-rebench-openhands-trajectories",
+      "url": "https://huggingface.co/datasets/nebius/SWE-rebench-openhands-trajectories",
+      "revision": "35455389ab51bf5e2306bfd436ef72d0f98bf882",
+      "dataset_license": "CC-BY-4.0",
+      "status": "enabled",
+      "files": ["trajectories.parquet"]
+    },
+    {
+      "id": "swe-agent-trajectories",
+      "kind": "negative_trajectory_pool",
+      "repository": "nebius/SWE-agent-trajectories",
+      "url": "https://huggingface.co/datasets/nebius/SWE-agent-trajectories",
+      "revision": "68195a1450865274106246d0d0296a1d6807b88e",
+      "dataset_license": "CC-BY-4.0-with-upstream-and-model-output-terms",
+      "status": "registered",
+      "files": ["data/train-*.parquet"]
+    },
+    {
+      "id": "swe-gym",
+      "kind": "task_roots",
+      "repository": "SWE-Gym/SWE-Gym",
+      "url": "https://huggingface.co/datasets/SWE-Gym/SWE-Gym",
+      "revision": "bb94ed9e39bbeb96a7fcbfb533b80f25a7fd59cb",
+      "dataset_license": "MIT",
+      "status": "registered",
+      "files": ["data/train-00000-of-00001.parquet"],
+      "notes": "Dataset metadata and code repository licenses are recorded separately."
+    },
+    {
+      "id": "openhands-feedback",
+      "kind": "sealed_external_holdout",
+      "repository": "OpenHands/openhands-feedback",
+      "url": "https://huggingface.co/datasets/OpenHands/openhands-feedback",
+      "revision": "facf45600d625510b98222ec584a8c9ac59272a2",
+      "dataset_license": "MIT",
+      "status": "sealed"
+    },
+    {
+      "id": "aiopslab",
+      "kind": "operational_replay_framework",
+      "repository": "microsoft/AIOpsLab",
+      "url": "https://github.com/microsoft/AIOpsLab",
+      "dataset_license": "MIT",
+      "status": "registered"
+    },
+    {
+      "id": "cloud-opsbench",
+      "kind": "operational_benchmark",
+      "repository": "LLM4Ops/Cloud-OpsBench",
+      "url": "https://github.com/LLM4Ops/Cloud-OpsBench",
+      "dataset_license": null,
+      "status": "license_blocked",
+      "notes": "Do not download or redistribute until an explicit license is published."
+    },
+    {
+      "id": "swe-lancer-diamond",
+      "kind": "sealed_external_holdout",
+      "repository": "openai/preparedness",
+      "url": "https://openai.com/index/swe-lancer/",
+      "dataset_license": "MIT-code; verify-task-assets",
+      "status": "sealed"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Paired WorkBuddy replay",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["root_id", "seed", "baseline", "skill"],
+  "properties": {
+    "root_id": {"type": "string"},
+    "seed": {"type": "integer"},
+    "baseline": {"$ref": "#/$defs/run"},
+    "skill": {"$ref": "#/$defs/run"}
+  },
+  "$defs": {
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pass", "turns", "agent_input_tokens", "agent_output_tokens", "boundary_tokens", "review_tokens", "distillation_tokens", "skill_hit", "skill_created", "skill_updated"],
+      "properties": {
+        "pass": {"type": "boolean"},
+        "turns": {"type": "integer", "minimum": 0},
+        "agent_input_tokens": {"type": "integer", "minimum": 0},
+        "agent_output_tokens": {"type": "integer", "minimum": 0},
+        "boundary_tokens": {"type": "integer", "minimum": 0},
+        "review_tokens": {"type": "integer", "minimum": 0},
+        "distillation_tokens": {"type": "integer", "minimum": 0},
+        "skill_hit": {"type": "boolean"},
+        "skill_created": {"type": "boolean"},
+        "skill_updated": {"type": "boolean"}
+      }
+    }
+  }
+}

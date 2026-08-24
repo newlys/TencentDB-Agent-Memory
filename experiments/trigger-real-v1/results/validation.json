@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "status": "collection_pass",
+  "strict": true,
+  "counts": {
+    "candidates": 5000,
+    "selected": 1000,
+    "unique_root_keys": 1000,
+    "native_trajectories": 10717,
+    "candidate_families": 31,
+    "near_duplicate_pairs": 0
+  },
+  "split_counts": {
+    "unassigned": 446,
+    "development": 90,
+    "lifecycle_test": 154,
+    "zero_shot_holdout": 76,
+    "discovery": 234
+  },
+  "license_counts": {
+    "BSD 3-Clause \"New\" or \"Revised\" License": 188,
+    "BSD 2-Clause \"Simplified\" License": 44,
+    "MIT License": 460,
+    "Apache License 2.0": 245,
+    "BSD License": 29,
+    "BSD": 11,
+    "BSD 3-Clause": 12,
+    "New BSD License": 11
+  },
+  "outcome_counts": {
+    "native_success": 310,
+    "mixed": 269,
+    "native_failure": 421
+  },
+  "errors": [],
+  "warnings": []
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "status": "not_executed",
+  "checks": {
+    "queue_count": 100,
+    "workbuddy_node": true,
+    "workbuddy_cli": true,
+    "baseline_user_key_present": false,
+    "memory_core_healthy": false,
+    "memory_proxy_healthy": false,
+    "docker_ready": false
+  },
+  "blockers": [
+    "baseline_user_key_present",
+    "memory_core_healthy",
+    "memory_proxy_healthy",
+    "docker_ready"
+  ],
+  "completed_pairs": 0,
+  "required_pairs": 100,
+  "result_file": "replays/paired-results.jsonl",
+  "truthfulness_note": "Native OpenHands outcomes are not substituted for WorkBuddy A/B outcomes."
+}

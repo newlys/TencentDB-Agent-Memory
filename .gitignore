@@ -127,6 +127,12 @@ data/tdai-memory.db
 **/data/_wiki_engines/
 **/data/mem-*/
 
+# trigger-real-v1 third-party caches and replay workspaces
+experiments/trigger-real-v1/.cache/
+experiments/trigger-real-v1/raw/
+experiments/trigger-real-v1/replays/worktrees/
+experiments/trigger-real-v1/replays/logs/
+
 # Test coverage output
 coverage/
 **/coverage/
