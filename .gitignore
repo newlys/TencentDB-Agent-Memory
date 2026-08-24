@@ -70,6 +70,7 @@ deploy/global-images/.memory-core-config/
 
 # Eval scripts output
 scripts/eval-report.json
+MemoryProxy/experiments/baseline/runtime/
 
 # OS files
 .DS_Store

@@ -1,0 +1,10 @@
+family,task_id,gold_skill,pass_retrieval,precision_at_k,recall_at_k,mrr,ndcg_at_k,rank,final_k,injection_chars,injection_tokens_cl100k,complexity,predicted_phases,complexity_k,confidence_k,budget_k,candidate_count,reranked_count,bm25_ms,rerank_ms,total_route_ms,rerank_input_tokens,rerank_output_tokens,fallback_reason
+"http-client","idempotent-retry","http-client-reliability",true,1,1,1,1,1,1,205,46,"complex",["explore","implement","test","review"],8,1,1,40,40,16,569,594,4960,0,""
+"http-client","breaker-half-open","http-client-reliability",true,1,1,1,1,1,1,205,46,"complex",["explore","implement","test","debug","review"],8,1,1,40,40,12,301,314,5116,0,""
+"http-client","request-coalescing","http-client-reliability",true,1,1,1,1,1,1,205,46,"complex",["explore","implement","test","debug"],8,1,1,40,40,24,339,365,4696,0,""
+"config-engine","schema-coercion","safe-config-engineering",true,1,1,1,1,1,1,223,40,"complex",["explore","implement","test","debug"],8,1,1,40,40,28,430,458,4683,0,""
+"config-engine","provenance","safe-config-engineering",true,1,1,1,1,1,1,223,40,"complex",["explore","implement","test","review"],8,1,1,40,40,21,260,282,4738,0,""
+"config-engine","prototype-pollution","safe-config-engineering",true,1,1,1,1,1,1,223,40,"complex",["explore","implement","test","review"],8,1,1,40,40,22,303,326,4849,0,""
+"cache","swr","production-cache-patterns",true,1,1,1,1,1,1,208,46,"complex",["explore","implement","test","debug"],8,1,1,40,40,25,308,335,5252,0,""
+"cache","size-eviction","production-cache-patterns",true,1,1,1,1,1,1,208,46,"complex",["explore","implement","test"],8,1,1,40,40,27,308,336,4803,0,""
+"cache","persistence-version","production-cache-patterns",true,1,1,1,1,1,1,208,46,"complex",["explore","implement","test","review"],8,1,1,40,40,17,288,306,4593,0,""

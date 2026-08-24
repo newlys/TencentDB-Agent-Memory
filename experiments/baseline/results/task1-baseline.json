@@ -1,0 +1,617 @@
+{
+  "schema_version": 1,
+  "started_at": "2026-08-21T04:39:54.424Z",
+  "completed_at": "2026-08-21T04:49:00.031Z",
+  "agent": "WorkBuddy CLI",
+  "requested_model": "glm-5.1",
+  "upstream_model": "qwen3.7-plus",
+  "cases": 12,
+  "positive_cases": 7,
+  "negative_cases": 5,
+  "success_rate": 1,
+  "effective_call_rate": 1,
+  "correct_tool_selection_rate": 0.7142857142857143,
+  "false_call_rate": 0,
+  "avg_input_tokens": 105202.83333333333,
+  "avg_turns": 11,
+  "injection": {
+    "avg_chars": 20727.416666666668,
+    "avg_tokens_cl100k": 8630,
+    "unique_prefix_hashes": 12,
+    "prefix_stability_rate": 0.08333333333333333
+  },
+  "rows": [
+    {
+      "id": "skill_tdd",
+      "expected": "skill",
+      "session_id": "t1-skill_tdd-mt2gndbv",
+      "process_exit_code": 0,
+      "success": true,
+      "expected_called": true,
+      "correct_selection": true,
+      "categories": [
+        "skill"
+      ],
+      "cloud_call_count": 2,
+      "turns": 10,
+      "input_tokens": 110867,
+      "output_tokens": 809,
+      "cache_read_tokens": 67456,
+      "duration_ms": 24201,
+      "injection": {
+        "system_chars": 37188,
+        "total_chars": 20979,
+        "total_tokens": 8698,
+        "hash": "958569414b8bd4776e23af2efcacacb1a178c3c470aa6bbc6c8c7694ed447e1e",
+        "blocks": {
+          "skill_tools": {
+            "chars": 2290,
+            "tokens": 1197
+          },
+          "available_skills": {
+            "chars": 9459,
+            "tokens": 2106
+          },
+          "memory_tools": {
+            "chars": 3098,
+            "tokens": 1464
+          },
+          "memory_guide": {
+            "chars": 1430,
+            "tokens": 959
+          },
+          "profile_memory": {
+            "chars": 1875,
+            "tokens": 1327
+          },
+          "knowledge_tools": {
+            "chars": 2827,
+            "tokens": 1645
+          }
+        }
+      }
+    },
+    {
+      "id": "skill_api_review",
+      "expected": "skill",
+      "session_id": "t1-skill_api_review-mt2go5pg",
+      "process_exit_code": 0,
+      "success": true,
+      "expected_called": true,
+      "correct_selection": true,
+      "categories": [
+        "skill"
+      ],
+      "cloud_call_count": 1,
+      "turns": 7,
+      "input_tokens": 66849,
+      "output_tokens": 1078,
+      "cache_read_tokens": 47872,
+      "duration_ms": 25449,
+      "injection": {
+        "system_chars": 37223,
+        "total_chars": 21014,
+        "total_tokens": 8698,
+        "hash": "c3d7acae351a6cb69ac42261ad7b1b09e9ba4850b69c1e26a24dd53c65d4747c",
+        "blocks": {
+          "skill_tools": {
+            "chars": 2297,
+            "tokens": 1197
+          },
+          "available_skills": {
+            "chars": 9459,
+            "tokens": 2106
+          },
+          "memory_tools": {
+            "chars": 3112,
+            "tokens": 1464
+          },
+          "memory_guide": {
+            "chars": 1430,
+            "tokens": 959
+          },
+          "profile_memory": {
+            "chars": 1875,
+            "tokens": 1327
+          },
+          "knowledge_tools": {
+            "chars": 2841,
+            "tokens": 1645
+          }
+        }
+      }
+    },
+    {
+      "id": "skill_debugging",
+      "expected": "skill",
+      "session_id": "t1-skill_debugging-mt2gp1vy",
+      "process_exit_code": 0,
+      "success": true,
+      "expected_called": true,
+      "correct_selection": true,
+      "categories": [
+        "skill"
+      ],
+      "cloud_call_count": 1,
+      "turns": 6,
+      "input_tokens": 68411,
+      "output_tokens": 557,
+      "cache_read_tokens": 47872,
+      "duration_ms": 17701,
+      "injection": {
+        "system_chars": 37218,
+        "total_chars": 21009,
+        "total_tokens": 8698,
+        "hash": "f076afd3fe706c714c752f0050be28a735244672806833f241998b85f5deb440",
+        "blocks": {
+          "skill_tools": {
+            "chars": 2296,
+            "tokens": 1197
+          },
+          "available_skills": {
+            "chars": 9459,
+            "tokens": 2106
+          },
+          "memory_tools": {
+            "chars": 3110,
+            "tokens": 1464
+          },
+          "memory_guide": {
+            "chars": 1430,
+            "tokens": 959
+          },
+          "profile_memory": {
+            "chars": 1875,
+            "tokens": 1327
+          },
+          "knowledge_tools": {
+            "chars": 2839,
+            "tokens": 1645
+          }
+        }
+      }
+    },
+    {
+      "id": "memory_history",
+      "expected": "memory",
+      "session_id": "t1-memory_history-mt2gpouf",
+      "process_exit_code": 0,
+      "success": true,
+      "expected_called": true,
+      "correct_selection": false,
+      "categories": [
+        "memory",
+        "knowledge"
+      ],
+      "cloud_call_count": 5,
+      "turns": 19,
+      "input_tokens": 179412,
+      "output_tokens": 1479,
+      "cache_read_tokens": 150144,
+      "duration_ms": 43267,
+      "injection": {
+        "system_chars": 37213,
+        "total_chars": 21004,
+        "total_tokens": 8688,
+        "hash": "5b96fdaf1f8befbc2878fa515abc19dd5dc246d70595a3741690a60d4223f46a",
+        "blocks": {
+          "skill_tools": {
+            "chars": 2295,
+            "tokens": 1195
+          },
+          "available_skills": {
+            "chars": 9459,
+            "tokens": 2106
+          },
+          "memory_tools": {
+            "chars": 3108,
+            "tokens": 1460
+          },
+          "memory_guide": {
+            "chars": 1430,
+            "tokens": 959
+          },
+          "profile_memory": {
+            "chars": 1875,
+            "tokens": 1327
+          },
+          "knowledge_tools": {
+            "chars": 2837,
+            "tokens": 1641
+          }
+        }
+      }
+    },
+    {
+      "id": "memory_conversation",
+      "expected": "memory",
+      "session_id": "t1-memory_conversation-mt2gqxje",
+      "process_exit_code": 0,
+      "success": true,
+      "expected_called": true,
+      "correct_selection": false,
+      "categories": [
+        "memory",
+        "knowledge"
+      ],
+      "cloud_call_count": 11,
+      "turns": 38,
+      "input_tokens": 332455,
+      "output_tokens": 3182,
+      "cache_read_tokens": 289408,
+      "duration_ms": 95114,
+      "injection": {
+        "system_chars": 37254,
+        "total_chars": 21045,
+        "total_tokens": 8692,
+        "hash": "d0fa703096d5e094748a08188783ac8f36faee5f45271e7c5f25e34e961a438a",
+        "blocks": {
+          "skill_tools": {
+            "chars": 2300,
+            "tokens": 1196
+          },
+          "available_skills": {
+            "chars": 9459,
+            "tokens": 2106
+          },
+          "memory_tools": {
+            "chars": 3118,
+            "tokens": 1462
+          },
+          "memory_guide": {
+            "chars": 1430,
+            "tokens": 959
+          },
+          "profile_memory": {
+            "chars": 1891,
+            "tokens": 1326
+          },
+          "knowledge_tools": {
+            "chars": 2847,
+            "tokens": 1643
+          }
+        }
+      }
+    },
+    {
+      "id": "knowledge_baseline",
+      "expected": "knowledge",
+      "session_id": "t1-knowledge_baseline-mt2gt9kv",
+      "process_exit_code": 0,
+      "success": true,
+      "expected_called": true,
+      "correct_selection": true,
+      "categories": [
+        "knowledge"
+      ],
+      "cloud_call_count": 3,
+      "turns": 14,
+      "input_tokens": 134164,
+      "output_tokens": 1025,
+      "cache_read_tokens": 117504,
+      "duration_ms": 37511,
+      "injection": {
+        "system_chars": 37249,
+        "total_chars": 21040,
+        "total_tokens": 8692,
+        "hash": "e1768e227f6d8a507e1b8cd5a25e3694464b32b68d0041f50216eca649c720a1",
+        "blocks": {
+          "skill_tools": {
+            "chars": 2299,
+            "tokens": 1196
+          },
+          "available_skills": {
+            "chars": 9459,
+            "tokens": 2106
+          },
+          "memory_tools": {
+            "chars": 3116,
+            "tokens": 1462
+          },
+          "memory_guide": {
+            "chars": 1430,
+            "tokens": 959
+          },
+          "profile_memory": {
+            "chars": 1891,
+            "tokens": 1326
+          },
+          "knowledge_tools": {
+            "chars": 2845,
+            "tokens": 1643
+          }
+        }
+      }
+    },
+    {
+      "id": "knowledge_task_scope",
+      "expected": "knowledge",
+      "session_id": "t1-knowledge_task_scope-mt2guoqk",
+      "process_exit_code": 0,
+      "success": true,
+      "expected_called": true,
+      "correct_selection": true,
+      "categories": [
+        "knowledge"
+      ],
+      "cloud_call_count": 4,
+      "turns": 23,
+      "input_tokens": 207695,
+      "output_tokens": 2188,
+      "cache_read_tokens": 184960,
+      "duration_ms": 65451,
+      "injection": {
+        "system_chars": 36672,
+        "total_chars": 20463,
+        "total_tokens": 8574,
+        "hash": "a9c529213d7d3adf8ff5b68272c7665407048372419b731376c2b3183c072630",
+        "blocks": {
+          "skill_tools": {
+            "chars": 2301,
+            "tokens": 1198
+          },
+          "available_skills": {
+            "chars": 8872,
+            "tokens": 1978
+          },
+          "memory_tools": {
+            "chars": 3120,
+            "tokens": 1466
+          },
+          "memory_guide": {
+            "chars": 1430,
+            "tokens": 959
+          },
+          "profile_memory": {
+            "chars": 1891,
+            "tokens": 1326
+          },
+          "knowledge_tools": {
+            "chars": 2849,
+            "tokens": 1647
+          }
+        }
+      }
+    },
+    {
+      "id": "none_event_loop",
+      "expected": "none",
+      "session_id": "t1-none_event_loop-mt2gwi09",
+      "process_exit_code": 0,
+      "success": true,
+      "expected_called": true,
+      "correct_selection": true,
+      "categories": [],
+      "cloud_call_count": 0,
+      "turns": 3,
+      "input_tokens": 32519,
+      "output_tokens": 106,
+      "cache_read_tokens": 19584,
+      "duration_ms": 6568,
+      "injection": {
+        "system_chars": 36647,
+        "total_chars": 20438,
+        "total_tokens": 8564,
+        "hash": "fc59e86dc370e6683618e5e254e684ded1f496b41fb352a56a203ac7c6d8bcb7",
+        "blocks": {
+          "skill_tools": {
+            "chars": 2296,
+            "tokens": 1196
+          },
+          "available_skills": {
+            "chars": 8872,
+            "tokens": 1978
+          },
+          "memory_tools": {
+            "chars": 3110,
+            "tokens": 1462
+          },
+          "memory_guide": {
+            "chars": 1430,
+            "tokens": 959
+          },
+          "profile_memory": {
+            "chars": 1891,
+            "tokens": 1326
+          },
+          "knowledge_tools": {
+            "chars": 2839,
+            "tokens": 1643
+          }
+        }
+      }
+    },
+    {
+      "id": "none_binary_search",
+      "expected": "none",
+      "session_id": "t1-none_binary_search-mt2gwxs2",
+      "process_exit_code": 0,
+      "success": true,
+      "expected_called": true,
+      "correct_selection": true,
+      "categories": [],
+      "cloud_call_count": 0,
+      "turns": 3,
+      "input_tokens": 32518,
+      "output_tokens": 224,
+      "cache_read_tokens": 19584,
+      "duration_ms": 7898,
+      "injection": {
+        "system_chars": 36662,
+        "total_chars": 20453,
+        "total_tokens": 8564,
+        "hash": "5e32adc80eb405baf16288c80e287a92a40b792fef04baa5a1670ff63c4ef76e",
+        "blocks": {
+          "skill_tools": {
+            "chars": 2299,
+            "tokens": 1196
+          },
+          "available_skills": {
+            "chars": 8872,
+            "tokens": 1978
+          },
+          "memory_tools": {
+            "chars": 3116,
+            "tokens": 1462
+          },
+          "memory_guide": {
+            "chars": 1430,
+            "tokens": 959
+          },
+          "profile_memory": {
+            "chars": 1891,
+            "tokens": 1326
+          },
+          "knowledge_tools": {
+            "chars": 2845,
+            "tokens": 1643
+          }
+        }
+      }
+    },
+    {
+      "id": "none_git_concept",
+      "expected": "none",
+      "session_id": "t1-none_git_concept-mt2gxfkw",
+      "process_exit_code": 0,
+      "success": true,
+      "expected_called": true,
+      "correct_selection": true,
+      "categories": [],
+      "cloud_call_count": 0,
+      "turns": 3,
+      "input_tokens": 32515,
+      "output_tokens": 428,
+      "cache_read_tokens": 19584,
+      "duration_ms": 11434,
+      "injection": {
+        "system_chars": 36652,
+        "total_chars": 20443,
+        "total_tokens": 8569,
+        "hash": "60f5ad02784b9afc85754ed2ab89c8a7965347aa22e4d7602191127d811e5a07",
+        "blocks": {
+          "skill_tools": {
+            "chars": 2297,
+            "tokens": 1197
+          },
+          "available_skills": {
+            "chars": 8872,
+            "tokens": 1978
+          },
+          "memory_tools": {
+            "chars": 3112,
+            "tokens": 1464
+          },
+          "memory_guide": {
+            "chars": 1430,
+            "tokens": 959
+          },
+          "profile_memory": {
+            "chars": 1891,
+            "tokens": 1326
+          },
+          "knowledge_tools": {
+            "chars": 2841,
+            "tokens": 1645
+          }
+        }
+      }
+    },
+    {
+      "id": "none_type_error",
+      "expected": "none",
+      "session_id": "t1-none_type_error-mt2gxztr",
+      "process_exit_code": 0,
+      "success": true,
+      "expected_called": true,
+      "correct_selection": true,
+      "categories": [],
+      "cloud_call_count": 0,
+      "turns": 3,
+      "input_tokens": 32512,
+      "output_tokens": 226,
+      "cache_read_tokens": 19584,
+      "duration_ms": 8024,
+      "injection": {
+        "system_chars": 36647,
+        "total_chars": 20438,
+        "total_tokens": 8564,
+        "hash": "a5a5a3924a10e01aea984395448d7f4175943cdeec2b1aee67f65d44279284b0",
+        "blocks": {
+          "skill_tools": {
+            "chars": 2296,
+            "tokens": 1196
+          },
+          "available_skills": {
+            "chars": 8872,
+            "tokens": 1978
+          },
+          "memory_tools": {
+            "chars": 3110,
+            "tokens": 1462
+          },
+          "memory_guide": {
+            "chars": 1430,
+            "tokens": 959
+          },
+          "profile_memory": {
+            "chars": 1891,
+            "tokens": 1326
+          },
+          "knowledge_tools": {
+            "chars": 2839,
+            "tokens": 1643
+          }
+        }
+      }
+    },
+    {
+      "id": "none_sql",
+      "expected": "none",
+      "session_id": "t1-none_sql-mt2gyfqd",
+      "process_exit_code": 0,
+      "success": true,
+      "expected_called": true,
+      "correct_selection": true,
+      "categories": [],
+      "cloud_call_count": 0,
+      "turns": 3,
+      "input_tokens": 32517,
+      "output_tokens": 65,
+      "cache_read_tokens": 19584,
+      "duration_ms": 8554,
+      "injection": {
+        "system_chars": 36612,
+        "total_chars": 20403,
+        "total_tokens": 8559,
+        "hash": "9c0f11a116464d25c119aab6707a70cc3fb72b1b16f30b167ef53bfc037f94c7",
+        "blocks": {
+          "skill_tools": {
+            "chars": 2289,
+            "tokens": 1195
+          },
+          "available_skills": {
+            "chars": 8872,
+            "tokens": 1978
+          },
+          "memory_tools": {
+            "chars": 3096,
+            "tokens": 1460
+          },
+          "memory_guide": {
+            "chars": 1430,
+            "tokens": 959
+          },
+          "profile_memory": {
+            "chars": 1891,
+            "tokens": 1326
+          },
+          "knowledge_tools": {
+            "chars": 2825,
+            "tokens": 1641
+          }
+        }
+      }
+    }
+  ]
+}

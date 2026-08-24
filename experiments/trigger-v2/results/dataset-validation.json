@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "valid": true,
+  "roots": 221,
+  "observations": 1105,
+  "categories": 13,
+  "expectedCreateRoots": 130,
+  "expectedUpdates": 13,
+  "negativesAndDuplicates": 78,
+  "nearDuplicatePairs": 0,
+  "hashes": {
+    "roots": "B08DD9D7601AA0FB142575469907F1C50A4CDD96F06F0BB48A5406000C045BE9",
+    "observations": "6981D6CBBDE5708F67F081C91C2B91A9F6AE5F0E68E10D6FC99EC3278D632EE1"
+  },
+  "errors": [],
+  "warnings": []
+}

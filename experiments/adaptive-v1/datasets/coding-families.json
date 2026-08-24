@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "policy": {
+    "warmup_per_family": 3,
+    "evaluation_per_family": 3,
+    "distractor_skills": 100,
+    "runs_per_task": 1
+  },
+  "families": [
+    {
+      "id": "http-client",
+      "gold_skill": "http-client-reliability",
+      "tasks": [
+        { "order": 1, "split": "warmup", "id": "basic-retry", "title": "Retry transient failures", "phases": ["explore", "implement", "test"] },
+        { "order": 2, "split": "warmup", "id": "retry-after", "title": "Honor Retry-After seconds and HTTP-date", "phases": ["implement", "test", "debug"] },
+        { "order": 3, "split": "warmup", "id": "timeout-cleanup", "title": "Clean up abort timers and listeners on timeout", "phases": ["explore", "implement", "test", "debug"] },
+        { "order": 4, "split": "evaluation", "id": "idempotent-retry", "title": "Retry only idempotent methods unless explicitly opted in", "phases": ["explore", "implement", "test", "review"] },
+        { "order": 5, "split": "evaluation", "id": "breaker-half-open", "title": "Add a circuit breaker with a single half-open probe", "phases": ["explore", "implement", "test", "debug", "review"] },
+        { "order": 6, "split": "evaluation", "id": "request-coalescing", "title": "Coalesce concurrent equivalent GET requests", "phases": ["explore", "implement", "test", "debug"] }
+      ]
+    },
+    {
+      "id": "config-engine",
+      "gold_skill": "safe-config-engineering",
+      "tasks": [
+        { "order": 1, "split": "warmup", "id": "deep-merge", "title": "Deep merge plain objects while replacing arrays", "phases": ["implement", "test"] },
+        { "order": 2, "split": "warmup", "id": "env-interpolation", "title": "Interpolate environment variables with defaults", "phases": ["explore", "implement", "test"] },
+        { "order": 3, "split": "warmup", "id": "precedence", "title": "Apply default, file, environment and CLI precedence", "phases": ["explore", "implement", "test"] },
+        { "order": 4, "split": "evaluation", "id": "schema-coercion", "title": "Coerce values according to a configuration schema", "phases": ["explore", "implement", "test", "debug"] },
+        { "order": 5, "split": "evaluation", "id": "provenance", "title": "Track the winning source for each configuration leaf", "phases": ["explore", "implement", "test", "review"] },
+        { "order": 6, "split": "evaluation", "id": "prototype-pollution", "title": "Prevent prototype pollution through unsafe keys", "phases": ["explore", "implement", "test", "review"] }
+      ]
+    },
+    {
+      "id": "cache",
+      "gold_skill": "production-cache-patterns",
+      "tasks": [
+        { "order": 1, "split": "warmup", "id": "lru", "title": "Implement an O(1) LRU cache", "phases": ["implement", "test"] },
+        { "order": 2, "split": "warmup", "id": "ttl", "title": "Add deterministic TTL expiration", "phases": ["implement", "test", "debug"] },
+        { "order": 3, "split": "warmup", "id": "single-flight", "title": "Deduplicate concurrent asynchronous loads", "phases": ["explore", "implement", "test", "debug"] },
+        { "order": 4, "split": "evaluation", "id": "swr", "title": "Implement stale-while-revalidate without duplicate refreshes", "phases": ["explore", "implement", "test", "debug"] },
+        { "order": 5, "split": "evaluation", "id": "size-eviction", "title": "Evict by total byte size and recency", "phases": ["explore", "implement", "test"] },
+        { "order": 6, "split": "evaluation", "id": "persistence-version", "title": "Load persisted cache snapshots with version migration", "phases": ["explore", "implement", "test", "review"] }
+      ]
+    }
+  ]
+}

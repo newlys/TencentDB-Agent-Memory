@@ -36,6 +36,7 @@ import {
   type ListingResult,
 } from "../../skill/core-client.js";
 import type { CoreSkillConfig } from "../../types.js";
+import { analyzeAdaptiveRoutingContext } from "../../skill/adaptive-context.js";
 
 const TAG = "[skill-injector]";
 
@@ -156,13 +157,17 @@ export class SkillInjector implements InjectionHook {
   priority: HookPriority = HOOK_PRIORITY.SKILL;
   description = "Inject agent-owned cloud skills via /v3/skill/listing before <agent_skills>.";
   /** Listing result is stable for the session. */
-  cacheStrategy: CacheStrategy = "session_init";
+  cacheStrategy: CacheStrategy;
+
+  private readonly adaptiveCache = new Map<string, { expiresAt: number; result: ListingResult }>();
 
   constructor(
     private config: SkillInjectorConfig,
     /** Optional override (tests). */
     private clientOverride?: CoreSkillClient,
-  ) {}
+  ) {
+    this.cacheStrategy = config.coreSkill.routingProfile === "adaptive_v1" ? "none" : "session_init";
+  }
 
   /**
    * Live-path execute (cache-miss self-heal).
@@ -193,7 +198,32 @@ export class SkillInjector implements InjectionHook {
       agent_id?: string;
       space_id?: string;
     } | undefined;
-    // No search query on the live path — core will route to mode=full.
+    if (this.config.coreSkill.routingProfile === "adaptive_v1") {
+      const route = analyzeAdaptiveRoutingContext(ctx);
+      const cacheKey = `${session?.space_id ?? ""}|${session?.team_id ?? ""}|${session?.agent_id ?? ""}|${route.signature}`;
+      const cached = this.adaptiveCache.get(cacheKey);
+      if (cached && cached.expiresAt > Date.now()) {
+        return this.blocksFromResult(cached.result, true);
+      }
+      const result = await this.fetchListing({
+        team_id: session?.team_id,
+        agent_id: session?.agent_id,
+        space_id: session?.space_id,
+        query: route.query,
+        routing_context: {
+          complexity: route.complexity,
+          predicted_phases: route.predicted_phases,
+          current_phase: route.current_phase,
+          recent_actions: route.recent_actions,
+          route_cache_hit: false,
+        },
+        trigger: "execute",
+      });
+      if (!result) return [];
+      this.adaptiveCache.set(cacheKey, { expiresAt: Date.now() + 300_000, result });
+      return this.blocksFromResult(result, false);
+    }
+    // No search query on the static live path — core routes to mode=full.
     return this.renderListingBlocks({
       team_id: session?.team_id,
       agent_id: session?.agent_id,
@@ -244,12 +274,24 @@ export class SkillInjector implements InjectionHook {
     query: string | undefined;
     trigger: "prewarm" | "execute";
   }): Promise<ContextBlock[]> {
+    const result = await this.fetchListing(args);
+    return result ? this.blocksFromResult(result, false) : [];
+  }
+
+  private async fetchListing(args: {
+    team_id?: string;
+    agent_id?: string;
+    space_id?: string;
+    query: string | undefined;
+    routing_context?: import("../../skill/core-client.js").ListingInput["routing_context"];
+    trigger: "prewarm" | "execute";
+  }): Promise<ListingResult | null> {
     const { team_id, agent_id, space_id, query, trigger } = args;
     if (!team_id || !agent_id) {
       console.log(
         `${TAG} ${trigger}: missing session identity (team_id/agent_id) — skipping listing`,
       );
-      return [];
+      return null;
     }
 
     // Route the request to the correct kernel tenant. `space_id` is the
@@ -270,6 +312,7 @@ export class SkillInjector implements InjectionHook {
         team_id,
         agent_id,
         query,
+        routing_context: args.routing_context,
       }, { serviceId });
       console.log(
         `${TAG} ${trigger} result mode=${result.mode}`
@@ -279,11 +322,17 @@ export class SkillInjector implements InjectionHook {
       console.warn(
         `${TAG} ${trigger} core listing failed, degrading to empty <available_skills>: ${(err as Error).message}`,
       );
-      return [];
+      return null;
     }
 
     const listing = result.listing;
-    if (!listing || listing.includes("(none)")) return [];
+    if (!listing || listing.includes("(none)")) return null;
+
+    return result;
+  }
+
+  private blocksFromResult(result: ListingResult, routeCacheHit: boolean): ContextBlock[] {
+    const listing = result.listing;
 
     const content = wrapAvailableSkillsBlock(listing);
     return [{
@@ -293,6 +342,7 @@ export class SkillInjector implements InjectionHook {
         source: this.id,
         skillCount: result.hits.length,
         mode: result.mode,
+        diagnostics: { ...(result.diagnostics ?? {}), route_cache_hit: routeCacheHit },
         // Shared cache key across prewarm + execute so pipeline self-heal
         // writes replace, not fragment, the prewarmed entry.
         cacheKey: "skill-injector:catalog",

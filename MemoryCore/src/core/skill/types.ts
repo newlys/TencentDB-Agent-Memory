@@ -23,16 +23,45 @@ export interface SkillConfigInput {
   contentBackend?: "local" | "cos";
 
   routing?: {
+    /** Backward-compatible static listing, or task-aware adaptive routing. */
+    profile?: "static" | "adaptive_v1";
     mode?: "bm25" | "embedding" | "hybrid";
     hybridAlpha?: number;
     searchTopK?: number;
     charBudgetPercent?: number;
     fastPathMinNameLength?: number;
+    adaptive?: {
+      candidateTopK?: number;
+      complexityK?: Partial<Record<"simple" | "moderate" | "complex", number>>;
+      absoluteScoreThreshold?: number;
+      relativeScoreThreshold?: number;
+      scoreGapThreshold?: number;
+      maxListingChars?: number;
+      reranker?: {
+        baseUrl?: string;
+        model?: string;
+        timeoutMs?: number;
+        failOpen?: boolean;
+        /** Environment variable containing the credential. Defaults to TDAI_SKILL_RERANK_API_KEY. */
+        apiKeyEnv?: string;
+      };
+    };
   };
 
   extraction?: {
     enabled?: boolean;
     toolCallThreshold?: number;
+    /** Optional semantic SOP boundary trigger; count/byte limits remain safety caps. */
+    trigger?: {
+      profile?: "legacy" | "sop_v1";
+      minToolCalls?: number;
+      completionScoreThreshold?: number;
+      topicSwitchScoreThreshold?: number;
+    };
+    /** Pre-LLM extraction value gate; defaults to baseline passthrough. */
+    valueGate?: { profile?: "legacy" | "precision_v1" };
+    /** Reviewer prompt version. V2 is preserved as the baseline. */
+    reviewPromptProfile?: "legacy_v2" | "precision_v3" | "balanced_v4";
     model?: string;
     maxIterations?: number;
     /**
@@ -104,16 +133,40 @@ export interface ResolvedSkillConfig {
   contentBackend: "local" | "cos";
 
   routing: {
+    profile: "static" | "adaptive_v1";
     mode: "bm25" | "embedding" | "hybrid";
     hybridAlpha: number;
     searchTopK: number;
     charBudgetPercent: number;
     fastPathMinNameLength: number;
+    adaptive: {
+      candidateTopK: number;
+      complexityK: Record<"simple" | "moderate" | "complex", number>;
+      absoluteScoreThreshold: number;
+      relativeScoreThreshold: number;
+      scoreGapThreshold: number;
+      maxListingChars: number;
+      reranker: {
+        baseUrl: string;
+        model: string;
+        timeoutMs: number;
+        failOpen: boolean;
+        apiKeyEnv: string;
+      };
+    };
   };
 
   extraction: {
     enabled: boolean;
     toolCallThreshold: number;
+    trigger: {
+      profile: "legacy" | "sop_v1";
+      minToolCalls: number;
+      completionScoreThreshold: number;
+      topicSwitchScoreThreshold: number;
+    };
+    valueGate: { profile: "legacy" | "precision_v1" };
+    reviewPromptProfile: "legacy_v2" | "precision_v3" | "balanced_v4";
     model?: string;
     maxIterations: number;
     /** 归档尺寸旋钮 (字节)。用户可见配置源；下面 7 个字段由它派生。 */

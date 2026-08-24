@@ -1,0 +1,139 @@
+{
+  "model": "qwen3.7-plus",
+  "generatedAt": "2026-08-23T16:36:38.203Z",
+  "judgeCalls": 0,
+  "inputChars": 0,
+  "promptTokens": 0,
+  "completionTokens": 0,
+  "predictions": {
+    "langfuse-ubuntu-compose-success": [
+      {
+        "phase": "after_append",
+        "index": 3,
+        "confidence": 0.95,
+        "reason": "The buffered workflow successfully deployed Langfuse using Docker Compose. The incoming transcript shows the final verification step (health check and container status) returning successful results, and the assistant explicitly confirms the deployment is complete and verified. This represents a fully executed multi-step SOP with a verified successful final outcome."
+      }
+    ],
+    "langfuse-macos-explanation-only": [],
+    "langfuse-compose-recovery-success": [
+      {
+        "phase": "after_append",
+        "index": 3,
+        "confidence": 0.95,
+        "reason": "The buffered workflow (deploy Langfuse, diagnose port conflict, fix compose config) reached a verified successful outcome in incoming: `docker compose up -d` succeeded and the health check returned `{\"status\":\"OK\"}`. The assistant explicitly confirms completion and extracts a reusable SOP point. This is a completed multi-step SOP with verified success."
+      }
+    ],
+    "langfuse-k8s-intermediate-success": [
+      {
+        "phase": "after_append",
+        "index": 3,
+        "confidence": 0.95,
+        "reason": "The buffered workflow (helm install, rollout) was completed, and the incoming transcript shows the final verification step (curl health check returning OK) and the assistant confirming the entire deployment flow is complete. This represents a verified successful final outcome of a multi-step SOP."
+      }
+    ],
+    "langfuse-unfinished": [],
+    "langfuse-topic-switch-before": [
+      {
+        "phase": "after_append",
+        "index": 2,
+        "confidence": 0.95,
+        "reason": "Buffered workflow (deploy Langfuse via docker compose) completed successfully. Incoming contains verification step (health check) which confirms the deployment is fully successful and accessible. This is a complete, verified multi-step SOP execution."
+      }
+    ],
+    "nginx-ubuntu-tls-success": [
+      {
+        "phase": "after_append",
+        "index": 3,
+        "confidence": 0.95,
+        "reason": "The buffered workflow (certbot --nginx) successfully deployed the certificate. The incoming workflow verifies the outcome (curl returns HTTP/2 200, certbot renew --dry-run succeeds) and the assistant confirms the task is complete. This is a verified successful final outcome of a multi-step SOP (configure HTTPS + verify auto-renewal)."
+      }
+    ],
+    "nginx-502-recovery-success": [
+      {
+        "phase": "after_append",
+        "index": 2,
+        "confidence": 0.92,
+        "reason": "Buffered workflow (check Nginx error log → identify upstream connection refused) reached a verified successful outcome: root cause identified (upstream service not running). Incoming continues the same troubleshooting task by checking the upstream service status, which is a continuation of the same SOP, not an unrelated new task. However, since the incoming is still part of the same troubleshooting flow and the buffered already achieved its diagnostic goal, this qualifies as after_append where the buffered executed workflow has a verified successful outcome."
+      }
+    ],
+    "nginx-reload-failed": [],
+    "nginx-logrotate-success": [
+      {
+        "phase": "after_append",
+        "index": 2,
+        "confidence": 0.95,
+        "reason": "The buffered workflow (configure Nginx log rotation) reached a verified successful outcome: the assistant confirmed '日志轮转配置完成并验证成功，Nginx 已重新打开新的 access.log' after executing logrotate -f and verifying with lsof. The incoming content starts with the final verification step of this same task, confirming the successful completion. This represents a complete, successfully executed multi-step SOP (configure logrotate, dry-run test, force rotation, verify file handle reopening)."
+      }
+    ],
+    "nginx-config-advice": [],
+    "postgres-logical-backup-success": [
+      {
+        "phase": "after_append",
+        "index": 2,
+        "confidence": 0.95,
+        "reason": "The buffered workflow (pg_dump) completed successfully (exit 0). The incoming workflow verifies the backup (pg_restore --list, sha256sum) and the assistant confirms the task is complete. This represents a verified successful final outcome for the backup SOP."
+      }
+    ],
+    "postgres-restore-staging-success": [
+      {
+        "phase": "after_append",
+        "index": 2,
+        "confidence": 0.95,
+        "reason": "Buffered workflow (restore + initial check) succeeded with exit 0. Incoming continues the same SOP (smoke verification via psql count) and concludes with a verified successful final outcome: restore complete and smoke test passed. The entire multi-step SOP (restore + smoke verification) is now fully executed and verified."
+      }
+    ],
+    "postgres-backup-permission-recovery": [
+      {
+        "phase": "after_append",
+        "index": 3,
+        "confidence": 0.9,
+        "reason": "Buffered workflow (exporting PostgreSQL backup from container to host) reached a verified successful outcome (exit 0, and incoming confirms pg_restore can read the dump). Incoming starts an unrelated new task (inspecting dump contents with pg_restore --list), so the buffered skill should be archived."
+      }
+    ],
+    "postgres-destructive-confirmation": [],
+    "postgres-topic-switch-before": [
+      {
+        "phase": "after_append",
+        "index": 2,
+        "confidence": 0.95,
+        "reason": "Buffered workflow verified nightly.dump is restorable (pg_restore succeeded, connectivity check passed). Incoming continues the same verification task (actual restore + connectivity check), completing the SOP successfully. The entire sequence forms one coherent multi-step SOP with a verified successful outcome."
+      }
+    ],
+    "redis-systemd-english-paraphrase": [
+      {
+        "phase": "after_append",
+        "index": 2,
+        "confidence": 0.95,
+        "reason": "The buffered workflow (install Redis, bind locally, enable on boot) was executed successfully. The incoming segment verifies the outcome (PONG, enabled) and the assistant confirms completion. The task is fully resolved with a verified successful final outcome."
+      }
+    ],
+    "redis-aof-chinese-paraphrase": [
+      {
+        "phase": "after_append",
+        "index": 2,
+        "confidence": 0.95,
+        "reason": "The buffered workflow (enable AOF, set probe key) and incoming workflow (restart Redis, verify probe key persists) together form a complete, verified multi-step SOP for enabling and verifying Redis AOF persistence. The final outcome is explicitly confirmed successful by the assistant."
+      }
+    ],
+    "redis-replica-intermediate": [],
+    "redis-cli-advice-only": [],
+    "redis-auth-failed": [],
+    "redis-topic-switch-paraphrase": [
+      {
+        "phase": "after_append",
+        "index": 2,
+        "confidence": 0.95,
+        "reason": "Buffered workflow (enable Redis systemd service) reached verified success ('active'). Incoming is an unrelated new task (verify Redis is responding via PING/PONG), which is a separate verification step. Archive buffered only."
+      }
+    ],
+    "redis-claimed-done-no-verification": [],
+    "redis-rdb-success-minimal": [
+      {
+        "phase": "after_append",
+        "index": 2,
+        "confidence": 0.95,
+        "reason": "Buffered workflow (BGSAVE) completed successfully. Incoming executes verification steps (LASTSAVE, redis-check-rdb) which are part of the same SOP (generate and verify RDB snapshot). The final assistant message confirms successful completion of the entire workflow."
+      }
+    ]
+  }
+}

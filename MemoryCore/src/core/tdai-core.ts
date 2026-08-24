@@ -64,6 +64,8 @@ import {
   SkillExtractor,
   resolveSkillConfig,
   SKILL_REVIEW_PROMPT,
+  SKILL_REVIEW_PROMPT_V3,
+  SKILL_REVIEW_PROMPT_V4,
 } from "./skill/index.js";
 // Skill async-extract 现在完全走 conversation-add 侧的 agent 队列 + Worker
 // (SkillTriggerService.archive → agent 队列 → SkillConversationExtractWorker),
@@ -943,12 +945,17 @@ export class TdaiCore {
           this.skillExtractor = new SkillExtractor({
             core: this.skillCore,
             runner: llmRunner,
-            systemPrompt: SKILL_REVIEW_PROMPT,
+            systemPrompt: resolved.extraction.reviewPromptProfile === "balanced_v4"
+              ? SKILL_REVIEW_PROMPT_V4
+              : resolved.extraction.reviewPromptProfile === "precision_v3"
+                ? SKILL_REVIEW_PROMPT_V3
+                : SKILL_REVIEW_PROMPT,
             maxIterations: resolved.extraction.maxIterations,
             headChars: resolved.extraction.headChars,
             tailChars: resolved.extraction.tailChars,
             maxTokens: resolved.extraction.maxTokens,
             prefixSkillsLimit: resolved.extraction.prefixSkillsLimit,
+            valueGateProfile: resolved.extraction.valueGate.profile,
             logger: this.logger,
           });
         } else {

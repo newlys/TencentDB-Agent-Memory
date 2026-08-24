@@ -30,6 +30,20 @@ export type {
   SkillProposeResult,
 } from "./types.js";
 export { resolveSkillConfig } from "./skill-config.js";
+export {
+  evaluateSkillValue,
+  type SkillValueGateProfile,
+  type SkillValueDecision,
+  type SkillValueGateResult,
+} from "./skill-value-gate.js";
+export {
+  complexityFromPhases,
+  selectAdaptiveSkills,
+  QwenSkillReranker,
+  type SkillReranker,
+  type SkillTaskPhase,
+  type SkillTaskComplexity,
+} from "./adaptive-routing.js";
 export type { ResolverLogger } from "./skill-config.js";
 
 // SKILL.md format helpers
@@ -135,6 +149,8 @@ export {
 
 // 抽取 prompt
 export { SKILL_REVIEW_PROMPT } from "./prompts/skill-review-prompt.js";
+export { SKILL_REVIEW_PROMPT_V3 } from "./prompts/skill-review-prompt-v3.js";
+export { SKILL_REVIEW_PROMPT_V4 } from "./prompts/skill-review-prompt-v4.js";
 
 // 抽取链路里 worker / dedupe 共用的 ExtractorLLMRunner（与 v2 ExtractorRunner 形状兼容）。
 export type { ExtractorLLMRunner } from "./types.js";

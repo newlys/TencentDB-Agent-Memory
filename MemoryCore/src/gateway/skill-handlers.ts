@@ -56,6 +56,12 @@ import type { CompressibleMessage } from "../core/skill/conversation-add/message
 import { trace } from "../core/report/trace.js";
 import { metricProducer } from "../core/report/kafka-metric-producer.js";
 import { obsLogger } from "../core/report/obs-logger.js";
+import {
+  complexityFromPhases,
+  QwenSkillReranker,
+  selectAdaptiveSkills,
+  type AdaptiveSkillCandidate,
+} from "../core/skill/adaptive-routing.js";
 
 const TAG = "[skill-handlers]";
 
@@ -75,6 +81,10 @@ export interface SkillRouterDeps {
   getSkillExtractor?: () => SkillExtractor | undefined;
   /** Optional. 已解析的 skill 配置；handleListing 用 searchTopK 限制注入条目数。 */
   getResolvedSkillConfig?: () => ResolvedSkillConfig | undefined;
+  /** Adaptive routing override for tests or alternate cross-encoder providers. */
+  createSkillReranker?: (options: {
+    baseUrl: string; apiKey: string; model: string; timeoutMs: number;
+  }) => import("../core/skill/adaptive-routing.js").SkillReranker;
   logger: Logger;
   /**
    * Service mode: resolve per-instance SkillCore (TcvdbSkillStore + COS).
@@ -680,6 +690,112 @@ export async function handleListing(body: unknown, _auth: V2AuthContext, request
     // 从配置读 routing：searchTopK（listing 最多注入多少条）+ mode（bm25/embedding/hybrid）。
     const routing = deps.getResolvedSkillConfig?.()?.routing;
     const topK = routing?.searchTopK ?? 20;
+
+    if (routing?.profile === "adaptive_v1" && useSearch) {
+      const adaptive = routing.adaptive;
+      const bm25Start = Date.now();
+      const hits = await pre.core.search({
+        user_id: pre.data.user_id,
+        team_id: pre.data.team_id,
+        agent_id: pre.data.agent_id,
+        query,
+        top_k: adaptive.candidateTopK,
+        mode: "bm25",
+      });
+      const bm25Ms = Date.now() - bm25Start;
+      const candidates: AdaptiveSkillCandidate[] = hits.map((h) => ({
+        skill_id: h.skill.skill_id,
+        name: h.skill.name,
+        description: h.skill.description,
+        version: h.skill.version,
+        score: h.score,
+      }));
+      const phases = pre.data.routing_context?.predicted_phases ?? [];
+      const complexity = pre.data.routing_context?.complexity ?? complexityFromPhases(phases);
+      let ranked = candidates;
+      let reranked = false;
+      let fallbackReason: string | undefined;
+      let rerankMs = 0;
+      let rerankInputTokens: number | undefined;
+      let rerankOutputTokens: number | undefined;
+      const apiKey = process.env[adaptive.reranker.apiKeyEnv] ?? "";
+      if (candidates.length > 0 && adaptive.reranker.baseUrl && apiKey) {
+        const rerankStart = Date.now();
+        try {
+          const reranker = deps.createSkillReranker?.({
+            baseUrl: adaptive.reranker.baseUrl, apiKey,
+            model: adaptive.reranker.model, timeoutMs: adaptive.reranker.timeoutMs,
+          }) ?? new QwenSkillReranker({
+            baseUrl: adaptive.reranker.baseUrl, apiKey,
+            model: adaptive.reranker.model, timeoutMs: adaptive.reranker.timeoutMs,
+          });
+          const scores = await reranker.rerank(
+            query,
+            candidates.map((s) => `${s.name}: ${s.description}`),
+            candidates.length,
+          );
+          const usage = reranker.getLastUsage?.();
+          rerankInputTokens = usage?.inputTokens;
+          rerankOutputTokens = usage?.outputTokens;
+          ranked = scores.map((score) => ({ ...candidates[score.index]!, score: score.score }))
+            .filter((candidate) => candidate.skill_id);
+          reranked = ranked.length > 0;
+          if (!reranked) throw new Error("reranker returned no valid candidates");
+        } catch (error) {
+          fallbackReason = error instanceof Error ? error.message : String(error);
+          if (!adaptive.reranker.failOpen) throw error;
+          ranked = candidates;
+        } finally {
+          rerankMs = Date.now() - rerankStart;
+        }
+      } else if (candidates.length > 0) {
+        fallbackReason = adaptive.reranker.baseUrl ? "reranker API key unavailable" : "reranker base URL unavailable";
+      }
+      const selection = selectAdaptiveSkills(ranked, complexity, {
+        complexityK: adaptive.complexityK,
+        absoluteScoreThreshold: adaptive.absoluteScoreThreshold,
+        relativeScoreThreshold: adaptive.relativeScoreThreshold,
+        scoreGapThreshold: adaptive.scoreGapThreshold,
+        maxListingChars: Math.min(adaptive.maxListingChars, charBudget),
+      }, reranked);
+      const totalMs = Date.now() - t0;
+      const diagnostics = {
+        profile: "adaptive_v1" as const,
+        complexity,
+        predicted_phases: phases,
+        current_phase: pre.data.routing_context?.current_phase,
+        candidate_count: candidates.length,
+        reranked_count: reranked ? ranked.length : 0,
+        selected_k: selection.selected.length,
+        complexity_k: selection.complexityK,
+        confidence_k: selection.confidenceK,
+        budget_k: selection.budgetK,
+        listing_chars: selection.listingChars,
+        listing_tokens_cl100k: selection.listingTokens,
+        bm25_ms: bm25Ms,
+        rerank_ms: rerankMs,
+        rerank_input_tokens: rerankInputTokens,
+        rerank_output_tokens: rerankOutputTokens,
+        total_ms: totalMs,
+        route_cache_hit: pre.data.routing_context?.route_cache_hit ?? false,
+        fallback_reason: fallbackReason,
+      };
+      obsLogger.info("skill.handleListing.done", {
+        req_id: requestId, code: 0, dur_ms: totalMs, mode: "search",
+        hits: selection.selected.length, profile: "adaptive_v1", complexity,
+        predicted_phases: phases.join(","), current_phase: diagnostics.current_phase,
+        candidate_count: candidates.length, reranked_count: diagnostics.reranked_count,
+        selected_k: selection.selected.length, listing_chars: selection.listingChars,
+        listing_tokens_cl100k: selection.listingTokens, bm25_ms: bm25Ms,
+        rerank_ms: rerankMs, fallback_reason: fallbackReason,
+      });
+      return successEnvelope({
+        mode: "search",
+        listing: selection.listing,
+        hits: selection.selected.map((s) => ({ skill_id: s.skill_id, version: s.version, name: s.name })),
+        diagnostics,
+      }, requestId);
+    }
 
     // search 模式：按 routing.mode 选检索算法；fallback 到 list head（query 为空）。
     type Item = { skill_id: string; name: string; description: string; version: number };

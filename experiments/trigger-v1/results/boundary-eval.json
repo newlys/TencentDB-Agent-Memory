@@ -1,0 +1,1892 @@
+{
+  "generatedAt": "2026-08-23T17:13:28.744Z",
+  "dataset": {
+    "families": 4,
+    "cases": 24,
+    "positiveBoundaries": 15,
+    "chunks": 79
+  },
+  "rows": [
+    {
+      "strategy": "llm_judge_qwen3.7-plus",
+      "cases": 24,
+      "truePositives": 14,
+      "falsePositives": 1,
+      "falseNegatives": 1,
+      "precision": 0.9333333333333333,
+      "recall": 0.9333333333333333,
+      "f1": 0.9333333333333333,
+      "exactCaseAccuracy": 0.9583333333333334,
+      "extractionRate": 0.625,
+      "redundantTriggerRate": 0.06666666666666667,
+      "missedSopRate": 0.06666666666666667,
+      "judgeCalls": 21,
+      "details": [
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-ubuntu-compose-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-macos-explanation-only",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-compose-recovery-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-k8s-intermediate-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-unfinished",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-topic-switch-before",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-ubuntu-tls-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-502-recovery-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-reload-failed",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-logrotate-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-config-advice",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-logical-backup-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-restore-staging-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-backup-permission-recovery",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-destructive-confirmation",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-topic-switch-before",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-systemd-english-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-aof-chinese-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-replica-intermediate",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-cli-advice-only",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-auth-failed",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-topic-switch-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-claimed-done-no-verification",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-rdb-success-minimal",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        }
+      ]
+    },
+    {
+      "strategy": "sop_v1_score_0.60",
+      "cases": 24,
+      "truePositives": 11,
+      "falsePositives": 0,
+      "falseNegatives": 4,
+      "precision": 1,
+      "recall": 0.7333333333333333,
+      "f1": 0.846153846153846,
+      "exactCaseAccuracy": 0.8333333333333334,
+      "extractionRate": 0.4583333333333333,
+      "redundantTriggerRate": 0,
+      "missedSopRate": 0.26666666666666666,
+      "judgeCalls": 0,
+      "details": [
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-ubuntu-compose-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-macos-explanation-only",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-compose-recovery-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-k8s-intermediate-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-unfinished",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-topic-switch-before",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-ubuntu-tls-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-502-recovery-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-reload-failed",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-logrotate-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-config-advice",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-logical-backup-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-restore-staging-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-backup-permission-recovery",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-destructive-confirmation",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-topic-switch-before",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-systemd-english-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-aof-chinese-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-replica-intermediate",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-cli-advice-only",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-auth-failed",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-topic-switch-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-claimed-done-no-verification",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-rdb-success-minimal",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        }
+      ]
+    },
+    {
+      "strategy": "sop_v1_score_0.68",
+      "cases": 24,
+      "truePositives": 11,
+      "falsePositives": 0,
+      "falseNegatives": 4,
+      "precision": 1,
+      "recall": 0.7333333333333333,
+      "f1": 0.846153846153846,
+      "exactCaseAccuracy": 0.8333333333333334,
+      "extractionRate": 0.4583333333333333,
+      "redundantTriggerRate": 0,
+      "missedSopRate": 0.26666666666666666,
+      "judgeCalls": 0,
+      "details": [
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-ubuntu-compose-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-macos-explanation-only",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-compose-recovery-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-k8s-intermediate-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-unfinished",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-topic-switch-before",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-ubuntu-tls-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-502-recovery-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-reload-failed",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-logrotate-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-config-advice",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-logical-backup-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-restore-staging-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-backup-permission-recovery",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-destructive-confirmation",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-topic-switch-before",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-systemd-english-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-aof-chinese-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-replica-intermediate",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-cli-advice-only",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-auth-failed",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-topic-switch-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-claimed-done-no-verification",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-rdb-success-minimal",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        }
+      ]
+    },
+    {
+      "strategy": "sop_v1_score_0.76",
+      "cases": 24,
+      "truePositives": 11,
+      "falsePositives": 0,
+      "falseNegatives": 4,
+      "precision": 1,
+      "recall": 0.7333333333333333,
+      "f1": 0.846153846153846,
+      "exactCaseAccuracy": 0.8333333333333334,
+      "extractionRate": 0.4583333333333333,
+      "redundantTriggerRate": 0,
+      "missedSopRate": 0.26666666666666666,
+      "judgeCalls": 0,
+      "details": [
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-ubuntu-compose-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-macos-explanation-only",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-compose-recovery-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-k8s-intermediate-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-unfinished",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-topic-switch-before",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-ubuntu-tls-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-502-recovery-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-reload-failed",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-logrotate-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-config-advice",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-logical-backup-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-restore-staging-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-backup-permission-recovery",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-destructive-confirmation",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-topic-switch-before",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-systemd-english-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-aof-chinese-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-replica-intermediate",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-cli-advice-only",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-auth-failed",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-topic-switch-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-claimed-done-no-verification",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-rdb-success-minimal",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        }
+      ]
+    },
+    {
+      "strategy": "sop_v1_score_0.84",
+      "cases": 24,
+      "truePositives": 9,
+      "falsePositives": 0,
+      "falseNegatives": 6,
+      "precision": 1,
+      "recall": 0.6,
+      "f1": 0.7499999999999999,
+      "exactCaseAccuracy": 0.75,
+      "extractionRate": 0.375,
+      "redundantTriggerRate": 0,
+      "missedSopRate": 0.4,
+      "judgeCalls": 0,
+      "details": [
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-ubuntu-compose-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-macos-explanation-only",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-compose-recovery-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-k8s-intermediate-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-unfinished",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-topic-switch-before",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-ubuntu-tls-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-502-recovery-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-reload-failed",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-logrotate-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-config-advice",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-logical-backup-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-restore-staging-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-backup-permission-recovery",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-destructive-confirmation",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-topic-switch-before",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-systemd-english-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-aof-chinese-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-replica-intermediate",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-cli-advice-only",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-auth-failed",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-topic-switch-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-claimed-done-no-verification",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-rdb-success-minimal",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        }
+      ]
+    },
+    {
+      "strategy": "fixed_tool_calls_3",
+      "cases": 24,
+      "truePositives": 6,
+      "falsePositives": 0,
+      "falseNegatives": 9,
+      "precision": 1,
+      "recall": 0.4,
+      "f1": 0.5714285714285715,
+      "exactCaseAccuracy": 0.625,
+      "extractionRate": 0.25,
+      "redundantTriggerRate": 0,
+      "missedSopRate": 0.6,
+      "judgeCalls": 0,
+      "details": [
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-ubuntu-compose-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-macos-explanation-only",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-compose-recovery-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-k8s-intermediate-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-unfinished",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-topic-switch-before",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-ubuntu-tls-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-502-recovery-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-reload-failed",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-logrotate-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-config-advice",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-logical-backup-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-restore-staging-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-backup-permission-recovery",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:4"
+          ]
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-destructive-confirmation",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-topic-switch-before",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-systemd-english-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-aof-chinese-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-replica-intermediate",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-cli-advice-only",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-auth-failed",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-topic-switch-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-claimed-done-no-verification",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-rdb-success-minimal",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        }
+      ]
+    },
+    {
+      "strategy": "fixed_tool_calls_2",
+      "cases": 24,
+      "truePositives": 9,
+      "falsePositives": 9,
+      "falseNegatives": 6,
+      "precision": 0.5,
+      "recall": 0.6,
+      "f1": 0.5454545454545454,
+      "exactCaseAccuracy": 0.625,
+      "extractionRate": 0.75,
+      "redundantTriggerRate": 0.5,
+      "missedSopRate": 0.4,
+      "judgeCalls": 0,
+      "details": [
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-ubuntu-compose-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-macos-explanation-only",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-compose-recovery-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-k8s-intermediate-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-unfinished",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-topic-switch-before",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-ubuntu-tls-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-502-recovery-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-reload-failed",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-logrotate-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-config-advice",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-logical-backup-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-restore-staging-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-backup-permission-recovery",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-destructive-confirmation",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-topic-switch-before",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-systemd-english-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-aof-chinese-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-replica-intermediate",
+          "gold": [],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-cli-advice-only",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-auth-failed",
+          "gold": [],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-topic-switch-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-claimed-done-no-verification",
+          "gold": [],
+          "predicted": [
+            "cut:3"
+          ]
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-rdb-success-minimal",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": [
+            "cut:3"
+          ]
+        }
+      ]
+    },
+    {
+      "strategy": "fixed_tool_calls_5",
+      "cases": 24,
+      "truePositives": 0,
+      "falsePositives": 0,
+      "falseNegatives": 15,
+      "precision": 0,
+      "recall": 0,
+      "f1": 0,
+      "exactCaseAccuracy": 0.375,
+      "extractionRate": 0,
+      "redundantTriggerRate": 0,
+      "missedSopRate": 1,
+      "judgeCalls": 0,
+      "details": [
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-ubuntu-compose-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-macos-explanation-only",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-compose-recovery-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-k8s-intermediate-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-unfinished",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-topic-switch-before",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-ubuntu-tls-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-502-recovery-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-reload-failed",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-logrotate-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-config-advice",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-logical-backup-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-restore-staging-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-backup-permission-recovery",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-destructive-confirmation",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-topic-switch-before",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-systemd-english-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-aof-chinese-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-replica-intermediate",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-cli-advice-only",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-auth-failed",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-topic-switch-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-claimed-done-no-verification",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-rdb-success-minimal",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        }
+      ]
+    },
+    {
+      "strategy": "fixed_tool_calls_10",
+      "cases": 24,
+      "truePositives": 0,
+      "falsePositives": 0,
+      "falseNegatives": 15,
+      "precision": 0,
+      "recall": 0,
+      "f1": 0,
+      "exactCaseAccuracy": 0.375,
+      "extractionRate": 0,
+      "redundantTriggerRate": 0,
+      "missedSopRate": 1,
+      "judgeCalls": 0,
+      "details": [
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-ubuntu-compose-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-macos-explanation-only",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-compose-recovery-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-k8s-intermediate-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-unfinished",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "langfuse-deploy",
+          "caseId": "langfuse-topic-switch-before",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-ubuntu-tls-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-502-recovery-success",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-reload-failed",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-logrotate-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "nginx-operations",
+          "caseId": "nginx-config-advice",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-logical-backup-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-restore-staging-success",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-backup-permission-recovery",
+          "gold": [
+            "cut:4"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-destructive-confirmation",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "postgres-backup-restore",
+          "caseId": "postgres-topic-switch-before",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-systemd-english-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-aof-chinese-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-replica-intermediate",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-cli-advice-only",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-auth-failed",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-topic-switch-paraphrase",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-claimed-done-no-verification",
+          "gold": [],
+          "predicted": []
+        },
+        {
+          "family": "redis-operations-holdout",
+          "caseId": "redis-rdb-success-minimal",
+          "gold": [
+            "cut:3"
+          ],
+          "predicted": []
+        }
+      ]
+    }
+  ]
+}

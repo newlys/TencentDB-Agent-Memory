@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "artifacts": [
+    {
+      "path": "agentbench-os-dev.json",
+      "source": "https://raw.githubusercontent.com/THUDM/AgentBench/main/data/os_interaction/data/dev.json",
+      "upstream_project": "https://github.com/THUDM/AgentBench",
+      "retrieved_at": "2026-08-24",
+      "sha256": "C5554248E6C1CB606E27D2F81025B751A490C9A5CCD37AABF4C86879A52E9274",
+      "usage": "Future real-shell execution holdout; not used to tune trigger-v1 thresholds or reviewer prompts."
+    }
+  ]
+}

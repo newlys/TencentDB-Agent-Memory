@@ -21,6 +21,7 @@ import { SkillTriggerService } from "./trigger-service.js";
 import { SkillConversationAddHandler, type HandlerThresholds } from "./add-handler.js";
 import type { CompressOptions } from "./message-compressor.js";
 import type { OversizeOptions } from "./oversize-strategy.js";
+import type { SopBoundaryConfig } from "./sop-boundary.js";
 import type { SkillCandidatesSink } from "./extract-worker.js";
 import { SkillCoreSink, type MetadataServiceLike } from "./skill-core-sink.js";
 
@@ -51,6 +52,9 @@ export interface WireConversationAddDeps {
 
   /** Handler 阈值覆盖 */
   thresholds?: Partial<HandlerThresholds>;
+
+  /** SOP semantic boundary policy; legacy by default. */
+  boundaryConfig?: Partial<SopBoundaryConfig>;
 
   /** 单条 tool 消息头尾压缩规则覆盖 (对应 SkillConfig.compress)。 */
   compressOptions?: Partial<CompressOptions>;
@@ -106,6 +110,7 @@ export function wireConversationAddHandler(
     buffer,
     trigger,
     thresholds: deps.thresholds,
+    boundaryConfig: deps.boundaryConfig,
     compressOptions: deps.compressOptions,
     oversizeOptions: deps.oversizeOptions,
   });

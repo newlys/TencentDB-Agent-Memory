@@ -1,0 +1,1726 @@
+{
+  "generatedAt": "2026-08-23T17:13:33.634Z",
+  "metrics": {
+    "cases": 44,
+    "positiveCases": 22,
+    "negativeCases": 22,
+    "llmCallsAvoided": 16,
+    "llmCallAvoidanceRate": 0.36363636363636365,
+    "skipPrecision": 1,
+    "positivePassThroughRecall": 1,
+    "unsafeFalseSkips": [],
+    "decisions": {
+      "extract": 18,
+      "review": 10,
+      "skip": 16
+    }
+  },
+  "details": [
+    {
+      "id": "boundary-ref--langfuse-ubuntu-compose-success",
+      "split": "seed",
+      "kind": "sop",
+      "shouldExtract": true,
+      "reason": "verified reusable operations workflow",
+      "messages": [
+        {
+          "role": "user",
+          "content": "在 Ubuntu 22.04 上用 Docker Compose 部署 Langfuse，数据要持久化。"
+        },
+        {
+          "role": "assistant",
+          "content": "先确认 Docker 与 Compose 插件，再创建部署目录和环境文件。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "c1",
+          "content": "docker --version && docker compose version"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "c1",
+          "content": "Docker 27.1.1\nDocker Compose v2.29.1"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "c2",
+          "content": "docker compose up -d"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "c2",
+          "content": "Container langfuse-db Healthy\nContainer langfuse-web Started"
+        },
+        {
+          "role": "assistant",
+          "content": "容器已启动，继续验证健康接口和重启策略。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "c3",
+          "content": "curl -fsS http://127.0.0.1:3000/api/public/health && docker compose ps"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "c3",
+          "content": "{\"status\":\"OK\"}\nlangfuse-web Up (healthy)"
+        },
+        {
+          "role": "assistant",
+          "content": "部署完成并验证成功：健康接口返回 OK，Postgres 卷和 restart 策略均已配置。"
+        }
+      ],
+      "result": {
+        "decision": "extract",
+        "score": 0.92,
+        "signals": [
+          "multi_step_execution",
+          "verified_completion"
+        ]
+      }
+    },
+    {
+      "id": "boundary-ref--langfuse-macos-explanation-only",
+      "split": "seed",
+      "kind": "none",
+      "shouldExtract": false,
+      "reason": "no completed reusable workflow boundary",
+      "messages": [
+        {
+          "role": "user",
+          "content": "macOS 上部署 Langfuse 大概要注意什么？先不要执行。"
+        },
+        {
+          "role": "assistant",
+          "content": "需要 Docker Desktop、足够内存、可用的 3000 端口，并应把 Postgres 数据挂载到 named volume。Apple Silicon 通常可直接使用官方多架构镜像。"
+        },
+        {
+          "role": "user",
+          "content": "如果 3000 端口被占用呢？"
+        },
+        {
+          "role": "assistant",
+          "content": "可把宿主端口改成 3001:3000，并同步修改访问地址。"
+        }
+      ],
+      "result": {
+        "decision": "review",
+        "score": 0.58,
+        "signals": [
+          "possible_durable_context"
+        ]
+      }
+    },
+    {
+      "id": "boundary-ref--langfuse-compose-recovery-success",
+      "split": "seed",
+      "kind": "sop",
+      "shouldExtract": true,
+      "reason": "verified reusable operations workflow",
+      "messages": [
+        {
+          "role": "user",
+          "content": "在 Debian 12 部署 Langfuse。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "c1",
+          "content": "docker compose up -d"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "c1",
+          "content": "ERROR: port 5432 is already allocated"
+        },
+        {
+          "role": "assistant",
+          "content": "启动失败，先定位端口占用，当前还不能算完成。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "c2",
+          "content": "ss -ltnp | grep 5432"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "c2",
+          "content": "postgres pid=811"
+        },
+        {
+          "role": "assistant",
+          "content": "保留宿主 PostgreSQL，将 Compose 的数据库端口改为仅内部暴露。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "c3",
+          "content": "docker compose up -d && curl -fsS http://localhost:3000/api/public/health"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "c3",
+          "content": "{\"status\":\"OK\"}"
+        },
+        {
+          "role": "assistant",
+          "content": "问题已修复，Langfuse 部署完成；健康检查通过。可复用要点是不要发布并不需要的数据库宿主端口。"
+        }
+      ],
+      "result": {
+        "decision": "extract",
+        "score": 0.92,
+        "signals": [
+          "multi_step_execution",
+          "verified_completion"
+        ]
+      }
+    },
+    {
+      "id": "boundary-ref--langfuse-k8s-intermediate-success",
+      "split": "seed",
+      "kind": "sop",
+      "shouldExtract": true,
+      "reason": "verified reusable operations workflow",
+      "messages": [
+        {
+          "role": "user",
+          "content": "把 Langfuse 部署到现有 Kubernetes 集群，并配置 Ingress。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "c1",
+          "content": "helm upgrade --install langfuse ./chart -n observability --create-namespace"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "c1",
+          "content": "Release langfuse has been upgraded. STATUS: deployed"
+        },
+        {
+          "role": "assistant",
+          "content": "Helm release 部署成功，下一步还需等待 rollout 并验证 Ingress。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "c2",
+          "content": "kubectl rollout status deploy/langfuse-web -n observability"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "c2",
+          "content": "deployment successfully rolled out"
+        },
+        {
+          "role": "assistant",
+          "content": "Pod rollout 完成，但外部入口尚未验证。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "c3",
+          "content": "curl -fsS https://langfuse.example.test/api/public/health"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "c3",
+          "content": "{\"status\":\"OK\"}"
+        },
+        {
+          "role": "assistant",
+          "content": "整个部署流程已完成：release、rollout 和 Ingress TLS 健康检查全部通过。"
+        }
+      ],
+      "result": {
+        "decision": "extract",
+        "score": 0.92,
+        "signals": [
+          "multi_step_execution",
+          "verified_completion"
+        ]
+      }
+    },
+    {
+      "id": "boundary-ref--langfuse-unfinished",
+      "split": "seed",
+      "kind": "none",
+      "shouldExtract": false,
+      "reason": "no completed reusable workflow boundary",
+      "messages": [
+        {
+          "role": "user",
+          "content": "用 Podman 在 Rocky Linux 9 上部署 Langfuse。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "c1",
+          "content": "podman compose up -d"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "c1",
+          "content": "Error: short-name resolution enforced but cannot prompt without a TTY"
+        },
+        {
+          "role": "assistant",
+          "content": "镜像短名称解析失败，需要把镜像改成完整 registry 路径后重试。"
+        },
+        {
+          "role": "user",
+          "content": "先停在这里，稍后再继续。"
+        }
+      ],
+      "result": {
+        "decision": "skip",
+        "score": 0.1,
+        "signals": [
+          "single_trivial_step"
+        ]
+      }
+    },
+    {
+      "id": "boundary-ref--langfuse-topic-switch-before",
+      "split": "seed",
+      "kind": "sop",
+      "shouldExtract": true,
+      "reason": "verified reusable operations workflow",
+      "messages": [
+        {
+          "role": "user",
+          "content": "部署 Langfuse，并确认本机可访问。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "c1",
+          "content": "docker compose up -d"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "c1",
+          "content": "langfuse-web Started"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "c2",
+          "content": "curl -fsS http://localhost:3000/api/public/health"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "c2",
+          "content": "{\"status\":\"OK\"}"
+        },
+        {
+          "role": "assistant",
+          "content": "健康检查通过，服务已经可用。"
+        },
+        {
+          "role": "user",
+          "content": "另外，帮我排查这台机器上的 Nginx 502，和 Langfuse 无关。"
+        }
+      ],
+      "result": {
+        "decision": "review",
+        "score": 0.55,
+        "signals": [
+          "multi_step_execution",
+          "ambiguous_outcome"
+        ]
+      }
+    },
+    {
+      "id": "boundary-ref--nginx-ubuntu-tls-success",
+      "split": "seed",
+      "kind": "sop",
+      "shouldExtract": true,
+      "reason": "verified reusable operations workflow",
+      "messages": [
+        {
+          "role": "user",
+          "content": "给 Ubuntu 上的 Nginx 站点配置 HTTPS 并验证自动续期。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "n1",
+          "content": "nginx -t"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "n1",
+          "content": "syntax is ok\ntest is successful"
+        },
+        {
+          "role": "assistant",
+          "content": "现有配置语法通过，接下来签发证书。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "n2",
+          "content": "certbot --nginx -d app.example.test --non-interactive --agree-tos"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "n2",
+          "content": "Successfully deployed certificate"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "n3",
+          "content": "curl -I https://app.example.test && certbot renew --dry-run"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "n3",
+          "content": "HTTP/2 200\nCongratulations, all simulated renewals succeeded"
+        },
+        {
+          "role": "assistant",
+          "content": "HTTPS 配置完成，HTTP/2 返回 200，证书自动续期 dry-run 也验证成功。"
+        }
+      ],
+      "result": {
+        "decision": "extract",
+        "score": 0.92,
+        "signals": [
+          "multi_step_execution",
+          "verified_completion"
+        ]
+      }
+    },
+    {
+      "id": "boundary-ref--nginx-502-recovery-success",
+      "split": "seed",
+      "kind": "sop",
+      "shouldExtract": true,
+      "reason": "verified reusable operations workflow",
+      "messages": [
+        {
+          "role": "user",
+          "content": "排查 Nginx 反向代理的 502。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "n1",
+          "content": "tail -n 80 /var/log/nginx/error.log"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "n1",
+          "content": "connect() failed (111: Connection refused) while connecting to upstream 127.0.0.1:8080"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "n2",
+          "content": "systemctl status myapp --no-pager"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "n2",
+          "content": "inactive (dead)"
+        },
+        {
+          "role": "assistant",
+          "content": "根因是 upstream 服务未运行，而不是 Nginx 配置本身。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "n3",
+          "content": "systemctl restart myapp && curl -sS -o /dev/null -w '%{http_code}' http://localhost"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "n3",
+          "content": "200"
+        },
+        {
+          "role": "assistant",
+          "content": "502 已修复并验证完成：重启 upstream 后代理返回 200。"
+        }
+      ],
+      "result": {
+        "decision": "extract",
+        "score": 0.92,
+        "signals": [
+          "multi_step_execution",
+          "verified_completion"
+        ]
+      }
+    },
+    {
+      "id": "boundary-ref--nginx-reload-failed",
+      "split": "seed",
+      "kind": "none",
+      "shouldExtract": false,
+      "reason": "no completed reusable workflow boundary",
+      "messages": [
+        {
+          "role": "user",
+          "content": "修改 Nginx upstream 后重新加载。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "n1",
+          "content": "nginx -t"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "n1",
+          "content": "[emerg] host not found in upstream api-internal"
+        },
+        {
+          "role": "assistant",
+          "content": "配置检查失败，不能 reload；需要先修复 DNS 或 upstream 名称。"
+        },
+        {
+          "role": "user",
+          "content": "不要改 DNS，我确认一下正确服务名再说。"
+        }
+      ],
+      "result": {
+        "decision": "skip",
+        "score": 0.1,
+        "signals": [
+          "single_trivial_step"
+        ]
+      }
+    },
+    {
+      "id": "boundary-ref--nginx-logrotate-success",
+      "split": "seed",
+      "kind": "sop",
+      "shouldExtract": true,
+      "reason": "verified reusable operations workflow",
+      "messages": [
+        {
+          "role": "user",
+          "content": "配置 Nginx 日志轮转，避免 access.log 占满磁盘。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "n1",
+          "content": "logrotate -d /etc/logrotate.d/nginx"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "n1",
+          "content": "rotating pattern: /var/log/nginx/*.log weekly"
+        },
+        {
+          "role": "assistant",
+          "content": "dry-run 规则可解析，但还需强制轮转验证 reopen。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "n2",
+          "content": "logrotate -f /etc/logrotate.d/nginx && lsof /var/log/nginx/access.log"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "n2",
+          "content": "nginx 1881 root 5w /var/log/nginx/access.log"
+        },
+        {
+          "role": "assistant",
+          "content": "日志轮转配置完成并验证成功，Nginx 已重新打开新的 access.log。"
+        }
+      ],
+      "result": {
+        "decision": "extract",
+        "score": 0.92,
+        "signals": [
+          "multi_step_execution",
+          "verified_completion"
+        ]
+      }
+    },
+    {
+      "id": "boundary-ref--nginx-config-advice",
+      "split": "seed",
+      "kind": "none",
+      "shouldExtract": false,
+      "reason": "no completed reusable workflow boundary",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Nginx 的 proxy_read_timeout 一般怎么配？"
+        },
+        {
+          "role": "assistant",
+          "content": "应按 upstream 的正常最长响应时间设置，并避免用超大 timeout 掩盖后端性能问题。长轮询与普通 API 最好分 location 配置。"
+        }
+      ],
+      "result": {
+        "decision": "skip",
+        "score": 0.1,
+        "signals": [
+          "no_execution_evidence"
+        ]
+      }
+    },
+    {
+      "id": "boundary-ref--postgres-logical-backup-success",
+      "split": "seed",
+      "kind": "sop",
+      "shouldExtract": true,
+      "reason": "verified reusable operations workflow",
+      "messages": [
+        {
+          "role": "user",
+          "content": "给 production 数据库做一次可恢复的逻辑备份。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "p1",
+          "content": "pg_dump -Fc -d production -f /backup/production.dump"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "p1",
+          "content": "exit 0"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "p2",
+          "content": "pg_restore --list /backup/production.dump | head && sha256sum /backup/production.dump"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "p2",
+          "content": "TABLE public accounts\n9e12... production.dump"
+        },
+        {
+          "role": "assistant",
+          "content": "逻辑备份完成，并通过 pg_restore 列表和 SHA-256 校验确认归档可读取。"
+        }
+      ],
+      "result": {
+        "decision": "extract",
+        "score": 0.92,
+        "signals": [
+          "multi_step_execution",
+          "verified_completion"
+        ]
+      }
+    },
+    {
+      "id": "boundary-ref--postgres-restore-staging-success",
+      "split": "seed",
+      "kind": "sop",
+      "shouldExtract": true,
+      "reason": "verified reusable operations workflow",
+      "messages": [
+        {
+          "role": "user",
+          "content": "把昨晚的 custom-format 备份恢复到 staging 并做冒烟验证。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "p1",
+          "content": "createdb restore_check && pg_restore --clean --if-exists -d restore_check /backup/nightly.dump"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "p1",
+          "content": "exit 0"
+        },
+        {
+          "role": "assistant",
+          "content": "恢复命令成功，但还要检查关键表。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "p2",
+          "content": "psql -d restore_check -c 'select count(*) from accounts'"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "p2",
+          "content": "count\n-----\n18421"
+        },
+        {
+          "role": "assistant",
+          "content": "恢复完成且冒烟验证通过，accounts 表有 18421 行。"
+        }
+      ],
+      "result": {
+        "decision": "extract",
+        "score": 0.92,
+        "signals": [
+          "multi_step_execution",
+          "verified_completion"
+        ]
+      }
+    },
+    {
+      "id": "boundary-ref--postgres-backup-permission-recovery",
+      "split": "seed",
+      "kind": "sop",
+      "shouldExtract": true,
+      "reason": "verified reusable operations workflow",
+      "messages": [
+        {
+          "role": "user",
+          "content": "从容器里的 PostgreSQL 导出备份到宿主机。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "p1",
+          "content": "docker exec db pg_dump -Fc app > /root/backups/app.dump"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "p1",
+          "content": "Access is denied"
+        },
+        {
+          "role": "assistant",
+          "content": "宿主输出目录无权限，备份尚未完成。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "p2",
+          "content": "docker exec db pg_dump -Fc app > ./app.dump"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "p2",
+          "content": "exit 0"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "p3",
+          "content": "pg_restore --list ./app.dump | Select-Object -First 3"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "p3",
+          "content": "DATABASE app\nSCHEMA public\nTABLE users"
+        },
+        {
+          "role": "assistant",
+          "content": "改用当前可写目录后备份完成，归档目录可由 pg_restore 正常读取。"
+        }
+      ],
+      "result": {
+        "decision": "extract",
+        "score": 0.92,
+        "signals": [
+          "multi_step_execution",
+          "verified_completion"
+        ]
+      }
+    },
+    {
+      "id": "boundary-ref--postgres-destructive-confirmation",
+      "split": "seed",
+      "kind": "none",
+      "shouldExtract": false,
+      "reason": "no completed reusable workflow boundary",
+      "messages": [
+        {
+          "role": "user",
+          "content": "直接把这个备份覆盖恢复到 production。"
+        },
+        {
+          "role": "assistant",
+          "content": "这会删除或覆盖现有对象。我需要先确认维护窗口、回滚备份和明确授权，当前不会执行。"
+        },
+        {
+          "role": "user",
+          "content": "先只列出备份内容。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "p1",
+          "content": "pg_restore --list production.dump"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "p1",
+          "content": "TABLE accounts\nTABLE events"
+        },
+        {
+          "role": "assistant",
+          "content": "已完成只读检查；尚未执行恢复。"
+        }
+      ],
+      "result": {
+        "decision": "skip",
+        "score": 0.1,
+        "signals": [
+          "single_trivial_step"
+        ]
+      }
+    },
+    {
+      "id": "boundary-ref--postgres-topic-switch-before",
+      "split": "seed",
+      "kind": "sop",
+      "shouldExtract": true,
+      "reason": "verified reusable operations workflow",
+      "messages": [
+        {
+          "role": "user",
+          "content": "验证 nightly.dump 是否可恢复。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "p1",
+          "content": "pg_restore --list nightly.dump | head"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "p1",
+          "content": "TABLE accounts\nTABLE events"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "p2",
+          "content": "pg_restore -d ephemeral_check nightly.dump && psql -d ephemeral_check -c 'select 1'"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "p2",
+          "content": "?column?\n1"
+        },
+        {
+          "role": "assistant",
+          "content": "备份已经实际恢复到临时库，连通性检查也通过。"
+        },
+        {
+          "role": "user",
+          "content": "新任务：帮我升级 Redis 7，先不要动 PostgreSQL。"
+        }
+      ],
+      "result": {
+        "decision": "review",
+        "score": 0.55,
+        "signals": [
+          "multi_step_execution",
+          "ambiguous_outcome"
+        ]
+      }
+    },
+    {
+      "id": "boundary-ref--redis-systemd-english-paraphrase",
+      "split": "adversarial_holdout",
+      "kind": "sop",
+      "shouldExtract": true,
+      "reason": "verified reusable operations workflow",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Install Redis 7, bind it locally, and make it survive reboot."
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "r1",
+          "content": "apt-get install -y redis-server && systemctl enable --now redis-server"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "r1",
+          "content": "Created symlink; active (running)"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "r2",
+          "content": "redis-cli PING && systemctl is-enabled redis-server"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "r2",
+          "content": "PONG\nenabled"
+        },
+        {
+          "role": "assistant",
+          "content": "Everything is now up, responds with PONG, and will start again after a reboot."
+        }
+      ],
+      "result": {
+        "decision": "review",
+        "score": 0.55,
+        "signals": [
+          "multi_step_execution",
+          "ambiguous_outcome"
+        ]
+      }
+    },
+    {
+      "id": "boundary-ref--redis-aof-chinese-paraphrase",
+      "split": "adversarial_holdout",
+      "kind": "sop",
+      "shouldExtract": true,
+      "reason": "verified reusable operations workflow",
+      "messages": [
+        {
+          "role": "user",
+          "content": "开启 Redis AOF，并确认重启后数据还在。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "r1",
+          "content": "redis-cli CONFIG SET appendonly yes && redis-cli SET skill_probe persisted"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "r1",
+          "content": "OK\nOK"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "r2",
+          "content": "systemctl restart redis-server && redis-cli GET skill_probe"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "r2",
+          "content": "persisted"
+        },
+        {
+          "role": "assistant",
+          "content": "收尾了：重启之后探针键仍然存在，AOF 的持久化行为符合预期。"
+        }
+      ],
+      "result": {
+        "decision": "review",
+        "score": 0.55,
+        "signals": [
+          "multi_step_execution",
+          "ambiguous_outcome"
+        ]
+      }
+    },
+    {
+      "id": "boundary-ref--redis-replica-intermediate",
+      "split": "adversarial_holdout",
+      "kind": "none",
+      "shouldExtract": false,
+      "reason": "no completed reusable workflow boundary",
+      "messages": [
+        {
+          "role": "user",
+          "content": "把这台 Redis 配成 replica 并检查同步。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "r1",
+          "content": "redis-cli REPLICAOF 10.0.0.4 6379"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "r1",
+          "content": "OK"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "r2",
+          "content": "redis-cli INFO replication | grep master_link_status"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "r2",
+          "content": "master_link_status:down"
+        },
+        {
+          "role": "assistant",
+          "content": "命令已经接受，但复制链路仍是 down，不能结束；下一步检查防火墙和认证。"
+        }
+      ],
+      "result": {
+        "decision": "skip",
+        "score": 0.12,
+        "signals": [
+          "multi_step_execution",
+          "unresolved_failure"
+        ]
+      }
+    },
+    {
+      "id": "boundary-ref--redis-cli-advice-only",
+      "split": "adversarial_holdout",
+      "kind": "none",
+      "shouldExtract": false,
+      "reason": "no completed reusable workflow boundary",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Redis 的 maxmemory-policy 应该怎么选？不要修改配置。"
+        },
+        {
+          "role": "assistant",
+          "content": "纯缓存常用 allkeys-lru 或 allkeys-lfu；混合持久数据更应先评估是否允许驱逐，不能只看默认值。"
+        }
+      ],
+      "result": {
+        "decision": "skip",
+        "score": 0.1,
+        "signals": [
+          "no_execution_evidence"
+        ]
+      }
+    },
+    {
+      "id": "boundary-ref--redis-auth-failed",
+      "split": "adversarial_holdout",
+      "kind": "none",
+      "shouldExtract": false,
+      "reason": "no completed reusable workflow boundary",
+      "messages": [
+        {
+          "role": "user",
+          "content": "给容器里的 Redis 设置 ACL 用户并验证。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "r1",
+          "content": "redis-cli ACL SETUSER app on '>secret' ~app:* +@all"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "r1",
+          "content": "OK"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "r2",
+          "content": "redis-cli --user app --pass wrong SET app:key 1"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "r2",
+          "content": "WRONGPASS invalid username-password pair"
+        },
+        {
+          "role": "assistant",
+          "content": "ACL 验证没有通过，凭据不匹配，当前流程未完成。"
+        }
+      ],
+      "result": {
+        "decision": "extract",
+        "score": 0.92,
+        "signals": [
+          "multi_step_execution",
+          "verified_completion"
+        ]
+      }
+    },
+    {
+      "id": "boundary-ref--redis-topic-switch-paraphrase",
+      "split": "adversarial_holdout",
+      "kind": "sop",
+      "shouldExtract": true,
+      "reason": "verified reusable operations workflow",
+      "messages": [
+        {
+          "role": "user",
+          "content": "启用 Redis systemd 服务并确认响应。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "r1",
+          "content": "systemctl enable --now redis-server"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "r1",
+          "content": "active"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "r2",
+          "content": "redis-cli PING"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "r2",
+          "content": "PONG"
+        },
+        {
+          "role": "assistant",
+          "content": "进程在线，PING 得到了 PONG。"
+        },
+        {
+          "role": "user",
+          "content": "换个任务，看看同一台机器的磁盘 SMART 数据。"
+        }
+      ],
+      "result": {
+        "decision": "review",
+        "score": 0.55,
+        "signals": [
+          "multi_step_execution",
+          "ambiguous_outcome"
+        ]
+      }
+    },
+    {
+      "id": "boundary-ref--redis-claimed-done-no-verification",
+      "split": "adversarial_holdout",
+      "kind": "none",
+      "shouldExtract": false,
+      "reason": "no completed reusable workflow boundary",
+      "messages": [
+        {
+          "role": "user",
+          "content": "创建三主三从 Redis Cluster。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "r1",
+          "content": "redis-cli --cluster create 10.0.0.1:6379 10.0.0.2:6379 --cluster-replicas 1"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "r1",
+          "content": ">>> Performing Cluster Check"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "r2",
+          "content": "redis-cli -c -h 10.0.0.1 SET probe 1"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "r2",
+          "content": "Could not connect to Redis at 10.0.0.1:6379"
+        },
+        {
+          "role": "assistant",
+          "content": "集群创建步骤完成了，但客户端验证失败，所以不能提炼为成功 SOP。"
+        }
+      ],
+      "result": {
+        "decision": "extract",
+        "score": 0.92,
+        "signals": [
+          "multi_step_execution",
+          "verified_completion"
+        ]
+      }
+    },
+    {
+      "id": "boundary-ref--redis-rdb-success-minimal",
+      "split": "adversarial_holdout",
+      "kind": "sop",
+      "shouldExtract": true,
+      "reason": "verified reusable operations workflow",
+      "messages": [
+        {
+          "role": "user",
+          "content": "手动生成 RDB 快照并确认文件有效。"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "r1",
+          "content": "redis-cli BGSAVE"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "r1",
+          "content": "Background saving started"
+        },
+        {
+          "role": "tool_call",
+          "tool_call_id": "r2",
+          "content": "redis-cli LASTSAVE && redis-check-rdb /var/lib/redis/dump.rdb"
+        },
+        {
+          "role": "tool_result",
+          "tool_call_id": "r2",
+          "content": "1787500000\n[offset 0] Checking RDB file dump.rdb\n[info] 3 keys read"
+        },
+        {
+          "role": "assistant",
+          "content": "快照已落盘；检查器完整读完 3 个键，没有发现损坏。"
+        }
+      ],
+      "result": {
+        "decision": "review",
+        "score": 0.55,
+        "signals": [
+          "multi_step_execution",
+          "ambiguous_outcome"
+        ]
+      }
+    },
+    {
+      "id": "preference-test-first",
+      "split": "manual_holdout",
+      "kind": "preference",
+      "shouldExtract": true,
+      "reason": "explicit durable team preference",
+      "messages": [
+        {
+          "role": "user",
+          "content": "以后每次修改代码都必须先运行现有测试，失败就不要继续提交。"
+        }
+      ],
+      "result": {
+        "decision": "extract",
+        "score": 0.9,
+        "signals": [
+          "explicit_durable_preference"
+        ]
+      }
+    },
+    {
+      "id": "preference-no-force-push",
+      "split": "manual_holdout",
+      "kind": "preference",
+      "shouldExtract": true,
+      "reason": "explicit safety convention",
+      "messages": [
+        {
+          "role": "user",
+          "content": "团队约定：永远不要向 main force push，必须走 PR。"
+        }
+      ],
+      "result": {
+        "decision": "extract",
+        "score": 0.9,
+        "signals": [
+          "explicit_durable_preference"
+        ]
+      }
+    },
+    {
+      "id": "background-service-topology",
+      "split": "manual_holdout",
+      "kind": "background",
+      "shouldExtract": true,
+      "reason": "durable non-obvious architecture",
+      "messages": [
+        {
+          "role": "user",
+          "content": "请记下我们的固定架构。"
+        },
+        {
+          "role": "assistant",
+          "content": "生产请求先到 edge-gateway，再按 tenant 路由到 memory-proxy；skill worker 只消费归档队列，不在请求路径同步抽取。队列按 agent 串行，跨 agent 并行。配置入口在部署仓库，运行态密钥来自实例配置中心。故障排查时先区分同步注入链路和异步抽取链路，避免把 worker 延迟误判为在线请求延迟。"
+        }
+      ],
+      "result": {
+        "decision": "review",
+        "score": 0.58,
+        "signals": [
+          "possible_durable_context"
+        ]
+      }
+    },
+    {
+      "id": "background-port-only",
+      "split": "manual_holdout",
+      "kind": "none",
+      "shouldExtract": false,
+      "reason": "single transient fact",
+      "messages": [
+        {
+          "role": "user",
+          "content": "现在开发服务在哪个端口？"
+        },
+        {
+          "role": "assistant",
+          "content": "这一次临时跑在 43127。"
+        }
+      ],
+      "result": {
+        "decision": "skip",
+        "score": 0.1,
+        "signals": [
+          "no_execution_evidence"
+        ]
+      }
+    },
+    {
+      "id": "sop-systemd-recovery",
+      "split": "manual_holdout",
+      "kind": "sop",
+      "shouldExtract": true,
+      "reason": "verified recovery workflow",
+      "messages": [
+        {
+          "role": "user",
+          "content": "修复服务启动失败"
+        },
+        {
+          "role": "tool_call",
+          "content": "systemctl status app"
+        },
+        {
+          "role": "tool_result",
+          "content": "failed: missing /etc/app.env"
+        },
+        {
+          "role": "tool_call",
+          "content": "install -m 600 app.env /etc/app.env && systemctl restart app"
+        },
+        {
+          "role": "tool_result",
+          "content": "active (running)"
+        },
+        {
+          "role": "assistant",
+          "content": "修复完成，systemd 状态检查通过。"
+        }
+      ],
+      "result": {
+        "decision": "extract",
+        "score": 0.92,
+        "signals": [
+          "multi_step_execution",
+          "verified_completion"
+        ]
+      }
+    },
+    {
+      "id": "sop-rollback",
+      "split": "manual_holdout",
+      "kind": "sop",
+      "shouldExtract": true,
+      "reason": "verified deployment and rollback branches",
+      "messages": [
+        {
+          "role": "user",
+          "content": "部署新版本并验证回滚"
+        },
+        {
+          "role": "tool_call",
+          "content": "deploy release-v2"
+        },
+        {
+          "role": "tool_result",
+          "content": "deployed"
+        },
+        {
+          "role": "tool_call",
+          "content": "smoke-test && rollback --dry-run"
+        },
+        {
+          "role": "tool_result",
+          "content": "tests passed; rollback plan valid"
+        },
+        {
+          "role": "assistant",
+          "content": "部署完成，冒烟测试和回滚预演均通过。"
+        }
+      ],
+      "result": {
+        "decision": "extract",
+        "score": 0.92,
+        "signals": [
+          "multi_step_execution",
+          "verified_completion"
+        ]
+      }
+    },
+    {
+      "id": "unresolved-two-step",
+      "split": "manual_holdout",
+      "kind": "none",
+      "shouldExtract": false,
+      "reason": "unresolved failure",
+      "messages": [
+        {
+          "role": "user",
+          "content": "部署"
+        },
+        {
+          "role": "tool_call",
+          "content": "deploy"
+        },
+        {
+          "role": "tool_result",
+          "content": "error"
+        },
+        {
+          "role": "tool_call",
+          "content": "retry"
+        },
+        {
+          "role": "tool_result",
+          "content": "error"
+        },
+        {
+          "role": "assistant",
+          "content": "仍然失败，稍后继续。"
+        }
+      ],
+      "result": {
+        "decision": "skip",
+        "score": 0.12,
+        "signals": [
+          "multi_step_execution",
+          "unresolved_failure"
+        ]
+      }
+    },
+    {
+      "id": "secret-only",
+      "split": "manual_holdout",
+      "kind": "none",
+      "shouldExtract": false,
+      "reason": "must not send secret material to extraction",
+      "messages": [
+        {
+          "role": "user",
+          "content": "临时密码=CorrectHorseBatteryStaple123，帮我保存一下。"
+        }
+      ],
+      "result": {
+        "decision": "skip",
+        "score": 0.1,
+        "signals": [
+          "no_execution_evidence"
+        ]
+      }
+    },
+    {
+      "id": "private-key",
+      "split": "manual_holdout",
+      "kind": "none",
+      "shouldExtract": false,
+      "reason": "private key is prohibited",
+      "messages": [
+        {
+          "role": "user",
+          "content": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASC\n-----END PRIVATE KEY-----"
+        }
+      ],
+      "result": {
+        "decision": "skip",
+        "score": 0,
+        "signals": [
+          "secret_material"
+        ]
+      }
+    },
+    {
+      "id": "explicit-no-retention",
+      "split": "manual_holdout",
+      "kind": "none",
+      "shouldExtract": false,
+      "reason": "user explicitly opted out",
+      "messages": [
+        {
+          "role": "user",
+          "content": "不要记住或提取下面这次操作。"
+        },
+        {
+          "role": "tool_call",
+          "content": "kubectl get pods"
+        },
+        {
+          "role": "tool_result",
+          "content": "all running"
+        }
+      ],
+      "result": {
+        "decision": "skip",
+        "score": 0,
+        "signals": [
+          "explicit_no_retention"
+        ]
+      }
+    },
+    {
+      "id": "trivial-command",
+      "split": "manual_holdout",
+      "kind": "none",
+      "shouldExtract": false,
+      "reason": "single trivial step",
+      "messages": [
+        {
+          "role": "user",
+          "content": "看看当前目录"
+        },
+        {
+          "role": "tool_call",
+          "content": "pwd"
+        },
+        {
+          "role": "tool_result",
+          "content": "/workspace"
+        },
+        {
+          "role": "assistant",
+          "content": "当前目录是 /workspace。"
+        }
+      ],
+      "result": {
+        "decision": "skip",
+        "score": 0.1,
+        "signals": [
+          "single_trivial_step"
+        ]
+      }
+    },
+    {
+      "id": "explanation-only",
+      "split": "manual_holdout",
+      "kind": "none",
+      "shouldExtract": false,
+      "reason": "generic explanation",
+      "messages": [
+        {
+          "role": "user",
+          "content": "什么是蓝绿部署？"
+        },
+        {
+          "role": "assistant",
+          "content": "蓝绿部署维护两套环境，通过切换流量降低发布风险。"
+        }
+      ],
+      "result": {
+        "decision": "skip",
+        "score": 0.1,
+        "signals": [
+          "no_execution_evidence"
+        ]
+      }
+    },
+    {
+      "id": "social-ack",
+      "split": "manual_holdout",
+      "kind": "none",
+      "shouldExtract": false,
+      "reason": "no reusable task knowledge",
+      "messages": [
+        {
+          "role": "user",
+          "content": "谢谢你"
+        },
+        {
+          "role": "assistant",
+          "content": "不客气。"
+        }
+      ],
+      "result": {
+        "decision": "skip",
+        "score": 0.1,
+        "signals": [
+          "no_execution_evidence"
+        ]
+      }
+    },
+    {
+      "id": "transient-self-healed",
+      "split": "manual_holdout",
+      "kind": "none",
+      "shouldExtract": false,
+      "reason": "transient event without repeatable resolution",
+      "messages": [
+        {
+          "role": "user",
+          "content": "刚才接口 503"
+        },
+        {
+          "role": "tool_call",
+          "content": "curl /health"
+        },
+        {
+          "role": "tool_result",
+          "content": "503"
+        },
+        {
+          "role": "tool_call",
+          "content": "curl /health"
+        },
+        {
+          "role": "tool_result",
+          "content": "200"
+        },
+        {
+          "role": "assistant",
+          "content": "网络抖动自行恢复，没有执行修复。"
+        }
+      ],
+      "result": {
+        "decision": "review",
+        "score": 0.55,
+        "signals": [
+          "multi_step_execution",
+          "ambiguous_outcome"
+        ]
+      }
+    },
+    {
+      "id": "unsafe-unbounded-delete",
+      "split": "manual_holdout",
+      "kind": "none",
+      "shouldExtract": false,
+      "reason": "unsafe action without constraints or validation",
+      "messages": [
+        {
+          "role": "user",
+          "content": "清空间"
+        },
+        {
+          "role": "tool_call",
+          "content": "rm -rf /var/lib/app/*"
+        },
+        {
+          "role": "tool_result",
+          "content": "done"
+        },
+        {
+          "role": "tool_call",
+          "content": "df -h"
+        },
+        {
+          "role": "tool_result",
+          "content": "60% free"
+        },
+        {
+          "role": "assistant",
+          "content": "删除完成，空间检查正常。"
+        }
+      ],
+      "result": {
+        "decision": "extract",
+        "score": 0.92,
+        "signals": [
+          "multi_step_execution",
+          "verified_completion"
+        ]
+      }
+    },
+    {
+      "id": "copied-docs",
+      "split": "manual_holdout",
+      "kind": "none",
+      "shouldExtract": false,
+      "reason": "copied documentation without execution evidence",
+      "messages": [
+        {
+          "role": "user",
+          "content": "把官方安装文档总结一下"
+        },
+        {
+          "role": "assistant",
+          "content": "第一步下载安装包，第二步启动服务，第三步打开网页。"
+        }
+      ],
+      "result": {
+        "decision": "skip",
+        "score": 0.1,
+        "signals": [
+          "no_execution_evidence"
+        ]
+      }
+    },
+    {
+      "id": "duplicate-existing",
+      "split": "manual_holdout",
+      "kind": "none",
+      "shouldExtract": false,
+      "reason": "must deduplicate against existing skill in reviewer",
+      "messages": [
+        {
+          "role": "user",
+          "content": "重复执行已存在的 nginx-502-triage 流程"
+        },
+        {
+          "role": "tool_call",
+          "content": "tail nginx error.log"
+        },
+        {
+          "role": "tool_result",
+          "content": "upstream refused"
+        },
+        {
+          "role": "tool_call",
+          "content": "restart upstream && curl localhost"
+        },
+        {
+          "role": "tool_result",
+          "content": "200"
+        },
+        {
+          "role": "assistant",
+          "content": "修复完成并验证返回 200；现有 skill 已完整覆盖，没有新增分支。"
+        }
+      ],
+      "result": {
+        "decision": "extract",
+        "score": 0.92,
+        "signals": [
+          "multi_step_execution",
+          "verified_completion"
+        ]
+      }
+    },
+    {
+      "id": "preference-output-format",
+      "split": "manual_holdout",
+      "kind": "preference",
+      "shouldExtract": true,
+      "reason": "durable output convention",
+      "messages": [
+        {
+          "role": "user",
+          "content": "今后所有运维报告都使用中文，先写结论，再列验证证据和回滚方式。"
+        }
+      ],
+      "result": {
+        "decision": "extract",
+        "score": 0.9,
+        "signals": [
+          "explicit_durable_preference"
+        ]
+      }
+    },
+    {
+      "id": "ambiguous-long-context",
+      "split": "manual_holdout",
+      "kind": "background",
+      "shouldExtract": true,
+      "reason": "valuable context should reach semantic reviewer",
+      "messages": [
+        {
+          "role": "user",
+          "content": "这是我们长期维护的发布链路背景。"
+        },
+        {
+          "role": "assistant",
+          "content": "所有服务由 release-controller 生成不可变版本，artifact registry 只允许签名镜像。staging 通过后才可提升同一 digest 到 production。生产部署不重新构建。故障回滚以 digest 为单位，数据库迁移必须声明 backward-compatible。审批记录保存在 change system，发布工具只引用 change id。监控的最终判据是业务 SLO 和合成探针，而不是仅看 Pod Ready。这个结构在各环境长期不变，后续发布和排障都需要遵循。"
+        }
+      ],
+      "result": {
+        "decision": "review",
+        "score": 0.58,
+        "signals": [
+          "possible_durable_context"
+        ]
+      }
+    },
+    {
+      "id": "read-only-investigation",
+      "split": "manual_holdout",
+      "kind": "none",
+      "shouldExtract": false,
+      "reason": "one-off answer rather than reusable procedure",
+      "messages": [
+        {
+          "role": "user",
+          "content": "这台机器有几个非 home 用户？"
+        },
+        {
+          "role": "tool_call",
+          "content": "awk -F: '$6 !~ /^\\/home/ {n++} END {print n}' /etc/passwd"
+        },
+        {
+          "role": "tool_result",
+          "content": "17"
+        },
+        {
+          "role": "assistant",
+          "content": "17"
+        }
+      ],
+      "result": {
+        "decision": "skip",
+        "score": 0.1,
+        "signals": [
+          "single_trivial_step"
+        ]
+      }
+    }
+  ]
+}

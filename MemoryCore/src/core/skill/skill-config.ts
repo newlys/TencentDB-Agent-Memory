@@ -55,6 +55,20 @@ function validPositiveInteger(
   return fallback;
 }
 
+function validUnitInterval(
+  raw: number | undefined,
+  fallback: number,
+  logger: ResolverLogger,
+  fieldName: string,
+): number {
+  if (raw === undefined) return fallback;
+  if (Number.isFinite(raw) && raw >= 0 && raw <= 1) return raw;
+  logger.warn(
+    `${TAG} ${fieldName}=${raw} invalid (must be between 0 and 1); falling back to ${fallback}`,
+  );
+  return fallback;
+}
+
 /**
  * @param strictMode — when true, COS/contentBackend degradations throw instead of silently
  *   falling back to local. Use in service mode where COS is always required.
@@ -227,15 +241,60 @@ export function resolveSkillConfig(
     storeBackend,
     contentBackend,
     routing: {
+      profile: input.routing?.profile ?? "static",
       mode: routingMode,
       hybridAlpha: input.routing?.hybridAlpha ?? 0.3,
       searchTopK: input.routing?.searchTopK ?? 20,
       charBudgetPercent: input.routing?.charBudgetPercent ?? 0.01,
       fastPathMinNameLength: input.routing?.fastPathMinNameLength ?? 4,
+      adaptive: {
+        candidateTopK: input.routing?.adaptive?.candidateTopK ?? 40,
+        complexityK: {
+          simple: input.routing?.adaptive?.complexityK?.simple ?? 4,
+          moderate: input.routing?.adaptive?.complexityK?.moderate ?? 6,
+          complex: input.routing?.adaptive?.complexityK?.complex ?? 8,
+        },
+        absoluteScoreThreshold: input.routing?.adaptive?.absoluteScoreThreshold ?? 0.25,
+        relativeScoreThreshold: input.routing?.adaptive?.relativeScoreThreshold ?? 0.60,
+        scoreGapThreshold: input.routing?.adaptive?.scoreGapThreshold ?? 0.20,
+        maxListingChars: input.routing?.adaptive?.maxListingChars ?? 4000,
+        reranker: {
+          baseUrl: input.routing?.adaptive?.reranker?.baseUrl ?? "",
+          model: input.routing?.adaptive?.reranker?.model ?? "qwen3-rerank",
+          timeoutMs: input.routing?.adaptive?.reranker?.timeoutMs ?? 5000,
+          failOpen: input.routing?.adaptive?.reranker?.failOpen ?? true,
+          apiKeyEnv: input.routing?.adaptive?.reranker?.apiKeyEnv ?? "TDAI_SKILL_RERANK_API_KEY",
+        },
+      },
     },
     extraction: {
       enabled: extractionEnabled,
       toolCallThreshold: input.extraction?.toolCallThreshold ?? 10,
+      trigger: {
+        profile: input.extraction?.trigger?.profile ?? "legacy",
+        minToolCalls: validPositiveInteger(
+          input.extraction?.trigger?.minToolCalls,
+          2,
+          logger,
+          "extraction.trigger.minToolCalls",
+        ),
+        completionScoreThreshold: validUnitInterval(
+          input.extraction?.trigger?.completionScoreThreshold,
+          0.68,
+          logger,
+          "extraction.trigger.completionScoreThreshold",
+        ),
+        topicSwitchScoreThreshold: validUnitInterval(
+          input.extraction?.trigger?.topicSwitchScoreThreshold,
+          0.72,
+          logger,
+          "extraction.trigger.topicSwitchScoreThreshold",
+        ),
+      },
+      valueGate: {
+        profile: input.extraction?.valueGate?.profile ?? "legacy",
+      },
+      reviewPromptProfile: input.extraction?.reviewPromptProfile ?? "legacy_v2",
       model: input.extraction?.model,
       maxIterations: input.extraction?.maxIterations ?? 16,
       archiveBytes,

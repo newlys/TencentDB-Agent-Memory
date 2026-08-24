@@ -25,6 +25,12 @@ import { prepareArchivePayload } from "./prepare-archive.js";
 import type { SkillBufferStorage, SessionKey, SessionMeta } from "./buffer-storage.js";
 import type { SkillTriggerService } from "./trigger-service.js";
 import { obsLogger } from "../../report/obs-logger.js";
+import {
+  evaluateSopBoundary,
+  type SopBoundaryConfig,
+  type SopBoundaryDecision,
+  type SopBoundaryMessage,
+} from "./sop-boundary.js";
 
 const VALID_ROLES: ReadonlySet<CompressibleRole> = new Set([
   "user",
@@ -85,7 +91,9 @@ export interface AddConversationResult {
     archived_at_ms: number;
     archive_key: string;
     /** normal 达阈值触发 / compressed 必触发 / oversize 兜底后触发 */
-    reason: "tool_calls" | "bytes" | "compressed" | "oversize";
+    reason: "tool_calls" | "bytes" | "compressed" | "oversize" | "sop_boundary";
+    /** Present for semantic boundary triggers; useful for offline calibration. */
+    boundary?: SopBoundaryDecision;
   };
 }
 
@@ -108,6 +116,7 @@ export interface SkillConversationAddHandlerOptions {
   buffer: SkillBufferStorage;
   trigger: SkillTriggerService;
   thresholds?: Partial<HandlerThresholds>;
+  boundaryConfig?: Partial<SopBoundaryConfig>;
   compressOptions?: Partial<CompressOptions>;
   oversizeOptions?: Partial<OversizeOptions>;
   now?: () => number;
@@ -124,6 +133,7 @@ export class SkillConversationAddHandler {
   private readonly buffer: SkillBufferStorage;
   private readonly trigger: SkillTriggerService;
   private readonly thresholds: HandlerThresholds;
+  private readonly boundaryConfig: Partial<SopBoundaryConfig>;
   private readonly compressOptions: CompressOptions;
   private readonly oversizeOptions: OversizeOptions;
   private readonly now: () => number;
@@ -132,6 +142,7 @@ export class SkillConversationAddHandler {
     this.buffer = opts.buffer;
     this.trigger = opts.trigger;
     this.thresholds = { ...DEFAULT_HANDLER_THRESHOLDS, ...opts.thresholds };
+    this.boundaryConfig = opts.boundaryConfig ?? {};
     this.compressOptions = { ...DEFAULT_COMPRESS_OPTIONS, ...opts.compressOptions };
     this.oversizeOptions = { ...DEFAULT_OVERSIZE_OPTIONS, ...opts.oversizeOptions };
     this.now = opts.now ?? (() => Date.now());
@@ -172,6 +183,59 @@ export class SkillConversationAddHandler {
       use_compress: useCompress,
     });
 
+    const boundaryDecision = evaluateSopBoundary({
+      bufferedMessages: current.messages as SopBoundaryMessage[],
+      incomingMessages: input.messages as SopBoundaryMessage[],
+    }, this.boundaryConfig);
+
+    // Topic switch: archive only the previous workflow. The incoming user batch
+    // becomes the beginning of the next buffer instead of contaminating the SOP.
+    // Oversized incoming batches stay on the existing compression path.
+    if (boundaryDecision.phase === "before_append" && !useCompress && current.messages.length > 0) {
+      const t0Arch = Date.now();
+      const archiveRes = await this.trigger.archive({
+        session: sess,
+        bufferAtTrigger: { messages: current.messages as Array<Record<string, unknown>> },
+        taskRefId: input.task_id,
+        perfRequestId: input.perfRequestId,
+      });
+      const nowMs = this.now();
+      const incomingToolCalls = countRoles(input.messages, TOOL_CALL_ROLES);
+      await Promise.all([
+        this.buffer.writeCurrent(sess, { messages: input.messages as Array<Record<string, unknown>> }),
+        this.buffer.writeMeta(sess, {
+          session_id: sess.session_id,
+          space_id: sess.space_id,
+          user_id: sess.user_id,
+          team_id: sess.team_id,
+          agent_id: sess.agent_id,
+          tool_call_count: incomingToolCalls,
+          byte_count: rawBytes,
+          last_appended_at_ms: nowMs,
+          last_archived_at_ms: archiveRes.archivedAtMs,
+        }),
+      ]);
+      obsLogger.info("skill.add_handler.sop_boundary", {
+        req_id: rid,
+        session_id: input.session_id,
+        instance_id: input.instance_id,
+        phase: boundaryDecision.phase,
+        score: boundaryDecision.score,
+        signals: boundaryDecision.signals,
+        dur_ms: Date.now() - t0Arch,
+      });
+      return {
+        status: "archived",
+        archived: {
+          task_id: archiveRes.taskId,
+          archived_at_ms: archiveRes.archivedAtMs,
+          archive_key: archiveRes.archiveKey,
+          reason: "sop_boundary",
+          boundary: boundaryDecision,
+        },
+      };
+    }
+
     // conversation-add 特有语义：只有压缩路径才走 oversize 兜底 (原实现见下方注释);
     // 用 helper 时，forceCompress=useCompress，当 useCompress=false 时 helper 内部
     // 也不会走 applyOversizeStrategy——因为常规路径下 combinedBytes 不该 > chunkMax
@@ -207,7 +271,8 @@ export class SkillConversationAddHandler {
     // ⑤ 阈值判定
     const hitTool = nextTool >= this.thresholds.toolCallThreshold;
     const hitBytes = nextBytes >= this.thresholds.bytesThreshold;
-    const shouldArchive = useCompress || hitTool || hitBytes;
+    const hitSopBoundary = boundaryDecision.phase === "after_append";
+    const shouldArchive = useCompress || hitSopBoundary || hitTool || hitBytes;
 
     let result: AddConversationResult = { status: "ok" };
 
@@ -217,6 +282,8 @@ export class SkillConversationAddHandler {
         ? "oversize"
         : useCompress
           ? "compressed"
+          : hitSopBoundary
+            ? "sop_boundary"
           : hitTool
             ? "tool_calls"
             : "bytes";
@@ -269,6 +336,7 @@ export class SkillConversationAddHandler {
           archived_at_ms: archiveRes.archivedAtMs,
           archive_key: archiveRes.archiveKey,
           reason,
+          boundary: reason === "sop_boundary" ? boundaryDecision : undefined,
         },
       };
     } else {

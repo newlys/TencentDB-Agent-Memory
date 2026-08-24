@@ -1,0 +1,10 @@
+family,task_id,gold_skill,pass_retrieval,precision_at_k,recall_at_k,mrr,ndcg_at_k,rank,final_k,injection_chars,injection_tokens_cl100k,complexity,predicted_phases,complexity_k,confidence_k,budget_k,candidate_count,reranked_count,bm25_ms,rerank_ms,total_route_ms,rerank_input_tokens,rerank_output_tokens,fallback_reason
+"http-client","idempotent-retry","http-client-reliability",true,0.05,1,1,1,1,20,8004,1643,"complex",["explore","implement","test","review"],"","","","","","","",254.44710000000003,0,0,""
+"http-client","breaker-half-open","http-client-reliability",true,0.05,1,1,1,1,20,8004,1643,"complex",["explore","implement","test","debug","review"],"","","","","","","",21.528599999999983,0,0,""
+"http-client","request-coalescing","http-client-reliability",true,0.05,1,1,1,1,20,7552,1497,"complex",["explore","implement","test","debug"],"","","","","","","",14.176399999999944,0,0,""
+"config-engine","schema-coercion","safe-config-engineering",true,0.05,1,1,1,1,20,8004,1612,"complex",["explore","implement","test","debug"],"","","","","","","",20.627099999999928,0,0,""
+"config-engine","provenance","safe-config-engineering",true,0.05,1,1,1,1,20,8004,1611,"complex",["explore","implement","test","review"],"","","","","","","",17.134599999999978,0,0,""
+"config-engine","prototype-pollution","safe-config-engineering",true,0.05,1,1,1,1,20,8004,1597,"complex",["explore","implement","test","review"],"","","","","","","",22.838199999999915,0,0,""
+"cache","swr","production-cache-patterns",true,0.05,1,1,1,1,20,8004,1643,"complex",["explore","implement","test","debug"],"","","","","","","",17.334699999999998,0,0,""
+"cache","size-eviction","production-cache-patterns",true,0.05,1,1,1,1,20,8004,1627,"complex",["explore","implement","test"],"","","","","","","",14.973800000000097,0,0,""
+"cache","persistence-version","production-cache-patterns",true,0.05,1,1,1,1,20,8004,1597,"complex",["explore","implement","test","review"],"","","","","","","",20.147199999999998,0,0,""

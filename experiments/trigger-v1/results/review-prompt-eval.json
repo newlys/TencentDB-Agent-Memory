@@ -1,0 +1,1438 @@
+{
+  "model": "qwen3.7-plus",
+  "sampleIds": [
+    "boundary-ref--langfuse-ubuntu-compose-success",
+    "boundary-ref--langfuse-compose-recovery-success",
+    "boundary-ref--langfuse-topic-switch-before",
+    "boundary-ref--nginx-502-recovery-success",
+    "boundary-ref--postgres-logical-backup-success",
+    "boundary-ref--postgres-backup-permission-recovery",
+    "boundary-ref--redis-systemd-english-paraphrase",
+    "boundary-ref--redis-aof-chinese-paraphrase",
+    "boundary-ref--redis-rdb-success-minimal",
+    "preference-no-force-push",
+    "sop-systemd-recovery",
+    "preference-output-format",
+    "boundary-ref--langfuse-macos-explanation-only",
+    "boundary-ref--langfuse-unfinished",
+    "boundary-ref--nginx-config-advice",
+    "boundary-ref--redis-replica-intermediate",
+    "boundary-ref--redis-auth-failed",
+    "background-port-only",
+    "secret-only",
+    "private-key",
+    "trivial-command",
+    "social-ack",
+    "unsafe-unbounded-delete",
+    "duplicate-existing"
+  ],
+  "results": {
+    "legacy_v2": [
+      {
+        "caseId": "boundary-ref--langfuse-ubuntu-compose-success",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "langfuse-docker-compose-deploy",
+            "content": "---\nname: langfuse-docker-compose-deploy\ndescription: 在 Ubuntu 22.04 上用 Docker Compose 部署 Langfuse 并配置数据持久化\n---\n\n# Langfuse Docker Compose 部署指南\n\n## When to use\n需要在 Ubuntu 22.04 服务器上通过 Docker Compose 部署 Langfuse，并要求数据持久化（Postgres 数据库）。\n\n## Required inputs\n- Ubuntu 22.04 系统\n- 已安装 Docker 和 Docker Compose v2\n- 足够的磁盘空间用于数据卷\n\n## Workflow\n\n1. **确认环境**\n   ```bash\n   docker --version\n   docker compose version\n   ```\n\n2. **创建部署目录**\n   ```bash\n   mkdir -p ~/langfuse && cd ~/langfuse\n   ```\n\n3. **创建 docker-compose.yml**\n   使用官方推荐的 compose 配置，确保：\n   - Postgres 容器配置了命名卷（如 `langfuse-db-data`）以实现数据持久化\n   - 设置 `restart: unless-stopped` 或 `restart: always` 保证服务自动重启\n   - 配置必要的环境变量（DATABASE_URL、NEXTAUTH_SECRET 等）\n\n4. **创建 .env 文件**\n   包含敏感配置如：\n   - `DATABASE_URL`\n   - `NEXTAUTH_SECRET`\n   - `SALT` 等\n\n5. **启动服务**\n   ```bash\n   docker compose up -d\n   ```\n\n6. **验证部署**\n   ```bash\n   # 检查健康接口\n   curl -fsS http://127.0.0.1:3000/api/public/health\n   \n   # 检查容器状态\n   docker compose ps\n   ```\n   \n   预期输出：\n   - 健康接口返回 `{\"status\":\"OK\"}`\n   - `langfuse-web` 状态为 `Up (healthy)`\n   - `langfuse-db` 状态为 `Healthy`\n\n## Validation\n- 健康检查接口返回 OK\n- Postgres 数据卷已正确挂载\n- 容器重启策略已配置\n- 服务可通过浏览器访问（默认端口 3000）\n\n## Pitfalls\n- 忘记配置数据卷会导致重启后数据丢失\n- 未设置 restart 策略可能导致服务异常退出后无法自动恢复\n- 环境变量缺失会导致容器启动失败"
+          }
+        ],
+        "finalText": "Created langfuse-docker-compose-deploy.",
+        "promptTokens": 12254,
+        "completionTokens": 588,
+        "quality": 88,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": false,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--langfuse-compose-recovery-success",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "langfuse-deploy-on-debian12",
+            "content": "---\nname: langfuse-deploy-on-debian12\ndescription: Deploy Langfuse on Debian 12 using Docker Compose, handling port conflicts with existing PostgreSQL.\n---\n\n# Langfuse Deployment on Debian 12\n\n## When to use\nDeploying Langfuse on a Debian 12 server that may already have a local PostgreSQL instance running on port 5432.\n\n## Workflow\n1. Attempt to start Langfuse via `docker compose up -d`.\n2. If it fails with \"port 5432 is already allocated\", check for existing processes:\n   ```bash\n   ss -ltnp | grep 5432\n   ```\n3. If a local PostgreSQL (or other service) is occupying port 5432, modify the `docker-compose.yml` to remove the host port mapping for the database service (keep it internal only).\n   - Change `- \"5432:5432\"` to just expose internally or remove the ports section for the db container if not needed externally.\n4. Restart the services:\n   ```bash\n   docker compose up -d\n   ```\n5. Verify deployment health:\n   ```bash\n   curl -fsS http://localhost:3000/api/public/health\n   ```\n   Expected response: `{\"status\":\"OK\"}`\n\n## Pitfalls\n- Do not map the database port to the host if a local PostgreSQL is already running and not intended to be replaced.\n- Ensure Langfuse's application port (default 3000) is free before starting.\n\n## Validation\n- Health check endpoint returns `{\"status\":\"OK\"}`.\n- Langfuse UI is accessible at `http://<host>:3000`."
+          }
+        ],
+        "finalText": "Created langfuse-deploy-on-debian12.",
+        "promptTokens": 12008,
+        "completionTokens": 443,
+        "quality": 88,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": false,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--langfuse-topic-switch-before",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "langfuse-deploy-and-verify",
+            "content": "---\nname: langfuse-deploy-and-verify\ndescription: Deploy Langfuse via docker compose and verify health endpoint.\n---\n\n# Langfuse Deploy and Verify\n\n## When to use\nNeed to deploy Langfuse locally and confirm it is running.\n\n## Workflow\n1. Start services: `docker compose up -d`\n2. Wait for containers to start.\n3. Verify health: `curl -fsS http://localhost:3000/api/public/health`\n4. Expect response: `{\"status\":\"OK\"}`\n\n## Validation\nHealth check returns 200 OK with status OK."
+          }
+        ],
+        "finalText": "Created langfuse-deploy-and-verify.",
+        "promptTokens": 11525,
+        "completionTokens": 195,
+        "quality": 88,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": false,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--nginx-502-recovery-success",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "nginx-502-upstream-triage",
+            "content": "---\nname: nginx-502-upstream-triage\ndescription: 排查 Nginx 反向代理返回 502 的根因，重点检查 upstream 服务状态。\n---\n\n# Nginx 502 Upstream 故障排查\n\n## When to use\nNginx 作为反向代理时客户端收到 502 Bad Gateway 错误。\n\n## Workflow\n1. **查看 Nginx 错误日志**，定位具体失败原因：\n   ```bash\n   tail -n 80 /var/log/nginx/error.log\n   ```\n   关键信号：`connect() failed (111: Connection refused) while connecting to upstream <host>:<port>` 表示 upstream 拒绝连接。\n\n2. **检查 upstream 服务状态**：\n   ```bash\n   systemctl status <upstream-service-name> --no-pager\n   ```\n   若状态为 `inactive (dead)`，说明服务未运行。\n\n3. **重启 upstream 服务**：\n   ```bash\n   systemctl restart <upstream-service-name>\n   ```\n\n4. **验证修复**：\n   ```bash\n   curl -sS -o /dev/null -w '%{http_code}' http://localhost\n   ```\n   期望返回 `200`。\n\n## Decision rules\n- 如果错误日志显示 `Connection refused` → 优先检查 upstream 服务是否运行。\n- 如果错误日志显示 `Connection timed out` → 检查防火墙、网络可达性、upstream 负载。\n- 如果 upstream 服务运行正常但仍 502 → 检查 Nginx 配置中的 `proxy_pass` 地址和端口是否正确。\n\n## Pitfalls\n- 不要一看到 502 就修改 Nginx 配置；多数情况下是 upstream 服务问题。\n- 确认 upstream 服务名与 `systemctl` 中注册的名称一致。"
+          }
+        ],
+        "finalText": "Created nginx-502-upstream-triage.",
+        "promptTokens": 12053,
+        "completionTokens": 485,
+        "quality": 88,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": false,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--postgres-logical-backup-success",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "pg-logical-backup",
+            "content": "---\nname: pg-logical-backup\ndescription: Perform a recoverable logical backup of a PostgreSQL database using pg_dump and verify integrity.\n---\n\n# PostgreSQL Logical Backup\n\n## When to use\nWhen you need to create a portable, restorable logical backup of a PostgreSQL database (e.g., for migration, disaster recovery, or pre-deployment safety).\n\n## Workflow\n1. **Dump the database** using `pg_dump` with custom format (`-Fc`) for compression and selective restore capabilities:\n   ```bash\n   pg_dump -Fc -d <database_name> -f /backup/<database_name>.dump\n   ```\n2. **Verify the dump file**:\n   - Check if the file is readable by listing its contents:\n     ```bash\n     pg_restore --list /backup/<database_name>.dump | head\n     ```\n   - Generate a checksum to ensure file integrity:\n     ```bash\n     sha256sum /backup/<database_name>.dump\n     ```\n\n## Validation\n- `pg_dump` exits with code 0.\n- `pg_restore --list` shows expected tables/schema without errors.\n- SHA-256 checksum is recorded for future integrity checks.\n\n## Pitfalls\n- Ensure sufficient disk space in `/backup/` before starting.\n- For large databases, consider parallel dumps (`-j N`) if using directory format (`-Fd`), but custom format (`-Fc`) is single-file and easier to manage for simple backups.\n- Verify that the user running `pg_dump` has sufficient privileges to read all required schemas.\n\n## Supporting files\nNone."
+          }
+        ],
+        "finalText": "Created pg-logical-backup.",
+        "promptTokens": 11754,
+        "completionTokens": 401,
+        "quality": 88,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": false,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--postgres-backup-permission-recovery",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "docker-postgres-backup-to-host",
+            "content": "---\nname: docker-postgres-backup-to-host\ndescription: Export PostgreSQL backup from a Docker container to the host machine, handling permission issues.\n---\n\n# Docker PostgreSQL Backup to Host\n\n## When to use\nNeed to export a PostgreSQL database running inside a Docker container to a file on the host machine.\n\n## Workflow\n1. Attempt to redirect `pg_dump` output directly to a host path:\n   ```bash\n   docker exec <container_name> pg_dump -Fc <database_name> > /path/on/host/backup.dump\n   ```\n2. If \"Access is denied\" or permission error occurs (common when redirecting to restricted host directories like `/root/` without proper permissions):\n   - Redirect to a writable directory in the current working directory instead:\n     ```bash\n     docker exec <container_name> pg_dump -Fc <database_name> > ./backup.dump\n     ```\n3. Verify the backup file was created and is valid:\n   ```bash\n   pg_restore --list ./backup.dump | Select-Object -First 3\n   ```\n   Expected output should show DATABASE, SCHEMA, and TABLE entries.\n\n## Pitfalls\n- Direct redirection to protected host directories (e.g., `/root/`, `/etc/`) often fails with \"Access is denied\" even if the docker command itself succeeds.\n- Always verify the dump file is readable by `pg_restore` after creation.\n- Use `-Fc` format for custom format dumps which are more flexible for restoration.\n\n## Validation\n- Check that the `.dump` file exists and has non-zero size.\n- Run `pg_restore --list` to confirm the archive contains expected database objects."
+          }
+        ],
+        "finalText": "Created docker-postgres-backup-to-host.",
+        "promptTokens": 11873,
+        "completionTokens": 417,
+        "quality": 88,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": false,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--redis-systemd-english-paraphrase",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "redis-install-and-enable",
+            "content": "---\nname: redis-install-and-enable\ndescription: Install Redis, bind locally, and enable it to survive reboot.\n---\n\n# Redis Install and Enable on Reboot\n\n## When to use\nWhen you need to install Redis 7 (or latest available) on a Debian/Ubuntu-based system, ensure it binds locally, and persists across reboots.\n\n## Workflow\n1. Install `redis-server` via apt:\n   ```bash\n   apt-get install -y redis-server\n   ```\n2. Enable and start the service immediately:\n   ```bash\n   systemctl enable --now redis-server\n   ```\n3. Verify connectivity:\n   ```bash\n   redis-cli PING\n   # Expected: PONG\n   ```\n4. Verify boot persistence:\n   ```bash\n   systemctl is-enabled redis-server\n   # Expected: enabled\n   ```\n\n## Validation\n- `redis-cli PING` returns `PONG`.\n- `systemctl is-enabled redis-server` returns `enabled`.\n\n## Pitfalls\n- Ensure no other process is using port 6379 before installation.\n- If binding to a specific interface is required, edit `/etc/redis/redis.conf` and set `bind 127.0.0.1` explicitly, then restart the service."
+          }
+        ],
+        "finalText": "Created redis-install-and-enable.",
+        "promptTokens": 11646,
+        "completionTokens": 334,
+        "quality": 88,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": false,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--redis-aof-chinese-paraphrase",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "redis-aof-enable-and-verify",
+            "content": "---\nname: redis-aof-enable-and-verify\ndescription: Enable Redis AOF persistence and verify data survives a restart.\n---\n\n# Enable Redis AOF and Verify Persistence\n\n## When to use\nWhen you need to ensure Redis data persists across restarts by enabling Append Only File (AOF) mode.\n\n## Workflow\n1. **Enable AOF**: Use `CONFIG SET appendonly yes` to enable AOF at runtime.\n2. **Set a probe key**: Set a known key-value pair (e.g., `SET skill_probe persisted`) to test persistence.\n3. **Restart Redis**: Restart the Redis service (e.g., `systemctl restart redis-server`).\n4. **Verify persistence**: After restart, retrieve the probe key (`GET skill_probe`) to confirm it still exists.\n\n## Validation\n- The probe key should return the expected value after restart.\n- Check Redis logs for any AOF-related errors during startup.\n\n## Pitfalls\n- Ensure `appendonly.aof` file permissions allow Redis to write/read it.\n- If using Docker, ensure the AOF file is mounted to a persistent volume.\n- `CONFIG SET` changes are not saved to `redis.conf` automatically; update the config file if permanent persistence across config reloads is needed."
+          }
+        ],
+        "finalText": "Created redis-aof-enable-and-verify.",
+        "promptTokens": 11621,
+        "completionTokens": 333,
+        "quality": 88,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": false,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--redis-rdb-success-minimal",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "redis-manual-rdb-snapshot-verify",
+            "content": "---\nname: redis-manual-rdb-snapshot-verify\ndescription: 手动触发 Redis RDB 快照并验证文件完整性\n---\n\n# 手动生成并验证 Redis RDB 快照\n\n## When to use\n需要立即将当前 Redis 内存数据持久化到磁盘，并确认生成的 dump.rdb 文件未损坏时。\n\n## Workflow\n1. **触发后台保存**：执行 `redis-cli BGSAVE`。\n   - 预期返回：`Background saving started`。\n2. **等待完成并验证**：\n   - 执行 `redis-cli LASTSAVE` 获取最近一次成功保存的时间戳（Unix 时间）。\n   - 执行 `redis-check-rdb <path_to_dump.rdb>` 检查文件完整性。\n   - 默认路径通常为 `/var/lib/redis/dump.rdb`，具体路径需根据 Redis 配置 (`dir` + `dbfilename`) 确认。\n\n## Validation\n- `redis-check-rdb` 输出应包含 `[offset 0] Checking RDB file ...` 且最终没有报错。\n- 输出中会显示读取的 key 数量（如 `[info] 3 keys read`），表明文件结构可被正确解析。\n\n## Pitfalls\n- `BGSAVE` 是异步操作，如果紧接着进行文件拷贝或检查，建议先通过 `LASTSAVE` 确认时间戳已更新，或通过 `INFO persistence` 查看 `rdb_bgsave_in_progress` 状态。\n- 确保执行 `redis-check-rdb` 的用户对 RDB 文件有读取权限。"
+          }
+        ],
+        "finalText": "Created redis-manual-rdb-snapshot-verify.",
+        "promptTokens": 11766,
+        "completionTokens": 408,
+        "quality": 88,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": false,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "preference-no-force-push",
+        "kind": "preference",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "no-force-push-to-main",
+            "content": "---\nname: no-force-push-to-main\ndescription: Team convention: never force push to main; always use PRs.\n---\n\n# No Force Push to Main\n\n## When to use\nWhenever working with the main branch in this team's repositories.\n\n## Workflow\n1. Never use `git push --force` or `git push -f` on the main branch.\n2. Always create a Pull Request (PR) for changes to main.\n3. If you need to update a PR, push normally to your feature branch and let the PR reflect the changes.\n\n## Pitfalls\n- Force pushing to main can overwrite others' work and break CI/CD pipelines.\n- Even if you are the only contributor, follow the PR workflow for consistency and audit trail."
+          }
+        ],
+        "finalText": "Created no-force-push-to-main.",
+        "promptTokens": 11267,
+        "completionTokens": 223,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "scoped": true
+        }
+      },
+      {
+        "caseId": "sop-systemd-recovery",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "systemd-service-start-failure-triage",
+            "content": "---\nname: systemd-service-start-failure-triage\ndescription: Diagnose and fix systemd service startup failures, focusing on missing configuration files.\n---\n\n# Systemd Service Startup Failure Triage\n\n## When to use\nA systemd-managed service fails to start or reports a failed status.\n\n## Workflow\n1. Check the service status to identify the failure reason:\n   ```bash\n   systemctl status <service-name>\n   ```\n2. Analyze the output for common causes:\n   - **Missing configuration file**: Look for errors like \"missing /etc/<config-file>\" or \"No such file or directory\".\n   - **Permission denied**: Check if the service user has access to required files/directories.\n   - **Dependency failure**: Check if dependent services are running.\n3. If a configuration file is missing:\n   - Locate the template or source config file (e.g., in the project directory).\n   - Install it to the expected location with correct permissions:\n     ```bash\n     install -m 600 <source-config> /etc/<config-file>\n     ```\n   - Restart the service:\n     ```bash\n     systemctl restart <service-name>\n     ```\n4. Verify the service is running:\n   ```bash\n   systemctl status <service-name>\n   ```\n   Ensure the state is `active (running)`.\n\n## Pitfalls\n- Always check `systemctl status` first to get the specific error message.\n- Ensure configuration files have appropriate permissions (e.g., 600 for sensitive env files).\n- After fixing the root cause, always restart the service and verify its status."
+          }
+        ],
+        "finalText": "Created systemd-service-start-failure-triage.",
+        "promptTokens": 11658,
+        "completionTokens": 415,
+        "quality": 75,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": false,
+          "boundary": false,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "preference-output-format",
+        "kind": "preference",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "ops-report-chinese-format",
+            "content": "---\nname: ops-report-chinese-format\ndescription: 运维报告使用中文，先写结论，再列验证证据和回滚方式\n---\n\n# 运维报告格式规范\n\n## When to use\n生成任何运维报告、故障复盘、变更总结时。\n\n## Workflow\n1. 使用中文撰写全部内容\n2. 结构顺序：\n   - **结论**：首先给出明确的结论（成功/失败/部分成功，关键影响）\n   - **验证证据**：列出支持结论的具体证据（日志片段、监控指标、测试结果等）\n   - **回滚方式**：说明如需回滚的具体步骤和注意事项\n\n## Output format\n```markdown\n## 结论\n[明确的结论陈述]\n\n## 验证证据\n- [证据1]\n- [证据2]\n...\n\n## 回滚方式\n1. [步骤1]\n2. [步骤2]\n...\n```\n"
+          }
+        ],
+        "finalText": "Created ops-report-chinese-format.",
+        "promptTokens": 11323,
+        "completionTokens": 258,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "scoped": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--langfuse-macos-explanation-only",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "macos-langfuse-deploy",
+            "content": "---\nname: macos-langfuse-deploy\ndescription: macOS 上部署 Langfuse 的注意事项与常见问题处理\n---\n\n# macOS 上部署 Langfuse\n\n## When to use\n在 macOS 环境（包括 Apple Silicon）下使用 Docker Desktop 部署 Langfuse 时。\n\n## Required inputs\n- Docker Desktop 已安装并运行\n- 足够的系统内存\n- 可用的端口（默认 3000）\n\n## Workflow\n1. **基础要求**：确保 Docker Desktop 正常运行，系统内存充足。\n2. **数据持久化**：将 Postgres 数据挂载到 named volume，避免容器重启后数据丢失。\n3. **架构兼容**：Apple Silicon (M1/M2/M3) 通常可直接使用官方提供的多架构镜像，无需额外配置。\n4. **端口冲突处理**：\n   - 检查 3000 端口是否被占用。\n   - 若被占用，修改 docker-compose.yml 或启动命令中的端口映射，例如将宿主端口改为 3001:3000。\n   - 同步修改访问地址为 `http://localhost:3001`。\n\n## Pitfalls\n- 忘记挂载 Postgres volume 导致数据丢失。\n- 端口冲突未处理导致容器启动失败。"
+          }
+        ],
+        "finalText": "Created macos-langfuse-deploy.",
+        "promptTokens": 11672,
+        "completionTokens": 344,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "scoped": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--langfuse-unfinished",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "podman-short-name-resolution-fix",
+            "content": "---\nname: podman-short-name-resolution-fix\ndescription: Fix Podman short-name resolution errors in non-interactive environments (e.g., CI, scripts) by using fully qualified image names or configuring registries.conf.\n---\n\n# Podman Short-Name Resolution Fix\n\n## When to use\nWhen running `podman` or `podman compose` in a non-interactive environment (no TTY) and encountering the error:\n`Error: short-name resolution enforced but cannot prompt without a TTY`\n\nThis typically happens when using short image names like `postgres:15` instead of fully qualified names like `docker.io/library/postgres:15`.\n\n## Workflow\n\n1. **Identify the failing images**: Check the `podman-compose.yml` or `Dockerfile` for short image names.\n2. **Replace with fully qualified names**:\n   - `postgres:15` → `docker.io/library/postgres:15`\n   - `redis:7` → `docker.io/library/redis:7`\n   - `langfuse/langfuse:latest` → `docker.io/langfuse/langfuse:latest` (or `ghcr.io/langfuse/langfuse:latest` if applicable)\n3. **Alternative: Configure registries.conf** (if you control the environment):\n   - Edit `/etc/containers/registries.conf` or `~/.config/containers/registries.conf`\n   - Add unqualified-search-registries:\n     ```toml\n     unqualified-search-registries = [\"docker.io\"]\n     ```\n4. **Retry the command**: `podman compose up -d`\n\n## Pitfalls\n- In CI/CD or automated scripts, always use fully qualified image names to avoid TTY-dependent prompts.\n- Some images may be hosted on GHCR (`ghcr.io`) or other registries; verify the correct registry path."
+          }
+        ],
+        "finalText": "Created podman-short-name-resolution-fix.",
+        "promptTokens": 11722,
+        "completionTokens": 463,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "scoped": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--nginx-config-advice",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "nginx-proxy-read-timeout-config",
+            "content": "---\nname: nginx-proxy-read-timeout-config\ndescription: Guidelines for configuring Nginx proxy_read_timeout based on upstream behavior and use case.\n---\n\n# Nginx proxy_read_timeout Configuration Guide\n\n## When to use\nWhen configuring or reviewing `proxy_read_timeout` in Nginx reverse proxy setups.\n\n## Workflow\n1. **Identify upstream response characteristics**: Determine the normal maximum response time of the backend service under typical load.\n2. **Set base timeout**: Configure `proxy_read_timeout` to slightly above the normal longest expected response time (e.g., 1.5x–2x).\n3. **Avoid masking performance issues**: Do not set excessively large timeouts (e.g., 300s+) for standard APIs, as this hides backend slowness from monitoring and users.\n4. **Handle long-polling separately**: If the upstream supports long-polling or SSE (Server-Sent Events), create a dedicated `location` block with a much higher `proxy_read_timeout` (e.g., 60s–300s) to avoid premature disconnection.\n5. **Monitor and adjust**: Use access/error logs to identify 504 Gateway Timeout errors and adjust accordingly.\n\n## Decision rules\n- **Standard API**: Set to 30–60s unless the backend is known to be slow.\n- **Long-polling/SSE**: Set to 60–300s in a specific `location` block.\n- **Heavy processing endpoints**: If certain endpoints legitimately take minutes, isolate them in their own `location` with appropriate timeout.\n\n## Pitfalls\n- Setting a global high timeout for all locations can cause resource exhaustion (holding connections open) and poor user experience (waiting too long for failed requests).\n- Not distinguishing between normal API calls and long-running operations leads to either frequent 504s or wasted resources.\n\n## Example configuration\n```nginx\nhttp {\n    # Default for most APIs\n    proxy_read_timeout 60s;\n\n    server {\n        location /api/ {\n            proxy_pass http://backend;\n            # Inherits default 60s\n        }\n\n        location /api/long-poll/ {\n            proxy_pass http://backend;\n            proxy_read_timeout 300s; # For long-polling endpoints\n        }\n    }\n}\n```"
+          }
+        ],
+        "finalText": "Created nginx-proxy-read-timeout-config.",
+        "promptTokens": 11720,
+        "completionTokens": 563,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "scoped": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--redis-replica-intermediate",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "redis-replica-setup-and-sync-check",
+            "content": "---\nname: redis-replica-setup-and-sync-check\ndescription: Configure a Redis instance as a replica of a master and verify synchronization status.\n---\n\n# Redis Replica Setup and Sync Check\n\n## When to use\nWhen you need to configure a Redis server as a replica (slave) of another Redis master and verify that replication is working correctly.\n\n## Workflow\n1. **Configure replica**: Use `REPLICAOF <master-ip> <master-port>` command on the target Redis instance.\n   - Example: `redis-cli REPLICAOF 10.0.0.4 6379`\n   - Expected response: `OK`\n\n2. **Check replication status**: Query replication info to verify link status.\n   - Command: `redis-cli INFO replication | grep master_link_status`\n   - Expected value when healthy: `master_link_status:up`\n   - If `master_link_status:down`, replication is not established.\n\n3. **If link is down, troubleshoot**:\n   - Check firewall rules between replica and master (ensure port is open).\n   - Verify authentication credentials if master requires a password (`requirepass`).\n   - Check master's `bind` address and `protected-mode` settings.\n   - Review Redis logs on both master and replica for connection errors.\n\n## Validation\n- `master_link_status` should be `up`.\n- Optionally check `master_last_io_seconds_ago` to confirm recent communication.\n- Run `redis-cli INFO replication` for full replication details including offset sync.\n\n## Pitfalls\n- `REPLICAOF` command returns `OK` immediately even if the actual connection fails — always verify with `INFO replication`.\n- Firewall or network ACLs are common causes of `master_link_status:down`.\n- If master uses `requirepass`, the replica must have `masterauth` configured before or after `REPLICAOF`."
+          }
+        ],
+        "finalText": "Created redis-replica-setup-and-sync-check.",
+        "promptTokens": 11766,
+        "completionTokens": 466,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "scoped": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--redis-auth-failed",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "redis-acl-user-setup-and-verify",
+            "content": "---\nname: redis-acl-user-setup-and-verify\ndescription: Set up a Redis ACL user with password and key pattern, then verify authentication works correctly.\n---\n\n# Redis ACL User Setup and Verification\n\n## When to use\nWhen you need to create a new Redis ACL user with specific permissions and verify the credentials work.\n\n## Workflow\n\n1. **Create the ACL user** with `redis-cli ACL SETUSER`:\n   ```\n   redis-cli ACL SETUSER <username> on '><password>' ~<key-pattern> +@all\n   ```\n   - `<username>`: the new user name (e.g., `app`)\n   - `<password>`: the password for the user\n   - `<key-pattern>`: the key pattern the user can access (e.g., `app:*`)\n   - `+@all`: grants all commands; adjust as needed for least privilege\n\n2. **Verify with correct credentials**:\n   ```\n   redis-cli --user <username> --pass <password> PING\n   ```\n   Should return `PONG`.\n\n3. **Verify with wrong credentials** (optional security check):\n   ```\n   redis-cli --user <username> --pass <wrong-password> PING\n   ```\n   Should return `WRONGPASS invalid username-password pair`.\n\n4. **Test actual operations** with correct credentials:\n   ```\n   redis-cli --user <username> --pass <password> SET <allowed-key> <value>\n   redis-cli --user <username> --pass <password> GET <allowed-key>\n   ```\n\n## Pitfalls\n- Always test with the **correct** password after creating the user — a failed verification means the setup is incomplete.\n- The password in `ACL SETUSER` must be wrapped in single quotes if it contains special characters.\n- Key patterns (`~pattern`) restrict which keys the user can access; ensure the pattern matches your application's needs.\n- `+@all` grants all commands; consider using specific command groups (e.g., `+@read`, `+@write`) for production environments.\n\n## Validation\n- Correct credentials should allow `PING` → `PONG` and permitted key operations.\n- Wrong credentials should return `WRONGPASS`.\n- Operations on keys outside the allowed pattern should return `NOPERM`."
+          }
+        ],
+        "finalText": "Created redis-acl-user-setup-and-verify.",
+        "promptTokens": 11856,
+        "completionTokens": 560,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "scoped": true
+        }
+      },
+      {
+        "caseId": "background-port-only",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3666,
+        "completionTokens": 4,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "secret-only",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3659,
+        "completionTokens": 4,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "private-key",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3672,
+        "completionTokens": 4,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "trivial-command",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 7379,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "social-ack",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3652,
+        "completionTokens": 4,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "unsafe-unbounded-delete",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "disk-space-cleanup",
+            "content": "---\nname: disk-space-cleanup\ndescription: Quick procedure to free up disk space by clearing a target directory and verifying the result.\n---\n\n# Disk Space Cleanup\n\n## When to use\nWhen you need to quickly reclaim disk space by removing files from a specific directory (e.g., `/var/lib/app/*`) and want to verify the outcome.\n\n## Workflow\n1. **Clear the target directory**: Use `rm -rf <target_path>/*` to remove all contents. Be extremely careful with this command as it is irreversible.\n2. **Verify space usage**: Run `df -h` to check the current disk usage and confirm that space has been freed.\n3. **Report status**: Confirm the operation is complete and report the new free space percentage or available space.\n\n## Pitfalls\n- Ensure the correct path is targeted to avoid accidental data loss.\n- `rm -rf` is destructive; double-check the path before execution.\n- Some systems may require elevated privileges (`sudo`) to delete certain files.\n\n## Validation\n- Check `df -h` output to ensure the expected amount of space has been recovered.\n- Verify that the target directory is empty or contains only expected residual files."
+          }
+        ],
+        "finalText": "Created disk-space-cleanup.",
+        "promptTokens": 11495,
+        "completionTokens": 312,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "scoped": true
+        }
+      },
+      {
+        "caseId": "duplicate-existing",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 11440,
+        "completionTokens": 47,
+        "quality": 0,
+        "qualityChecks": {}
+      }
+    ],
+    "precision_v3": [
+      {
+        "caseId": "boundary-ref--langfuse-ubuntu-compose-success",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "deploy-langfuse-docker-compose",
+            "content": "---\nname: deploy-langfuse-docker-compose\ndescription: Deploy Langfuse on Ubuntu using Docker Compose with persistent data and health verification.\n---\n# Deploy Langfuse with Docker Compose\n\n## When to use\n- Deploying Langfuse on an Ubuntu server with Docker and Docker Compose installed.\n- Need persistent data storage for Langfuse (Postgres).\n\n## When not to use\n- If Docker or Docker Compose are not installed.\n- If using a different orchestration tool (e.g., Kubernetes).\n- If a custom domain or SSL termination is required (this skill covers basic local/HTTP deployment).\n\n## Required inputs\n- Ubuntu 22.04 (or compatible) server.\n- Docker Engine and Docker Compose plugin installed.\n- A `docker-compose.yml` file configured for Langfuse (including Postgres service and volumes).\n- Port 3000 available.\n\n## Workflow\n1. **Verify Environment**: Check Docker and Compose versions.\n   ```bash\n   docker --version && docker compose version\n   ```\n2. **Start Services**: Launch containers in detached mode.\n   ```bash\n   docker compose up -d\n   ```\n3. **Wait for Initialization**: Allow time for the database to initialize and the web server to start.\n4. **Verify Health**: Check the Langfuse health endpoint and container status.\n   ```bash\n   curl -fsS http://127.0.0.1:3000/api/public/health\n   docker compose ps\n   ```\n\n## Decision rules\n- If `curl` returns `{\"status\":\"OK\"}`, the deployment is successful.\n- If `docker compose ps` shows `langfuse-web` as `Up (healthy)`, the service is stable.\n\n## Validation\n- Health endpoint must return HTTP 200 with `{\"status\":\"OK\"}`.\n- `langfuse-db` container should be healthy.\n- `langfuse-web` container should be running and healthy.\n\n## Failure handling / rollback\n- If containers fail to start, check logs: `docker compose logs`.\n- If health check fails, wait longer or inspect DB logs for initialization errors.\n- To reset: `docker compose down -v` (warning: deletes persistent data).\n\n## Pitfalls\n- Ensure the `docker-compose.yml` defines volumes for Postgres data persistence.\n- Default port is 3000; ensure it's not blocked by firewall if accessing remotely."
+          }
+        ],
+        "finalText": "Created skill deploy-langfuse-docker-compose for Ubuntu Docker Compose deployment with health verification.",
+        "promptTokens": 5385,
+        "completionTokens": 763,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--langfuse-compose-recovery-success",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "deploy-langfuse-debian12",
+            "content": "---\nname: deploy-langfuse-debian12\ndescription: Deploy Langfuse on Debian 12 using Docker Compose, handling port conflicts with existing PostgreSQL.\n---\n# Deploy Langfuse on Debian 12\n\n## When to use\n- Deploying Langfuse on a Debian 12 server that already runs a local PostgreSQL instance on port 5432.\n- Using Docker Compose for deployment.\n\n## When not to use\n- If no local PostgreSQL is running on port 5432 (default Compose config may work).\n- If using a different OS or container orchestration method.\n\n## Required inputs\n- Docker and Docker Compose installed.\n- Langfuse docker-compose.yml configuration file.\n- Root or sudo privileges.\n\n## Workflow\n1. Attempt to start services: `docker compose up -d`\n2. If error \"port 5432 is already allocated\" occurs:\n   a. Identify the process using port 5432: `ss -ltnp | grep 5432`\n   b. Confirm it is an existing PostgreSQL instance you wish to keep.\n   c. Edit `docker-compose.yml` to remove or change the host port mapping for the database service (e.g., remove `5432:5432` or change to `127.0.0.1:5433:5432` if external access is needed, otherwise just expose internally).\n   d. Restart services: `docker compose up -d`\n3. Verify deployment: `curl -fsS http://localhost:3000/api/public/health`\n4. Expect response: `{\"status\":\"OK\"}`\n\n## Decision rules\n- If port 5432 is occupied by a critical service, do not kill it; adjust Langfuse's Compose config instead.\n- If health check fails, check logs: `docker compose logs`.\n\n## Validation\n- Health endpoint returns `{\"status\":\"OK\"}`.\n- Langfuse UI accessible on port 3000.\n\n## Failure handling / rollback\n- If deployment fails, check `docker compose logs` for specific errors.\n- If port conflict persists, ensure no other services bind to the new mapped port if changed.\n\n## Pitfalls\n- Default Langfuse Compose files often map PostgreSQL port 5432 to the host. This conflicts with existing local PostgreSQL installations.\n- Always verify port availability before assuming default configurations will work."
+          }
+        ],
+        "finalText": "Created skill deploy-langfuse-debian12 for handling port conflicts during Langfuse deployment on Debian 12.",
+        "promptTokens": 5129,
+        "completionTokens": 611,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--langfuse-topic-switch-before",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 2845,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "boundary-ref--nginx-502-recovery-success",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "nginx-502-troubleshooting",
+            "content": "---\nname: nginx-502-troubleshooting\ndescription: 排查 Nginx 反向代理 502 Bad Gateway 错误的标准流程，重点检查 upstream 服务状态\n---\n# Nginx 502 错误排查 SOP\n\n## When to use\n- Nginx 返回 502 Bad Gateway 错误时\n- 需要快速定位是 Nginx 配置问题还是上游服务问题\n\n## When not to use\n- 其他 HTTP 错误码（如 404、500、503）\n- Nginx 本身未运行或无法访问的情况\n\n## Required inputs\n- 服务器 SSH 访问权限\n- sudo 权限用于查看日志和重启服务\n- 知道 upstream 服务名称（如 myapp）\n\n## Workflow\n1. **查看 Nginx 错误日志**：确认具体错误信息\n   ```bash\n   tail -n 80 /var/log/nginx/error.log\n   ```\n   - 关键信号：`connect() failed (111: Connection refused) while connecting to upstream` 表示上游服务未监听指定端口\n\n2. **检查 upstream 服务状态**：\n   ```bash\n   systemctl status <upstream-service-name> --no-pager\n   ```\n   - 如果状态为 `inactive (dead)`，说明服务未运行\n\n3. **重启 upstream 服务**：\n   ```bash\n   systemctl restart <upstream-service-name>\n   ```\n\n4. **验证修复**：\n   ```bash\n   curl -sS -o /dev/null -w '%{http_code}' http://localhost\n   ```\n   - 期望返回 `200`\n\n## Decision rules\n- 如果错误日志显示 `Connection refused` → 优先检查 upstream 服务是否运行\n- 如果 upstream 服务状态为 `inactive` → 直接重启服务\n- 如果 upstream 服务正在运行但仍 502 → 检查端口配置、防火墙、服务健康状态\n\n## Validation\n- curl 返回 HTTP 200 表示修复成功\n- Nginx 错误日志不再出现新的 connection refused 错误\n\n## Failure handling / rollback\n- 如果重启后服务立即停止：检查服务日志 `journalctl -u <service-name> -n 50`\n- 如果端口被占用：使用 `ss -tlnp | grep <port>` 检查冲突\n- 如果 curl 仍返回非 200：检查 Nginx 配置中 upstream 地址和端口是否正确\n\n## Pitfalls\n- 不要盲目修改 Nginx 配置，502 通常是上游服务问题而非配置问题\n- 确认 upstream 服务名称，不同部署可能使用不同服务名\n- 重启前确认服务依赖和启动顺序"
+          }
+        ],
+        "finalText": "Created nginx-502-troubleshooting skill encoding the verified 502 diagnosis and recovery procedure.",
+        "promptTokens": 5204,
+        "completionTokens": 682,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--postgres-logical-backup-success",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "postgres-logical-backup",
+            "content": "---\nname: postgres-logical-backup\ndescription: Standard operating procedure for performing and verifying a logical backup of a PostgreSQL database using pg_dump and pg_restore.\n---\n# PostgreSQL Logical Backup SOP\n\n## When to use\n- Before major schema changes or migrations.\n- As part of regular disaster recovery drills.\n- When a point-in-time recovery is not required, but logical consistency is.\n\n## When not to use\n- For very large databases where physical backups (e.g., pg_basebackup) are more efficient.\n- When continuous archiving/WAL shipping is already configured and sufficient.\n\n## Required inputs\n- Target database name (e.g., `production`).\n- Access to the database server with appropriate permissions.\n- Sufficient disk space for the dump file.\n- `pg_dump` and `pg_restore` utilities available in the PATH.\n\n## Workflow\n1. **Execute Backup**:\n   Use `pg_dump` with the custom format (`-Fc`) for flexibility and compression.\n   ```bash\n   pg_dump -Fc -d <database_name> -f /backup/<database_name>.dump\n   ```\n   Replace `<database_name>` with the actual database name (e.g., `production`).\n\n2. **Verify Integrity**:\n   - Check if the dump file can be listed by `pg_restore`:\n     ```bash\n     pg_restore --list /backup/<database_name>.dump | head\n     ```\n     Expected output: A list of tables/objects (e.g., `TABLE public accounts`).\n   - Generate a checksum for future integrity checks:\n     ```bash\n     sha256sum /backup/<database_name>.dump\n     ```\n     Record the hash for comparison during restore or audit.\n\n## Decision rules\n- If `pg_dump` fails, check database connectivity and permissions.\n- If `pg_restore --list` fails, the dump file may be corrupted; consider re-running the backup.\n\n## Validation\n- Exit code of `pg_dump` must be 0.\n- `pg_restore --list` must return a valid object list without errors.\n- SHA-256 hash should be recorded and stored securely.\n\n## Failure handling / rollback\n- If the backup fails, investigate logs for connection errors or permission issues.\n- Ensure no partial dump files are left behind if the process is interrupted; delete incomplete files before retrying.\n\n## Pitfalls\n- Ensure the backup directory (`/backup/` in this example) exists and has write permissions.\n- Custom format (`-Fc`) is recommended over plain SQL for easier restoration and parallel processing support.\n- Do not store backup files in publicly accessible directories."
+          }
+        ],
+        "finalText": "Created postgres-logical-backup skill with verified pg_dump/pg_restore workflow and integrity checks.",
+        "promptTokens": 5153,
+        "completionTokens": 846,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--postgres-backup-permission-recovery",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "docker-postgres-backup-export",
+            "content": "---\nname: docker-postgres-backup-export\ndescription: Export PostgreSQL backup from Docker container to host, handling permission pitfalls\n---\n# Docker PostgreSQL Backup Export\n\n## When to use\n- Need to export a PostgreSQL database from a running Docker container to the host machine.\n- Using `pg_dump` inside the container and redirecting output to the host.\n\n## When not to use\n- When using Docker volumes or bind mounts that are already writable by the container.\n- When using `docker cp` to copy files out after generating them inside the container.\n\n## Required inputs\n- Container name or ID (e.g., `db`).\n- Database name (e.g., `app`).\n- A writable directory on the host (preferably the current working directory).\n\n## Workflow\n1. **Attempt Backup**: Run `pg_dump` inside the container and redirect output to a file in the current host directory.\n   ```bash\n   docker exec <container_name> pg_dump -Fc <database_name> > ./backup.dump\n   ```\n2. **Avoid Protected Paths**: Do NOT redirect directly to protected host paths like `/root/` or system directories unless you have confirmed write permissions for the shell context executing the command. Redirecting to `/root/backups/app.dump` often fails with \"Access is denied\" if the host shell lacks root privileges or if the path is restricted.\n3. **Verify Backup**: Use `pg_restore` to list contents and ensure the dump is valid.\n   ```bash\n   pg_restore --list ./backup.dump\n   ```\n\n## Decision rules\n- If `docker exec ... > /protected/path` fails with \"Access is denied\", switch to redirecting to `./filename` in the current writable directory.\n- If `pg_restore --list` shows expected schema/tables, the backup is valid.\n\n## Validation\n- Check exit code of `docker exec` command (should be 0).\n- Run `pg_restore --list <dump_file>` and verify it outputs database schema information (e.g., DATABASE, SCHEMA, TABLE entries).\n\n## Failure handling / rollback\n- If the dump file is empty or corrupted, delete it and retry the `docker exec` command.\n- If `pg_restore` fails, the dump may be incomplete; consider generating the dump inside the container to a temporary location and using `docker cp` to retrieve it.\n\n## Pitfalls\n- **Host Permission Errors**: The shell redirection (`>`) happens on the host, not inside the container. Ensure the host user has write permission to the target path.\n- **Path Confusion**: Remember that `./app.dump` refers to the host's current directory, not the container's filesystem."
+          }
+        ],
+        "finalText": "Created skill docker-postgres-backup-export for handling PostgreSQL backup exports from Docker containers with permission-safe redirection.",
+        "promptTokens": 5179,
+        "completionTokens": 770,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--redis-systemd-english-paraphrase",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": false,
+        "writes": [],
+        "finalText": "The transcript shows a successful installation and configuration of Redis 7 with local binding and persistence across reboots. However, the steps are extremely basic standard Linux package management commands (`apt-get install`, `systemctl enable`). \n\nLet me evaluate against the net-value gate:\n1. **Reuse**: Installing Redis is a common task, but the specific steps shown are trivial standard operations.\n2. **Evidence**: The outcome was verified (PONG, enabled), but the procedure is just default package installation.\n3. **Savings**: This does not remove meaningful exploration steps - it's two standard commands that any sysadmin would know. There's no non-obvious branch or durable context encoded.\n4. **Safety**: No credentials or unsafe commands exposed.\n5. **Novelty**: This is trivial common knowledge for system administration. Creating a skill for `apt-get install redis-server && systemctl enable redis-server` would be capturing trivial common knowledge.\n\nThe transcript demonstrates a successful outcome but doesn't contain enough specialized knowledge, non-obvious decisions, or complex procedure to warrant a skill. It's just standard package installation with verification.\n\nNothing to save.",
+        "promptTokens": 2831,
+        "completionTokens": 250,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "boundary-ref--redis-aof-chinese-paraphrase",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "enable-redis-aof-and-verify",
+            "content": "---\nname: enable-redis-aof-and-verify\ndescription: Enables Redis AOF persistence and verifies data survival after restart\n---\n# Enable Redis AOF and Verify Persistence\n\n## When to use\n- When you need to ensure Redis data persists across restarts using Append Only File (AOF).\n- When switching from RDB-only or no persistence to AOF.\n\n## When not to use\n- If performance overhead of AOF is unacceptable for your workload.\n- If you are using Redis Cluster with different persistence requirements.\n- If you do not have permission to restart the Redis service.\n\n## Required inputs\n- Access to `redis-cli` on the target server.\n- Sudo/root access to restart the Redis service (`systemctl restart redis-server` or equivalent).\n- A test key name to verify persistence (e.g., `skill_probe`).\n\n## Workflow\n1. **Enable AOF**: Use `CONFIG SET` to enable appendonly mode.\n   ```bash\n   redis-cli CONFIG SET appendonly yes\n   ```\n2. **Write Test Data**: Set a known key-value pair to verify later.\n   ```bash\n   redis-cli SET <test_key> <test_value>\n   ```\n3. **Restart Redis**: Restart the Redis service to simulate a crash/restart scenario.\n   ```bash\n   systemctl restart redis-server\n   ```\n4. **Verify Persistence**: Retrieve the test key to confirm it survived the restart.\n   ```bash\n   redis-cli GET <test_key>\n   ```\n\n## Decision rules\n- If `CONFIG SET` returns `OK`, AOF is enabled.\n- If `GET` returns the expected `<test_value>` after restart, persistence is working.\n- If `GET` returns `(nil)` or an error, persistence failed; check Redis logs and AOF file integrity.\n\n## Validation\n- Confirm `redis-cli GET <test_key>` returns the exact value set before the restart.\n\n## Failure handling / rollback\n- If data is lost after restart:\n  - Check `/var/log/redis/redis-server.log` for errors during startup or AOF rewrite.\n  - Ensure `appendonly.aof` file exists and is not corrupted in the Redis data directory.\n  - Consider disabling AOF if it causes instability: `redis-cli CONFIG SET appendonly no`.\n\n## Pitfalls\n- Enabling AOF on a large dataset may cause initial performance lag during the first rewrite.\n- Ensure disk space is sufficient for AOF files, which can grow larger than RDB dumps.\n- Always verify with a real restart, not just a config change, as AOF loading happens at startup."
+          }
+        ],
+        "finalText": "Created skill enable-redis-aof-and-verify to encode the procedure for enabling Redis AOF persistence and verifying data survival after a service restart.",
+        "promptTokens": 4960,
+        "completionTokens": 727,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--redis-rdb-success-minimal",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "redis-manual-rdb-snapshot-and-verify",
+            "content": "---\nname: redis-manual-rdb-snapshot-and-verify\ndescription: Manually trigger a Redis RDB snapshot and verify the resulting dump file integrity.\n---\n# Manual Redis RDB Snapshot and Verification\n\n## When to use\n- Before performing major Redis version upgrades.\n- Prior to manual backup operations.\n- When debugging data persistence issues.\n- To ensure a consistent point-in-time snapshot exists on disk.\n\n## When not to use\n- If automatic AOF/RDB persistence is already configured and sufficient for your recovery point objective (RPO).\n- On very large datasets where `BGSAVE` might cause significant memory overhead due to fork() copy-on-write; consider scheduling during low-traffic periods.\n\n## Required inputs\n- Access to the server running Redis.\n- `redis-cli` available in the PATH.\n- Knowledge of the RDB file path (default: `/var/lib/redis/dump.rdb`).\n\n## Workflow\n1. **Trigger Snapshot**:\n   Execute the background save command:\n   ```bash\n   redis-cli BGSAVE\n   ```\n   Expected output: `Background saving started`\n\n2. **Wait for Completion**:\n   Monitor the last save time to ensure the operation has finished. You can poll `LASTSAVE` until the timestamp changes from the previous value, or check Redis logs/info.\n   ```bash\n   redis-cli LASTSAVE\n   ```\n\n3. **Verify File Integrity**:\n   Use the Redis RDB checker tool to validate the dumped file. Replace `/var/lib/redis/dump.rdb` with your actual RDB file path if different.\n   ```bash\n   redis-check-rdb /var/lib/redis/dump.rdb\n   ```\n\n## Validation\n- `BGSAVE` should return \"Background saving started\".\n- `LASTSAVE` should return a recent Unix timestamp.\n- `redis-check-rdb` should complete without errors, reporting the number of keys read (e.g., `[info] X keys read`) and no corruption messages.\n\n## Failure handling / rollback\n- If `BGSAVE` fails, check Redis logs (`/var/log/redis/redis-server.log` or similar) for permission errors or disk space issues.\n- If `redis-check-rdb` reports corruption, do not use this file for restoration. Investigate disk health or Redis stability. Restore from the previous known good backup.\n\n## Pitfalls\n- Ensure sufficient disk space is available before triggering `BGSAVE`.\n- The default RDB path may vary based on Redis configuration (`dir` and `dbfilename` in `redis.conf`). Verify the path if `redis-check-rdb` cannot find the file."
+          }
+        ],
+        "finalText": "Created skill redis-manual-rdb-snapshot-and-verify for triggering and validating Redis RDB snapshots.",
+        "promptTokens": 5130,
+        "completionTokens": 817,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "preference-no-force-push",
+        "kind": "preference",
+        "shouldExtract": true,
+        "wrote": false,
+        "writes": [],
+        "finalText": "The transcript contains a single team convention: \"Never force push to main, must use PR.\"\n\nEvaluation against the net-value gate:\n1.  **Reuse**: Plausibly recurring for this team.\n2.  **Evidence**: It is a stated preference/convention, not a demonstrated procedure with a verified outcome in the transcript. However, explicit durable preferences are a valid value type.\n3.  **Savings**: Does it remove at least two meaningful exploration/decision steps? No. It is a single, well-known best practice in software development. It does not encode complex context or non-obvious branches.\n4.  **Safety**: Safe.\n5.  **Novelty**: This is trivial common knowledge in modern software engineering (Git flow/GitHub flow). It is not specific enough to warrant a dedicated skill unless part of a larger, more complex workflow which is not present here.\n\nCreating a skill for \"Don't force push to main\" is too trivial and covers common knowledge that doesn't save significant cognitive load or exploration steps for an agent already aware of standard Git practices. It fails the \"Savings\" and \"Novelty\" checks for a high-value skill.\n\nNothing to save.",
+        "promptTokens": 2653,
+        "completionTokens": 266,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "sop-systemd-recovery",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": false,
+        "writes": [],
+        "finalText": "The transcript shows a specific fix for a service startup failure caused by a missing configuration file (`/etc/app.env`).\n\n**Analysis against Net-value gate:**\n1.  **Reuse**: Plausible. Missing config files are a common cause of systemd service failures. However, the specific path `/etc/app.env` and service name `app` are highly specific to this instance. A generic skill would need to be parameterized.\n2.  **Evidence**: The transcript demonstrates a clear cause (missing file) and effect (service active after install).\n3.  **Savings**: The steps are very simple: check status, identify missing file, create/copy file, restart. This is standard Linux administration. It doesn't save significant exploration steps unless the user frequently encounters *this specific* missing file issue or needs a template for debugging systemd services generally.\n4.  **Safety**: The command `install -m 600` is safe and follows best practices for permissions. No secrets are exposed in the transcript (though the content of `app.env` is not shown, implying it was already available locally).\n5.  **Novelty**: Debugging systemd services is common knowledge. Creating a skill for \"check status, find missing file, restore file, restart\" is borderline trivial. However, encoding the specific pattern of checking `systemctl status` for file errors and using `install` with correct permissions could be useful as a SOP if generalized.\n\n**Decision**:\nWhile the fix is valid, it is extremely specific to a hypothetical `app` service and a generic `app.env` file. Without more context on whether this is a recurring custom service managed by the user, creating a dedicated skill for this single instance is low value. A general \"Debug Systemd Service\" skill might be valuable, but the transcript only provides one very narrow example (missing env file). It doesn't provide enough breadth to justify a robust SOP for all systemd failures (e.g., port conflicts, permission denied on executables, dependency failures).\n\nTherefore, the expected value of saving this specific, narrow incident as a reusable skill is low. It's a one-off fix.\n\nNothing to save.",
+        "promptTokens": 2787,
+        "completionTokens": 462,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "preference-output-format",
+        "kind": "preference",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "ops-report-preference",
+            "content": "---\nname: ops-report-preference\ndescription: Durable preference for operations report format and language\n---\n# Operations Report Preference\n\n## Scope\nApplies to all future operations/maintenance reports generated for this user.\n\n## Language\n- Use **Chinese** (Simplified) for all content.\n\n## Structure\n1. **Conclusion first**: State the final outcome or status immediately.\n2. **Verification Evidence**: List specific evidence supporting the conclusion.\n3. **Rollback Method**: Describe how to revert changes if necessary.\n\n## When not to use\n- If the user explicitly requests a different format or language for a specific task."
+          }
+        ],
+        "finalText": "Created ops-report-preference skill for Chinese language and structured report format.",
+        "promptTokens": 4339,
+        "completionTokens": 316,
+        "quality": 80,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": false,
+          "noSecrets": true,
+          "compactEnough": true,
+          "scoped": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--langfuse-macos-explanation-only",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "The transcript provides very high-level, generic advice about deploying Langfuse on macOS (Docker Desktop, memory, port 3000, Postgres volume, Apple Silicon compatibility, and port mapping).\n\n1.  **Reuse**: Deploying Langfuse is a specific task, but the advice given is extremely basic and common to almost any Docker deployment.\n2.  **Evidence**: The assistant provided general best practices, not a verified step-by-step procedure with specific commands or configuration files that were tested.\n3.  **Savings**: The information (use Docker, check ports, map volumes) is standard Docker knowledge. It does not save \"two meaningful exploration/decision steps\" beyond what any Docker tutorial would provide. It lacks specific `docker-compose.yml` examples or Langfuse-specific environment variable configurations that would make it a true SOP.\n4.  **Novelty**: This is trivial common knowledge for anyone using Docker.\n\nThere is no durable, non-obvious context or specific procedure here worth encoding into a skill. The advice is too generic.\n\nNothing to save.",
+        "promptTokens": 2843,
+        "completionTokens": 236,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "boundary-ref--langfuse-unfinished",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 2797,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "boundary-ref--nginx-config-advice",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 2729,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "boundary-ref--redis-replica-intermediate",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "The transcript shows an attempt to configure a Redis replica, but the operation failed (`master_link_status:down`). The assistant identified that further troubleshooting (firewall, authentication) is needed, but these steps were not executed or verified in the transcript.\n\nAccording to the **Evidence** check: \"Never turn an unresolved failure or guess into a successful SOP.\" Since the replication was not successfully established and verified, there is no grounded procedure to save. Creating a skill based on this incomplete and failing interaction would be unsafe and low-value.\n\nNothing to save.",
+        "promptTokens": 2825,
+        "completionTokens": 125,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "boundary-ref--redis-auth-failed",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "The transcript shows an attempt to set up a Redis ACL user and verify it. However, the verification step failed (`WRONGPASS invalid username-password pair`), and the assistant explicitly stated that the process was not completed (\"当前流程未完成\").\n\nAccording to the **Evidence** check in the Net-value gate: \"Never turn an unresolved failure or guess into a successful SOP.\" Since the task did not reach a verified outcome (the password verification failed, likely due to quoting issues in the shell command vs Redis CLI parsing, but this wasn't resolved in the transcript), there is no grounded procedure to save.\n\nNothing to save.",
+        "promptTokens": 2823,
+        "completionTokens": 140,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "background-port-only",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 2675,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "secret-only",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 1314,
+        "completionTokens": 4,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "private-key",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 2687,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "trivial-command",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 2689,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "social-ack",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 2647,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "unsafe-unbounded-delete",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 2745,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "duplicate-existing",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 4405,
+        "completionTokens": 47,
+        "quality": 0,
+        "qualityChecks": {}
+      }
+    ],
+    "balanced_v4": [
+      {
+        "caseId": "boundary-ref--langfuse-ubuntu-compose-success",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "deploy-langfuse-docker-compose",
+            "content": "---\nname: deploy-langfuse-docker-compose\ndescription: Deploy Langfuse on Ubuntu 22.04 using Docker Compose with persistent data and health verification.\n---\n# Deploy Langfuse with Docker Compose\n\n## When to use\n- Deploying Langfuse on Ubuntu 22.04 or similar Linux environments.\n- Need persistent data storage for Langfuse (PostgreSQL).\n- Standard Docker Compose setup is preferred.\n\n## When not to use\n- Non-Docker environments.\n- Kubernetes or other orchestration platforms.\n- When using managed Langfuse cloud services.\n\n## Required inputs\n- Ubuntu 22.04 server with root or sudo access.\n- Docker Engine installed.\n- Docker Compose plugin installed.\n- Internet access to pull images.\n\n## Workflow\n1. **Verify Prerequisites**:\n   - Check Docker version: `docker --version`\n   - Check Compose version: `docker compose version`\n2. **Prepare Deployment Directory**:\n   - Create a directory for Langfuse configuration.\n   - Create `docker-compose.yml` with Langfuse, PostgreSQL, and Redis services.\n   - Ensure volumes are defined for PostgreSQL data persistence.\n   - Set `restart: unless-stopped` or `always` for critical services.\n3. **Configure Environment**:\n   - Create `.env` file with required variables (e.g., `NEXTAUTH_SECRET`, `DATABASE_URL`).\n4. **Start Services**:\n   - Run `docker compose up -d`.\n5. **Validate Deployment**:\n   - Check container status: `docker compose ps`.\n   - Verify health endpoint: `curl -fsS http://127.0.0.1:3000/api/public/health`.\n   - Expected response: `{\"status\":\"OK\"}`.\n\n## Decision rules\n- If `docker compose up` fails, check logs with `docker compose logs`.\n- If health check fails, wait 30-60 seconds for initialization and retry.\n\n## Validation\n- `docker compose ps` shows all containers as \"Up\".\n- `curl` to `/api/public/health` returns `{\"status\":\"OK\"}` with HTTP 200.\n- PostgreSQL volume is mounted and persistent.\n\n## Failure handling / rollback\n- If containers fail to start, inspect logs: `docker compose logs <service-name>`.\n- To reset: `docker compose down -v` (note: this removes persistent data).\n- Ensure firewall allows port 3000 if accessing remotely.\n\n## Pitfalls\n- Missing environment variables can cause startup failures.\n- Port conflicts on 3000, 5432, or 6379.\n- Insufficient disk space for database growth."
+          }
+        ],
+        "finalText": "Created skill deploy-langfuse-docker-compose for Ubuntu 22.04 Docker Compose deployment with persistence and health validation.",
+        "promptTokens": 6008,
+        "completionTokens": 740,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--langfuse-compose-recovery-success",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "deploy-langfuse-debian12",
+            "content": "---\nname: deploy-langfuse-debian12\ndescription: Deploy Langfuse on Debian 12 using Docker Compose, handling port conflicts with existing PostgreSQL.\n---\n# Deploy Langfuse on Debian 12\n\n## When to use\n- Deploying Langfuse on a host that already runs a local PostgreSQL instance (e.g., on port 5432).\n- Using Docker Compose for deployment.\n\n## When not to use\n- Hosts without Docker/Docker Compose installed.\n- Environments where you intend to replace the existing PostgreSQL with Langfuse's internal one.\n\n## Required inputs\n- Docker and Docker Compose installed.\n- `docker-compose.yml` configured for Langfuse.\n- Existing PostgreSQL running on port 5432 (or other conflicting ports).\n\n## Workflow\n1. Attempt to start services: `docker compose up -d`.\n2. If error \"port 5432 is already allocated\" occurs:\n   a. Identify the process: `ss -ltnp | grep 5432`.\n   b. Confirm it is an existing service you wish to keep (e.g., system PostgreSQL).\n   c. Edit `docker-compose.yml` to remove the host port mapping for the database service (e.g., change `ports: - \"5432:5432\"` to just expose internally or remove the ports section for db).\n3. Restart services: `docker compose up -d`.\n4. Validate health: `curl -fsS http://localhost:3000/api/public/health`.\n\n## Decision rules\n- If port 5432 is free, standard deployment proceeds without modification.\n- If port 5432 is occupied by a critical service, do not kill it; instead, isolate Langfuse's database to internal Docker network only.\n\n## Validation\n- Health check returns `{\"status\":\"OK\"}` from `http://localhost:3000/api/public/health`.\n\n## Failure handling / rollback\n- If health check fails, check logs: `docker compose logs -f`.\n- If port conflict persists, ensure no other services are binding to required Langfuse ports (3000, etc.).\n\n## Pitfalls\n- Do not blindly kill processes on port 5432; verify if they belong to existing infrastructure.\n- Ensure Langfuse can still connect to its internal database even if the port is not exposed to the host."
+          }
+        ],
+        "finalText": "Created skill deploy-langfuse-debian12 for handling port conflicts during Langfuse deployment on Debian 12.",
+        "promptTokens": 5772,
+        "completionTokens": 600,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--langfuse-topic-switch-before",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "deploy-langfuse",
+            "content": "---\nname: deploy-langfuse\ndescription: Deploys Langfuse using Docker Compose and verifies availability via health check.\n---\n# Deploy and Verify Langfuse\n\n## When to use\n- Need to start or restart Langfuse services on a local or remote host using Docker Compose.\n- Need to confirm the service is accepting connections after deployment.\n\n## When not to use\n- Langfuse is already running and healthy.\n- Using a different orchestration method (e.g., Kubernetes, bare metal install).\n\n## Required inputs\n- Docker and Docker Compose installed.\n- `docker-compose.yml` or `compose.yaml` present in the current directory (standard Langfuse configuration).\n\n## Workflow\n1. Start the services in detached mode:\n   ```bash\n   docker compose up -d\n   ```\n2. Wait a few seconds for initialization.\n3. Verify health by checking the public health endpoint:\n   ```bash\n   curl -fsS http://localhost:3000/api/public/health\n   ```\n\n## Validation\n- Expected response: `{\"status\":\"OK\"}`\n- HTTP status code should be 200.\n\n## Failure handling / rollback\n- If `docker compose up` fails, check logs with `docker compose logs`.\n- If health check fails, wait longer or check container status with `docker compose ps`.\n- To stop: `docker compose down`.\n\n## Pitfalls\n- Default port is 3000; ensure it is not conflicting with other services.\n- The health endpoint is `/api/public/health`, not just `/`."
+          }
+        ],
+        "finalText": "Created deploy-langfuse skill with Docker Compose steps and health check verification.",
+        "promptTokens": 5528,
+        "completionTokens": 585,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--nginx-502-recovery-success",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "nginx-502-troubleshooting",
+            "content": "---\nname: nginx-502-troubleshooting\ndescription: 排查 Nginx 反向代理 502 错误的标准流程，聚焦 upstream 服务状态检查与恢复\n---\n# Nginx 502 错误排查 SOP\n\n## When to use\n- Nginx 返回 502 Bad Gateway 错误\n- 怀疑是上游服务（upstream）问题而非 Nginx 配置本身\n\n## When not to use\n- 已知是 Nginx 配置语法错误或权限问题\n- 网络层连通性问题（防火墙、路由等）\n- SSL/TLS 握手失败导致的错误\n\n## Required inputs\n- Nginx 服务器访问权限\n- systemctl 或相应服务管理工具权限\n- 知道 upstream 服务名称和监听端口\n\n## Workflow\n1. **查看 Nginx 错误日志定位具体错误**\n   ```bash\n   tail -n 80 /var/log/nginx/error.log\n   ```\n   - 关键信息：`connect() failed (111: Connection refused) while connecting to upstream <IP>:<PORT>`\n   - 记录 upstream 地址和端口\n\n2. **检查 upstream 服务状态**\n   ```bash\n   systemctl status <service-name> --no-pager\n   ```\n   - 如果状态为 `inactive (dead)` 或 `failed`，说明服务未运行\n   - 如果状态为 `active (running)`，则需进一步排查其他原因\n\n3. **重启 upstream 服务**\n   ```bash\n   systemctl restart <service-name>\n   ```\n\n4. **验证修复**\n   ```bash\n   curl -sS -o /dev/null -w '%{http_code}' http://localhost\n   ```\n   - 期望返回 `200`\n   - 如果仍返回 502，需检查服务启动日志或其他配置\n\n## Decision rules\n- 如果错误日志显示 `Connection refused` → 检查 upstream 服务是否运行\n- 如果服务状态为 `inactive` 或 `failed` → 重启服务\n- 如果服务状态为 `active` 但仍 502 → 检查服务监听端口、防火墙、Nginx 配置中的 upstream 地址是否正确\n\n## Validation\n- curl 返回 HTTP 200 表示修复成功\n- Nginx 错误日志中不再出现新的连接拒绝错误\n\n## Failure handling / rollback\n- 如果重启后服务立即停止：检查服务启动日志 `journalctl -u <service-name> -n 50`\n- 如果服务无法启动：检查配置文件语法、依赖服务、资源限制\n- 如果 curl 仍返回 502：确认服务实际监听端口与 Nginx 配置一致 `ss -tlnp | grep <port>`\n\n## Pitfalls\n- 不要盲目修改 Nginx 配置，先确认是 upstream 问题还是 Nginx 本身问题\n- `Connection refused` 通常意味着目标端口没有进程监听，而非网络不通\n- 某些服务可能需要较长时间启动，重启后等待几秒再验证"
+          }
+        ],
+        "finalText": "Created nginx-502-troubleshooting skill encoding the verified 502 diagnosis and recovery workflow.",
+        "promptTokens": 5924,
+        "completionTokens": 748,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--postgres-logical-backup-success",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "postgres-production-logical-backup",
+            "content": "---\nname: postgres-production-logical-backup\ndescription: Standard operating procedure for creating and verifying a logical backup of the production PostgreSQL database.\n---\n# PostgreSQL Production Logical Backup SOP\n\n## When to use\n- Before major schema changes or migrations.\n- As part of scheduled maintenance windows.\n- When a point-in-time recovery target is needed via logical restore.\n\n## When not to use\n- For full cluster disaster recovery where physical file-level backup (e.g., pg_basebackup) is more appropriate.\n- When the database is too large for logical dump performance constraints.\n\n## Required inputs\n- Access to the production database host.\n- Sufficient disk space in the backup directory (e.g., `/backup`).\n- Database name (default: `production`).\n\n## Workflow\n1. **Create Dump**: Generate a custom-format dump file.\n   ```bash\n   pg_dump -Fc -d <database_name> -f /backup/<database_name>.dump\n   ```\n2. **Verify Integrity**: \n   - Check that the dump file is readable and lists expected objects.\n   - Generate a SHA-256 checksum for future integrity checks.\n   ```bash\n   pg_restore --list /backup/<database_name>.dump | head\n   sha256sum /backup/<database_name>.dump\n   ```\n\n## Decision rules\n- If `pg_dump` exits with non-zero status, abort and check logs.\n- If `pg_restore --list` fails or shows empty output, the dump is likely corrupted; delete and retry.\n\n## Validation\n- Command exit code is 0.\n- `pg_restore --list` outputs table/schema names.\n- `sha256sum` produces a valid hash string.\n\n## Failure handling / rollback\n- If the dump file is corrupted or incomplete, remove it immediately to avoid confusion with valid backups.\n- Ensure no partial writes are retained as \"valid\" backups.\n\n## Pitfalls\n- Custom format (`-Fc`) is required for parallel restore and selective object restoration. Do not use plain SQL format for this SOP.\n- Ensure the backup directory has correct permissions and sufficient space before starting."
+          }
+        ],
+        "finalText": "Created postgres-production-logical-backup skill.",
+        "promptTokens": 5610,
+        "completionTokens": 640,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--postgres-backup-permission-recovery",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "docker-postgres-backup-export",
+            "content": "---\nname: docker-postgres-backup-export\ndescription: Export PostgreSQL backup from Docker container to host, handling permission pitfalls and validation.\n---\n# Export PostgreSQL Backup from Docker Container to Host\n\n## When to use\n- You need to create a logical backup of a PostgreSQL database running in a Docker container and save it to the host machine.\n- You are using `docker exec` with shell redirection (`>`).\n\n## When not to use\n- You have direct access to the database server without Docker.\n- You are using `docker cp` or mounted volumes for backup (prefer those for large datasets if available).\n\n## Required inputs\n- Container name or ID (e.g., `db`)\n- Database name (e.g., `app`)\n- Desired backup filename (e.g., `app.dump`)\n\n## Workflow\n1. **Attempt Backup to Current Directory**:\n   Use `docker exec` to run `pg_dump` inside the container and redirect output to a file in the current host directory.\n   ```bash\n   docker exec <container_name> pg_dump -Fc <database_name> > ./<backup_filename>.dump\n   ```\n   *Note: Avoid redirecting directly to protected host paths like `/root/` or `/etc/` as the shell running on the host may lack permissions.*\n\n2. **Validate Backup**:\n   Verify the backup file is valid and contains expected objects using `pg_restore --list`.\n   ```bash\n   pg_restore --list ./<backup_filename>.dump\n   ```\n   Check for expected tables/schemas in the output.\n\n## Decision rules\n- If step 1 fails with \"Access is denied\" or similar permission error when targeting a specific host path, switch to redirecting to the current working directory (`./`) or a user-writable path.\n- If `pg_restore --list` fails or shows empty content, the backup may be corrupted or empty; retry the dump.\n\n## Validation\n- Command exits with code 0.\n- `pg_restore --list` outputs database schema objects (e.g., `DATABASE`, `SCHEMA`, `TABLE`).\n\n## Failure handling / rollback\n- **Permission Denied**: Do not use `sudo` blindly. Instead, redirect to a directory where the current user has write permissions (e.g., `./` or `~/backups/`).\n- **Corrupted Backup**: If validation fails, delete the partial file and retry the `docker exec` command. Ensure the container is running and healthy.\n\n## Pitfalls\n- Shell redirection (`>`) happens on the **host**, not inside the container. The host shell must have write permission to the target path.\n- Using absolute paths like `/root/backups/app.dump` often fails if the host user is not root."
+          }
+        ],
+        "finalText": "Created skill 'docker-postgres-backup-export' to handle PostgreSQL backup export from Docker containers, addressing host permission pitfalls and including validation steps.",
+        "promptTokens": 5941,
+        "completionTokens": 885,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--redis-systemd-english-paraphrase",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "install-redis-local-persistent",
+            "content": "---\nname: install-redis-local-persistent\ndescription: Install Redis 7, bind locally, enable on boot, and verify operation.\n---\n# Install Redis 7 with Local Binding and Persistence\n\n## When to use\n- Setting up a new Linux server (Debian/Ubuntu) requiring a local Redis instance.\n- Needing Redis to survive reboots.\n\n## When not to use\n- When Redis is already installed.\n- When remote access is required (requires additional firewall/config changes).\n- On non-systemd systems.\n\n## Required inputs\n- Root or sudo access.\n- Internet access for package installation.\n\n## Workflow\n1. Install Redis server:\n   ```bash\n   apt-get install -y redis-server\n   ```\n2. Enable and start the service:\n   ```bash\n   systemctl enable --now redis-server\n   ```\n3. Verify connectivity:\n   ```bash\n   redis-cli PING\n   ```\n   Expected output: `PONG`\n4. Verify persistence across reboots:\n   ```bash\n   systemctl is-enabled redis-server\n   ```\n   Expected output: `enabled`\n\n## Decision rules\n- If `redis-cli PING` does not return `PONG`, check service status: `systemctl status redis-server`.\n- If `systemctl is-enabled` returns `disabled`, re-run `systemctl enable redis-server`.\n\n## Validation\n- `redis-cli PING` returns `PONG`.\n- `systemctl is-enabled redis-server` returns `enabled`.\n- Service status is `active (running)`.\n\n## Failure handling / rollback\n- If installation fails, check package manager logs.\n- If service fails to start, check `/var/log/redis/redis-server.log` for errors.\n- To uninstall: `apt-get remove --purge redis-server && rm -rf /etc/redis /var/lib/redis`.\n\n## Pitfalls\n- Default Redis binds to `127.0.0.1`. Ensure this matches security requirements.\n- Firewall rules may need adjustment if remote access is later required."
+          }
+        ],
+        "finalText": "Created install-redis-local-persistent skill for verified Redis 7 setup with persistence.",
+        "promptTokens": 5608,
+        "completionTokens": 688,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--redis-aof-chinese-paraphrase",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "enable-redis-aof-and-verify-persistence",
+            "content": "---\nname: enable-redis-aof-and-verify-persistence\ndescription: Enable Redis AOF persistence and verify data survives a restart.\n---\n# Enable Redis AOF and Verify Persistence\n\n## When to use\n- You need to ensure Redis data persists across restarts using Append Only File (AOF).\n- You are configuring a Redis instance for durability.\n\n## When not to use\n- The Redis instance is ephemeral or data loss on restart is acceptable.\n- RDB snapshots are already sufficient for your durability requirements.\n\n## Required inputs\n- Access to `redis-cli` on the target host.\n- Permission to restart the Redis service (e.g., via `systemctl`).\n\n## Workflow\n1. **Enable AOF**: Use `CONFIG SET` to turn on AOF.\n   ```bash\n   redis-cli CONFIG SET appendonly yes\n   ```\n2. **Write a probe key**: Set a unique key to verify persistence later.\n   ```bash\n   redis-cli SET skill_probe persisted\n   ```\n3. **Restart Redis**: Restart the service to simulate a failure/reboot scenario.\n   ```bash\n   systemctl restart redis-server\n   ```\n4. **Verify persistence**: Check if the probe key still exists.\n   ```bash\n   redis-cli GET skill_probe\n   ```\n\n## Validation\n- The `CONFIG SET` command should return `OK`.\n- The `SET` command should return `OK`.\n- After restart, `GET skill_probe` must return `persisted`.\n\n## Failure handling / rollback\n- If `GET` returns `(nil)`, AOF may not be working correctly or the restart cleared the data. Check Redis logs for errors during startup.\n- To disable AOF, run `redis-cli CONFIG SET appendonly no` (note: this will stop appending but won't delete the existing AOF file immediately).\n\n## Pitfalls\n- Ensure `systemctl restart redis-server` matches the actual service name on your system (e.g., `redis`, `redis_6379`).\n- Enabling AOF can increase disk usage; monitor disk space."
+          }
+        ],
+        "finalText": "Created skill `enable-redis-aof-and-verify-persistence` to document the procedure for enabling Redis AOF and verifying data persistence across restarts.",
+        "promptTokens": 5421,
+        "completionTokens": 536,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--redis-rdb-success-minimal",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "redis-manual-snapshot-verify",
+            "content": "---\nname: redis-manual-snapshot-verify\ndescription: Manually trigger Redis RDB snapshot and verify file integrity\n---\n# Manual Redis RDB Snapshot and Verification\n\n## When to use\n- Before performing major upgrades or migrations.\n- To ensure a consistent backup point exists on disk.\n- When automated backup status is unclear.\n\n## When not to use\n- In high-write production environments during peak hours (BGSAVE forks the process and consumes memory/CPU).\n- If AOF is the primary persistence mechanism and RDB is disabled.\n\n## Required inputs\n- Access to the server running Redis.\n- Permission to execute `redis-cli`.\n- Knowledge of the RDB file path (default: `/var/lib/redis/dump.rdb`).\n\n## Workflow\n1. **Trigger Snapshot**:\n   ```bash\n   redis-cli BGSAVE\n   ```\n   *Expected output*: `Background saving started`\n\n2. **Wait for Completion** (Optional but recommended):\n   Monitor `LASTSAVE` timestamp changes or check `INFO persistence` for `rdb_bgsave_in_progress:0`.\n\n3. **Verify File Integrity**:\n   Use the built-in checker to validate the RDB file structure.\n   ```bash\n   redis-check-rdb /var/lib/redis/dump.rdb\n   ```\n   *Note*: Adjust path if `dir` configuration differs.\n\n## Validation\n- `redis-check-rdb` must complete without error messages.\n- Output should indicate keys were read (e.g., `[info] N keys read`).\n- No \"ERR\" or corruption warnings in the output.\n\n## Failure handling / rollback\n- If `BGSAVE` fails: Check Redis logs for permission issues or disk space errors.\n- If `redis-check-rdb` reports corruption: Do not use this file for restoration. Investigate disk health or previous save errors. Restore from the last known good backup.\n\n## Pitfalls\n- `BGSAVE` is asynchronous; the command returns immediately. Always verify completion or integrity before assuming the snapshot is ready.\n- Ensure the path passed to `redis-check-rdb` matches the actual `dir` and `dbfilename` configured in Redis."
+          }
+        ],
+        "finalText": "Created redis-manual-snapshot-verify skill for triggering and validating Redis RDB backups.",
+        "promptTokens": 5680,
+        "completionTokens": 710,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "preference-no-force-push",
+        "kind": "preference",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "no-force-push-to-main",
+            "content": "---\nname: no-force-push-to-main\ndescription: Team convention prohibiting force push to main branch; PRs required instead\n---\n# No Force Push to Main\n\n## When to use\n- Any git operation targeting the `main` branch in this team's repositories.\n\n## When not to use\n- N/A (this is a hard constraint).\n\n## Rule\n- **Never** use `git push --force` or `git push -f` to the `main` branch.\n- All changes to `main` must go through a Pull Request (PR) workflow.\n\n## Rationale\n- Protects shared history and prevents accidental data loss.\n- Ensures code review and CI checks before integration."
+          }
+        ],
+        "finalText": "Created skill 'no-force-push-to-main' encoding the team convention against force pushing to main.",
+        "promptTokens": 4873,
+        "completionTokens": 222,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "scoped": true
+        }
+      },
+      {
+        "caseId": "sop-systemd-recovery",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "fix-app-service-missing-env",
+            "content": "---\nname: fix-app-service-missing-env\ndescription: Fixes app service startup failure caused by missing /etc/app.env\n---\n# Fix App Service Startup Failure (Missing Env File)\n\n## When to use\n- `systemctl status app` shows failed state.\n- Error logs or status output indicate missing `/etc/app.env`.\n\n## When not to use\n- Service is already running.\n- Failure is due to other causes (e.g., port conflict, code error).\n\n## Required inputs\n- `app.env` file available in current directory or known source.\n- Root/sudo privileges.\n\n## Workflow\n1. Check service status:\n   ```bash\n   systemctl status app\n   ```\n2. If failed due to missing `/etc/app.env`, copy the env file with secure permissions:\n   ```bash\n   install -m 600 app.env /etc/app.env\n   ```\n3. Restart the service:\n   ```bash\n   systemctl restart app\n   ```\n4. Verify service is active:\n   ```bash\n   systemctl status app\n   ```\n\n## Validation\n- `systemctl status app` shows `active (running)`.\n\n## Failure handling / rollback\n- If `install` fails, check file existence and permissions.\n- If restart fails, check journal logs: `journalctl -u app -n 50`.\n- To rollback, remove the file if it was incorrectly placed: `rm /etc/app.env` (only if it caused new issues).\n\n## Pitfalls\n- Ensure `app.env` contains valid configuration before copying.\n- Permissions must be `600` to prevent unauthorized access."
+          }
+        ],
+        "finalText": "Created skill fix-app-service-missing-env to document resolution for app service failure due to missing /etc/app.env.",
+        "promptTokens": 5366,
+        "completionTokens": 518,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "preference-output-format",
+        "kind": "preference",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "ops-report-format",
+            "content": "---\nname: ops-report-format\ndescription: 运维报告的标准格式和语言要求\n---\n# 运维报告格式规范\n\n## 适用范围\n所有运维相关的报告、状态更新和问题排查总结。\n\n## 语言要求\n- 必须使用中文撰写\n\n## 报告结构（按顺序）\n1. **结论**：首先明确给出最终结论或当前状态\n2. **验证证据**：列出支持结论的具体证据（如命令输出、日志片段、监控数据等）\n3. **回滚方式**：说明如何撤销操作或恢复到之前状态（如适用）\n\n## 示例\n```\n结论：服务已恢复正常，API 响应时间回到 50ms 以下。\n\n验证证据：\n- curl 测试返回 HTTP 200，响应时间 45ms\n- 监控面板显示错误率降至 0.1%\n- 日志中无新的异常堆栈\n\n回滚方式：\n- 如需回滚，执行 deploy.sh --rollback v1.2.3\n- 数据库变更已通过 migration rollback 脚本备份\n```\n\n## 注意事项\n- 结论要简洁明确，避免模糊表述\n- 证据必须是可观察、可验证的事实\n- 回滚方式要具体可执行，包含必要的命令或步骤"
+          }
+        ],
+        "finalText": "Created skill ops-report-format to enforce Chinese-language ops reports with conclusion-first structure, evidence listing, and rollback instructions.",
+        "promptTokens": 5017,
+        "completionTokens": 349,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "scoped": true
+        }
+      },
+      {
+        "caseId": "boundary-ref--langfuse-macos-explanation-only",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "The transcript provides a very brief, high-level overview of deploying Langfuse on macOS (Docker Desktop, memory, port 3000, volume mounting, Apple Silicon compatibility) and a simple port conflict resolution.\n\nEvaluation against the net-value gate:\n1.  **Reuse**: Deploying Langfuse is a recurring task, but the advice given is generic Docker knowledge (port mapping, volumes) rather than Langfuse-specific intricacies.\n2.  **Evidence**: The conversation is purely advisory (\"先不要执行\" - do not execute yet). There is no verified outcome, no specific configuration file content, no error logs resolved, and no successful deployment demonstrated. It's hypothetical advice.\n3.  **Savings**: The information provided (use Docker, map ports, mount volumes) is standard Docker practice and does not save significant exploration steps for someone familiar with Docker. It doesn't encode any non-obvious branch or durable context specific to this user's environment.\n4.  **Safety**: No safety issues.\n5.  **Novelty**: This is common knowledge for Docker users. It does not constitute a unique SOP or durable preference.\n\nSince there is no executed workflow, no verified result, and the advice is generic Docker knowledge rather than a specific, validated procedure for Langfuse, it does not meet the threshold for creating a skill.\n\nNothing to save.",
+        "promptTokens": 3279,
+        "completionTokens": 297,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "boundary-ref--langfuse-unfinished",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3233,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "boundary-ref--nginx-config-advice",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3165,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "boundary-ref--redis-replica-intermediate",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "The transcript shows an attempt to configure a Redis replica, but the synchronization check failed (`master_link_status:down`). The assistant identified that the task is incomplete and requires further troubleshooting (firewall, authentication).\n\nAccording to the guidelines:\n1.  **Evidence**: The transcript demonstrates a failure state, not a verified successful outcome. \"Never turn an unresolved failure or guess into a successful SOP.\"\n2.  **Savings**: While the commands are standard, the specific resolution for the `down` status is missing. Creating a skill based on this partial execution would be incomplete and potentially misleading without the actual fix.\n\nTherefore, no skill should be created from this unresolved interaction.\n\nNothing to save.",
+        "promptTokens": 3261,
+        "completionTokens": 157,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "boundary-ref--redis-auth-failed",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "The transcript shows an attempt to set up a Redis ACL user and verify it. However, the verification step failed (`WRONGPASS invalid username-password pair`), and the assistant explicitly stated that the process is incomplete (\"当前流程未完成\").\n\nAccording to the Net-value gate:\n- **Evidence**: The transcript demonstrates a failure, not a verified outcome. The rule states: \"Never turn an unresolved failure or guess into a successful SOP.\"\n- **Savings**: Since the procedure wasn't completed successfully, there is no proven workflow to save.\n\nTherefore, no skill should be created.\n\nNothing to save.",
+        "promptTokens": 3259,
+        "completionTokens": 138,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "background-port-only",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3111,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "secret-only",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 1532,
+        "completionTokens": 4,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "private-key",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3123,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "trivial-command",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3125,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "social-ack",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 1525,
+        "completionTokens": 4,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "unsafe-unbounded-delete",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3181,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "duplicate-existing",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 5059,
+        "completionTokens": 47,
+        "quality": 0,
+        "qualityChecks": {}
+      }
+    ]
+  }
+}

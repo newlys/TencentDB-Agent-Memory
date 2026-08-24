@@ -1968,7 +1968,7 @@ export class TdaiGateway {
     skillCore: SkillCoreType,
     instanceId: string,
   ): Promise<SkillExtractorClass> {
-    const { SKILL_REVIEW_PROMPT } = await import("../core/skill/index.js");
+    const { SKILL_REVIEW_PROMPT, SKILL_REVIEW_PROMPT_V3, SKILL_REVIEW_PROMPT_V4 } = await import("../core/skill/index.js");
     const { StandaloneLLMRunner } = await import("../adapters/standalone/llm-runner.js");
     const { resolveStandaloneLlmForRuntime, LlmProviderResolveError } = await import("../adapters/standalone/llm-provider-resolver.js");
 
@@ -2003,7 +2003,11 @@ export class TdaiGateway {
     return new SkillExtractorClass({
       core: skillCore,
       runner: llmRunner,
-      systemPrompt: SKILL_REVIEW_PROMPT,
+      systemPrompt: cfg?.extraction.reviewPromptProfile === "balanced_v4"
+        ? SKILL_REVIEW_PROMPT_V4
+        : cfg?.extraction.reviewPromptProfile === "precision_v3"
+          ? SKILL_REVIEW_PROMPT_V3
+          : SKILL_REVIEW_PROMPT,
       maxIterations: cfg?.extraction.maxIterations ?? 5,
       // 透传 archiveBytes 派生的 head/tail chars + 独立的 maxTokens，
       // 让 skill.extraction.archiveBytes 与 skill.extraction.maxTokens 生效
@@ -2012,6 +2016,7 @@ export class TdaiGateway {
       tailChars: cfg?.extraction.tailChars,
       maxTokens: cfg?.extraction.maxTokens,
       prefixSkillsLimit: cfg?.extraction.prefixSkillsLimit,
+      valueGateProfile: cfg?.extraction.valueGate.profile,
       logger: this.logger,
     } as import("../core/skill/skill-extractor.js").ExtractorOptions);
   }
@@ -2264,7 +2269,7 @@ export class TdaiGateway {
    */
   private buildSkillWireOverrides(): Pick<
     WireConversationAddDeps,
-    "thresholds" | "compressOptions" | "oversizeOptions"
+    "thresholds" | "boundaryConfig" | "compressOptions" | "oversizeOptions"
   > {
     const cfg = this.core.getResolvedSkillConfig();
     if (!cfg) return {};
@@ -2274,6 +2279,7 @@ export class TdaiGateway {
         bytesThreshold: cfg.extraction.bytesThreshold,
         requestCompressThresholdBytes: cfg.extraction.requestCompressThresholdBytes,
       },
+      boundaryConfig: cfg.extraction.trigger,
       compressOptions: {
         toolContentThresholdBytes: cfg.compress.toolContentThresholdBytes,
         headBytes: cfg.compress.headBytes,

@@ -199,6 +199,13 @@ export interface ListingInput extends IdFields {
   query?: string;
   /** char budget for the rendered listing block. Default 8000 in plugin. */
   char_budget?: number;
+  routing_context?: {
+    complexity?: "simple" | "moderate" | "complex";
+    predicted_phases?: Array<"explore" | "implement" | "test" | "debug" | "review">;
+    current_phase?: "explore" | "implement" | "test" | "debug" | "review";
+    recent_actions?: string[];
+    route_cache_hit?: boolean;
+  };
 }
 
 /** Result from /v3/skill/listing. `listing` is the pre-rendered `<available_skills>` block. */
@@ -206,6 +213,7 @@ export interface ListingResult {
   mode: "full" | "search";
   listing: string;
   hits: Array<{ skill_id: string; version: number; name: string }>;
+  diagnostics?: Record<string, unknown>;
 }
 
 /** Core gateway envelope (mirrors `tdai-memory-plugin/src/gateway/v2-router.ts:145-150`). */

@@ -21,6 +21,7 @@ import type {
 import { metricProducer } from "../report/kafka-metric-producer.js";
 import { trace } from "../report/trace.js";
 import { obsLogger } from "../report/obs-logger.js";
+import { evaluateSkillValue, type SkillValueGateProfile } from "./skill-value-gate.js";
 
 const TAG = "[skill-extractor]";
 
@@ -71,6 +72,8 @@ export interface ExtractorOptions {
    * 时不触发额外的 query-gen LLM 调用。
    */
   prefixSkillsLimit?: number;
+  /** Zero-token high-confidence negative filter. Defaults to legacy passthrough. */
+  valueGateProfile?: SkillValueGateProfile;
   logger?: { info(msg: string): void; warn(msg: string): void; error(msg: string): void };
 }
 
@@ -104,6 +107,7 @@ export class SkillExtractor {
   private readonly tailChars: number;
   private readonly maxTokens?: number;
   private readonly prefixSkillsLimit: number;
+  private readonly valueGateProfile: SkillValueGateProfile;
   private readonly logger?: ExtractorOptions["logger"];
 
   constructor(opts: ExtractorOptions) {
@@ -122,6 +126,7 @@ export class SkillExtractor {
     this.prefixSkillsLimit = rawLimit === undefined
       ? 0
       : (Number.isFinite(rawLimit) && rawLimit >= 0 ? Math.floor(rawLimit) : 0);
+    this.valueGateProfile = opts.valueGateProfile ?? "legacy";
     this.logger = opts.logger;
   }
 
@@ -129,6 +134,18 @@ export class SkillExtractor {
     const { messages } = input;
     if (!Array.isArray(messages) || messages.length === 0) {
       throw new Error("ExtractV2: messages must be a non-empty array of ExtractMessage");
+    }
+    const valueGate = evaluateSkillValue(messages, this.valueGateProfile);
+    if (valueGate.decision === "skip") {
+      this.logger?.info(`${TAG} value gate skipped extraction: ${valueGate.signals.join(",")}`);
+      obsLogger.info("skill.extractor.value_gate", {
+        task_id: input.task_id,
+        decision: valueGate.decision,
+        score: valueGate.score,
+        signals: valueGate.signals,
+        msg_count: messages.length,
+      });
+      return { candidates: [], text: "Nothing to save." };
     }
     // [obs] 一次抽取一条汇总事件；LLM 内部 iteration 走 langfuse trace（trace.report
     // → OTel Span → Langfuse SpanProcessor 过滤上报），这里只做「入口→出口」

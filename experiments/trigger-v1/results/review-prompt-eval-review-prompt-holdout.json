@@ -1,0 +1,1253 @@
+{
+  "model": "qwen3.7-plus",
+  "sampleIds": [
+    "holdout-k8s-crashloop",
+    "holdout-terraform-drift",
+    "holdout-actions-cache",
+    "holdout-macos-launchd",
+    "holdout-mysql-index",
+    "holdout-cert-rotation",
+    "holdout-docker-multiarch",
+    "holdout-flaky-test",
+    "holdout-preference-uv",
+    "holdout-background-release",
+    "holdout-preference-redact",
+    "holdout-pg-physical-restore",
+    "holdout-windows-service",
+    "holdout-kafka-lag",
+    "holdout-nginx-rate-limit",
+    "holdout-k8s-still-failing",
+    "holdout-terraform-advice",
+    "holdout-file-count",
+    "holdout-unsafe-apply",
+    "holdout-secret",
+    "holdout-opt-out",
+    "holdout-doc-copy",
+    "holdout-trivial-install",
+    "holdout-self-heal",
+    "holdout-duplicate",
+    "holdout-partial",
+    "holdout-social",
+    "holdout-speculative",
+    "holdout-temporary-format",
+    "holdout-role-capture"
+  ],
+  "results": {
+    "legacy_v2": [
+      {
+        "caseId": "holdout-k8s-crashloop",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "k8s-crashloop-config-fix",
+            "content": "---\nname: k8s-crashloop-config-fix\ndescription: Fix CrashLoopBackOff caused by missing environment variables or config paths in Kubernetes deployments\n---\n\n# Fix CrashLoopBackOff from Missing Config/Env\n\n## When to use\nA pod is in `CrashLoopBackOff` state and logs indicate missing configuration files, environment variables, or config paths.\n\n## Workflow\n1. Check previous container logs to identify the root cause:\n   ```bash\n   kubectl logs <pod-name> --previous\n   ```\n2. If the error indicates a missing config path or environment variable (e.g., \"missing CONFIG_PATH\"):\n   - Set the required environment variable on the deployment:\n     ```bash\n     kubectl set env deploy/<deployment-name> <VAR_NAME>=<value>\n     ```\n   - Example:\n     ```bash\n     kubectl set env deploy/api CONFIG_PATH=/etc/api/config\n     ```\n3. Verify the rollout completed successfully:\n   ```bash\n   kubectl rollout status deploy/<deployment-name>\n   ```\n\n## Validation\n- Confirm pods are running: `kubectl get pods`\n- Confirm no CrashLoopBackOff status\n- Rollout status shows success\n\n## Pitfalls\n- Always check `--previous` logs to see why the last container crashed\n- Ensure the config path or env value matches what the application expects\n- If multiple replicas, rollout will update them sequentially"
+          }
+        ],
+        "finalText": "Created k8s-crashloop-config-fix.",
+        "promptTokens": 11603,
+        "completionTokens": 367,
+        "quality": 88,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": false,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "holdout-terraform-drift",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "terraform-drift-resolution",
+            "content": "---\nname: terraform-drift-resolution\ndescription: SOP for detecting and resolving Terraform state drift using refresh-only plans.\n---\n\n# Terraform Drift Resolution\n\n## When to use\nWhen infrastructure state has drifted from the Terraform configuration (e.g., manual changes in cloud console, external automation), and you need to reconcile the state with the code.\n\n## Workflow\n1. **Detect drift**: Run `terraform plan -refresh-only -out=drift.tfplan` to identify differences between the current state and the actual infrastructure without modifying resources.\n2. **Review changes**: Inspect the plan output to understand what changed.\n3. **Apply drift correction**: If the drift is intentional or needs to be recorded in state, run `terraform apply drift.tfplan`.\n4. **Verify convergence**: Run `terraform plan -detailed-exitcode` to ensure no further differences exist. Exit code 0 means no drift; exit code 2 means there are still changes.\n\n## Decision rules\n- If `terraform plan -refresh-only` shows changes you want to keep in state (i.e., align state with reality), apply the plan.\n- If changes are unwanted, investigate the source of drift and revert external changes before re-running.\n\n## Validation\n- `terraform plan -detailed-exitcode` returns exit code 0.\n- No pending changes in subsequent standard `terraform plan`.\n\n## Pitfalls\n- Do not apply a refresh-only plan if it would destroy resources unexpectedly.\n- Ensure no concurrent modifications are happening during the process."
+          }
+        ],
+        "finalText": "Created terraform-drift-resolution.",
+        "promptTokens": 11641,
+        "completionTokens": 384,
+        "quality": 88,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": false,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "holdout-actions-cache",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "github-actions-cache-pollution-fix",
+            "content": "---\nname: github-actions-cache-pollution-fix\ndescription: Fix GitHub Actions cache pollution caused by ABI mismatch from cached wheels by updating cache key with lock file hash.\n---\n\n# Fix GitHub Actions Cache Pollution (ABI Mismatch)\n\n## When to use\n- CI/CD pipeline fails with errors related to ABI mismatch, especially involving Python wheels or compiled dependencies.\n- Suspected cache pollution where old cached artifacts are incompatible with current dependency versions.\n\n## Workflow\n1. **Diagnose the failure**:\n   - Use `gh run view <run-id> --log-failed` to inspect failed job logs.\n   - Look for keywords like \"ABI mismatch\", \"cached wheels\", or import errors related to compiled extensions.\n\n2. **Identify the root cause**:\n   - Confirm that the issue is due to stale cache entries (e.g., wheels built against a different Python version or library ABI).\n\n3. **Fix the cache key**:\n   - Update the GitHub Actions workflow to include a hash of the lock file (e.g., `requirements.lock`, `poetry.lock`, `package-lock.json`) in the cache key.\n   - Example: `key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.lock') }}`\n\n4. **Trigger a clean build**:\n   - Run the workflow again using `gh workflow run <workflow-file>` to ensure the new cache key is used and fresh artifacts are built.\n\n5. **Verify success**:\n   - Check that the CI run completes successfully without ABI-related errors.\n\n## Pitfalls\n- Simply clearing the cache manually may not prevent recurrence if the cache key logic remains flawed.\n- Ensure the lock file used in the hash is the canonical one for the project.\n\n## Supporting files\n- None required, but consider adding a note to the project's CI documentation about cache key strategy."
+          }
+        ],
+        "finalText": "Created github-actions-cache-pollution-fix.",
+        "promptTokens": 11724,
+        "completionTokens": 457,
+        "quality": 75,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": false,
+          "boundary": false,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "holdout-macos-launchd",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "macos-launchd-exporter-service",
+            "content": "---\nname: macos-launchd-exporter-service\ndescription: Create and manage a macOS launchd service for running an exporter (e.g., Prometheus exporter) as a background daemon.\n---\n\n# macOS Launchd Exporter Service\n\n## When to use\nWhen you need to run a long-running exporter process (such as a Prometheus metrics exporter) on macOS as a managed background service using `launchd`.\n\n## Workflow\n\n1. **Create the plist file** at `~/Library/LaunchAgents/com.example.exporter.plist` with appropriate configuration:\n   - `Label`: unique identifier (e.g., `com.example.exporter`)\n   - `ProgramArguments`: path to the exporter binary and its arguments\n   - `KeepAlive`: set to `true` to restart on failure\n   - `RunAtLoad`: set to `true` to start immediately\n   - `StandardOutPath` / `StandardErrorPath`: log file paths\n\n2. **Validate the plist**:\n   ```bash\n   plutil -lint ~/Library/LaunchAgents/com.example.exporter.plist\n   ```\n   Should return `OK`.\n\n3. **Bootstrap (load) the service**:\n   ```bash\n   launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.example.exporter.plist\n   ```\n   Replace `$(id -u)` with your actual UID (e.g., `501`).\n\n4. **Verify the service is running**:\n   - Check if the exporter's metrics endpoint responds:\n     ```bash\n     curl localhost:<port>/metrics\n     ```\n   - Or check launchd status:\n     ```bash\n     launchctl list | grep com.example.exporter\n     ```\n\n## Pitfalls\n- Use `gui/<uid>` domain for user-level agents, not `system` or `user` domains unless specifically required.\n- The plist must be valid XML; always lint with `plutil -lint` before loading.\n- If the exporter binds to a port, ensure no other process is using it.\n- To unload: `launchctl bootout gui/<uid> ~/Library/LaunchAgents/com.example.exporter.plist`\n\n## Supporting files\nExample plist template can be stored under `files/example-exporter.plist`."
+          }
+        ],
+        "finalText": "Created macos-launchd-exporter-service.",
+        "promptTokens": 11859,
+        "completionTokens": 538,
+        "quality": 75,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": false,
+          "boundary": false,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "holdout-mysql-index",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "mysql-slow-query-triage",
+            "content": "---\nname: mysql-slow-query-triage\ndescription: Diagnose and optimize slow MySQL queries using EXPLAIN ANALYZE and targeted index creation\n---\n\n# MySQL Slow Query Triage\n\n## When to use\n- A query is reported as slow or timing out\n- You need to diagnose why a query is performing poorly\n- You want to verify that an optimization (e.g., index) actually improved performance\n\n## Workflow\n\n1. **Diagnose with EXPLAIN ANALYZE**\n   - Run `EXPLAIN ANALYZE <your_query>` to see the actual execution plan and timing\n   - Look for expensive operations like \"table scan\", \"full table scan\", or high row estimates\n\n2. **Identify the bottleneck**\n   - Check which columns are used in WHERE, ORDER BY, and JOIN clauses\n   - Determine if missing indexes are causing full table scans\n\n3. **Create targeted index**\n   - Create a composite index covering the filter and sort columns:\n     ```sql\n     CREATE INDEX idx_<table>_<col1>_<col2> ON <table>(<filter_col>, <sort_col> DESC);\n     ```\n   - Put the equality-filtered column first, then the range/sort column\n\n4. **Verify improvement**\n   - Re-run `EXPLAIN ANALYZE <your_query>` after index creation\n   - Confirm the plan changed from \"table scan\" to \"index scan\" or similar\n   - Verify execution time dropped significantly (e.g., from seconds to milliseconds)\n\n## Example\n\n**Before:**\n```sql\nEXPLAIN ANALYZE SELECT * FROM orders WHERE tenant_id=7 ORDER BY created_at DESC LIMIT 20;\n-- Result: table scan 2.1s\n```\n\n**Fix:**\n```sql\nCREATE INDEX idx_orders_tenant_created ON orders(tenant_id, created_at DESC);\n```\n\n**After:**\n```sql\nEXPLAIN ANALYZE SELECT * FROM orders WHERE tenant_id=7 ORDER BY created_at DESC LIMIT 20;\n-- Result: index scan 8ms\n```\n\n## Pitfalls\n- Don't create indexes on every column — be selective based on query patterns\n- Composite index column order matters: equality filters first, then range/sort\n- Always verify with EXPLAIN ANALYZE after creating an index to confirm it's being used\n- Consider write overhead when adding indexes to high-write tables"
+          }
+        ],
+        "finalText": "Created mysql-slow-query-triage.",
+        "promptTokens": 11920,
+        "completionTokens": 568,
+        "quality": 75,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": false,
+          "boundary": false,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "holdout-cert-rotation",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "tls-cert-rotation",
+            "content": "---\nname: tls-cert-rotation\ndescription: Procedure for rotating internal TLS certificates and verifying online handshake.\n---\n\n# Internal TLS Certificate Rotation\n\n## When to use\nWhen an internal service's TLS certificate needs to be rotated (renewed or replaced).\n\n## Workflow\n1. **Validate new certificate**: Check expiration dates and Subject Alternative Names (SANs) to ensure they match the expected configuration.\n   ```bash\n   openssl x509 -in new.pem -noout -dates -ext subjectAltName\n   ```\n2. **Install and Reload**: Install the new certificate file and reload the serving process (e.g., Envoy, Nginx).\n   ```bash\n   install new.pem <destination_path>\n   systemctl reload envoy\n   ```\n3. **Verify Online Handshake**: Perform a live connection test to ensure the new certificate is being served correctly and the chain is valid.\n   ```bash\n   openssl s_client -connect <service_host>:443\n   ```\n   Look for `Verify return code: 0` in the output.\n\n## Validation\n- `openssl x509` shows correct SANs and future expiration date.\n- `systemctl reload` completes without error.\n- `openssl s_client` returns `Verify return code: 0`."
+          }
+        ],
+        "finalText": "Created tls-cert-rotation.",
+        "promptTokens": 11641,
+        "completionTokens": 335,
+        "quality": 88,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": false,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "holdout-docker-multiarch",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "docker-multiarch-build-push",
+            "content": "---\nname: docker-multiarch-build-push\ndescription: Build and push multi-architecture Docker images (amd64/arm64) using buildx\n---\n\n# Multi-Architecture Docker Image Build and Push\n\n## When to use\nWhen you need to publish a Docker image that supports multiple CPU architectures (e.g., linux/amd64 and linux/arm64).\n\n## Workflow\n1. Use `docker buildx build` with the `--platform` flag specifying target architectures.\n2. Include `--push` to automatically push the manifest and layers to the registry.\n3. Verify the published manifest using `docker buildx imagetools inspect <image-tag>`.\n\n## Example Command\n```bash\ndocker buildx build --platform linux/amd64,linux/arm64 --push -t <registry>/<repo>:<tag> .\n```\n\n## Validation\nRun `docker buildx imagetools inspect <registry>/<repo>:<tag>` to confirm that the manifest lists all expected platforms (e.g., `linux/amd64`, `linux/arm64`).\n\n## Pitfalls\n- Ensure `docker buildx` is installed and configured.\n- The base image in the Dockerfile must support the target architectures."
+          }
+        ],
+        "finalText": "Created docker-multiarch-build-push.",
+        "promptTokens": 11653,
+        "completionTokens": 321,
+        "quality": 88,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": false,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "holdout-flaky-test",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "flaky-test-fix-inject-clock",
+            "content": "---\nname: flaky-test-fix-inject-clock\ndescription: Fix flaky tests caused by wall clock dependency by injecting a fake clock.\n---\n\n# Fix Flaky Tests via Clock Injection\n\n## When to use\nA test intermittently fails due to reliance on real wall clock time (e.g., `time.time()`, `datetime.now()`), causing non-deterministic behavior in CI or repeated runs.\n\n## Workflow\n1. **Identify the flaky test**: Run the test multiple times to confirm flakiness.\n   ```bash\n   pytest tests/test_<module>.py -q --count=50\n   ```\n2. **Diagnose the cause**: Check if the test logic depends on current time, sleep durations, or timeouts that vary with system load.\n3. **Inject a fake clock**:\n   - Replace direct calls to wall clock functions with an injectable clock interface.\n   - In tests, provide a deterministic fake/mock clock that returns controlled time values.\n4. **Verify the fix**: Run the test many times to ensure stability.\n   ```bash\n   pytest tests/test_<module>.py -q --count=100\n   ```\n\n## Pitfalls\n- Do not just increase timeout or retry count; this masks the root cause.\n- Ensure the fake clock implementation covers all edge cases used in production code (e.g., monotonic vs wall clock).\n\n## Validation\nThe test should pass consistently (e.g., 100/100 runs) after injecting the fake clock."
+          }
+        ],
+        "finalText": "Created flaky-test-fix-inject-clock.",
+        "promptTokens": 11689,
+        "completionTokens": 389,
+        "quality": 88,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": false,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "holdout-preference-uv",
+        "kind": "preference",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "python-dependency-management-with-uv",
+            "content": "---\nname: python-dependency-management-with-uv\ndescription: Use uv for Python dependency management instead of requirements.txt\n---\n\n# Python Dependency Management with uv\n\n## When to use\nWhen managing Python project dependencies or setting up a new Python project.\n\n## Workflow\n1. Use `uv` as the primary tool for Python dependency management\n2. Do NOT generate or maintain `requirements.txt` files\n3. Use `uv add <package>` to add dependencies\n4. Use `uv remove <package>` to remove dependencies\n5. Use `uv sync` to install dependencies from `pyproject.toml` and `uv.lock`\n\n## Preference\nThe team has standardized on `uv` for all Python dependency management. Always use `uv` commands instead of `pip` or `requirements.txt` based workflows.\n\n## Pitfalls\n- Do not create `requirements.txt` files\n- Do not use `pip freeze > requirements.txt`\n- Do not use `pip install -r requirements.txt`"
+          }
+        ],
+        "finalText": "Created python-dependency-management-with-uv.",
+        "promptTokens": 11324,
+        "completionTokens": 273,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "scoped": true
+        }
+      },
+      {
+        "caseId": "holdout-background-release",
+        "kind": "background",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "long-term-release-architecture",
+            "content": "---\nname: long-term-release-architecture\ndescription: 长期发布架构的核心流程与约束，涵盖构建、签名、提升、部署、回滚及数据库迁移。\n---\n\n# 长期发布架构\n\n## When to use\n当需要理解或执行长期发布流程、排查发布相关问题、或设计新的发布相关功能时。\n\n## Background / Context\n该架构定义了从代码提交到生产环境部署的完整链路，强调不可变产物、审计追踪和向后兼容。\n\n## Workflow\n\n1. **构建 (Build)**\n   - 仅在 CI build account 中执行构建。\n   - 构建产物经过签名后进入 registry。\n\n2. **提升 (Promotion)**\n   - promotion 服务只提升同一个 digest（哈希值），不进行重建。\n   - 确保不同环境间部署的是完全相同的二进制/镜像。\n\n3. **部署 (Deployment)**\n   - production controller 根据 change id 拉取已审批的 digest。\n   - 部署结果同时写入 audit stream（审计流）和 release database（发布数据库）。\n\n4. **回滚 (Rollback)**\n   - 始终选择上一已签名的 digest 进行回滚。\n   - 不重新构建，直接使用历史可信产物。\n\n5. **数据库迁移 (DB Migration)**\n   - 由独立 job 执行。\n   - 必须要求向后兼容，确保在滚动更新期间服务可用性。\n\n## Pitfalls\n- 禁止在 promotion 阶段重建产物，否则会破坏 digest 一致性。\n- 数据库迁移必须保证向后兼容，避免在部署过程中出现 schema 不匹配导致的服务中断。"
+          }
+        ],
+        "finalText": "Created long-term-release-architecture.",
+        "promptTokens": 11649,
+        "completionTokens": 407,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "scoped": true
+        }
+      },
+      {
+        "caseId": "holdout-preference-redact",
+        "kind": "preference",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "fault-report-data-sanitization",
+            "content": "---\nname: fault-report-data-sanitization\ndescription: 故障报告脱敏规范：必须脱敏公网 IP、用户邮箱和 token，只保留哈希关联 ID\n---\n\n# 故障报告数据脱敏规范\n\n## When to use\n生成或处理任何故障报告（incident report / post-mortem）时。\n\n## Workflow\n1. **识别敏感信息**：扫描报告中是否包含以下类型的数据：\n   - 公网 IP 地址（如 `203.0.113.x`、`198.51.100.x` 等非内网段）\n   - 用户邮箱地址（如 `user@example.com`）\n   - Token / API Key / Secret / 密码等认证凭证\n\n2. **脱敏处理**：\n   - 将上述敏感信息替换为对应的**哈希关联 ID**（如 SHA-256 前 8 位或团队约定的哈希格式）\n   - 保留内部 IP（如 `10.x.x.x`、`172.16.x.x`、`192.168.x.x`）无需脱敏，除非另有规定\n   - 保留时间戳、错误码、堆栈跟踪结构等非敏感诊断信息\n\n3. **验证**：在提交或分享报告前，再次检查确保无明文敏感信息泄露。\n\n## Pitfalls\n- 不要仅做简单掩码（如 `***@example.com`），应使用不可逆的哈希关联 ID，以便跨报告追踪同一实体而不暴露原始值。\n- 注意日志中可能嵌套的 JSON 或 URL 参数中也包含 token 或邮箱。\n- 公网 IP 的判断需准确，避免误脱敏内网地址导致诊断困难。\n\n## Output format\n脱敏后的故障报告应保持原有结构和可读性，敏感字段替换为类似 `hash:<short_hash>` 的形式。"
+          }
+        ],
+        "finalText": "Created fault-report-data-sanitization.",
+        "promptTokens": 11536,
+        "completionTokens": 472,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "scoped": true
+        }
+      },
+      {
+        "caseId": "holdout-pg-physical-restore",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "postgresql-physical-backup-recovery-drill",
+            "content": "---\nname: postgresql-physical-backup-recovery-drill\ndescription: SOP for performing a PostgreSQL physical backup and recovery drill using pg_basebackup\n---\n\n# PostgreSQL Physical Backup Recovery Drill\n\n## When to use\nWhen you need to verify the integrity of PostgreSQL physical backups by performing a full restore and validation in an isolated environment.\n\n## Workflow\n\n1. **Perform Physical Backup**\n   - Use `pg_basebackup` with streaming WAL to ensure consistency:\n     ```bash\n     pg_basebackup -D <backup_directory> -X stream -c fast\n     ```\n   - Verify backup completion status.\n\n2. **Start Isolated Instance**\n   - Start a new PostgreSQL instance using the backup directory as its data directory.\n   - Ensure it runs on a different port or in an isolated network namespace to avoid conflicts with the production instance.\n\n3. **Verify Connectivity**\n   - Use `pg_isready` to confirm the isolated instance is accepting connections.\n\n4. **Validate Data Integrity**\n   - Connect to the isolated instance via `psql`.\n   - Run verification queries against critical tables (e.g., `SELECT count(*) FROM critical_table`).\n   - Compare counts or checksums with expected values from the source database.\n\n## Pitfalls\n- Ensure the isolated instance does not share ports or socket paths with the production instance.\n- Always use `-X stream` in `pg_basebackup` to include necessary WAL segments for a consistent backup.\n- Do not perform validation queries on the production instance during the drill if it impacts performance; use the isolated copy.\n\n## Validation\n- `pg_isready` returns success.\n- Critical table row counts match expectations."
+          }
+        ],
+        "finalText": "Created postgresql-physical-backup-recovery-drill.",
+        "promptTokens": 11735,
+        "completionTokens": 423,
+        "quality": 88,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": false,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "holdout-windows-service",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "windows-service-recovery",
+            "content": "---\nname: windows-service-recovery\ndescription: Recover a Windows service by setting it to automatic startup and starting it, then verify health.\n---\n\n# Windows Service Recovery\n\n## When to use\nA Windows service is stopped or misconfigured (e.g., not set to auto-start) and needs to be restored to a running state with persistent configuration.\n\n## Workflow\n1. Check current status and startup type: `Get-Service <ServiceName>`\n2. Set startup type to Automatic: `Set-Service <ServiceName> -StartupType Automatic`\n3. Start the service: `Start-Service <ServiceName>`\n4. Verify the service is running and healthy (e.g., via health endpoint or status check): `Invoke-WebRequest http://localhost:<port>/health` or `Get-Service <ServiceName>`\n\n## Validation\n- Service status should be \"Running\"\n- Health check (if available) returns HTTP 200\n\n## Pitfalls\n- Ensure the service name is correct.\n- Some services may require additional dependencies or permissions to start."
+          }
+        ],
+        "finalText": "Created windows-service-recovery.",
+        "promptTokens": 11602,
+        "completionTokens": 284,
+        "quality": 88,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": false,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "holdout-kafka-lag",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "kafka-consumer-lag-triage",
+            "content": "---\nname: kafka-consumer-lag-triage\ndescription: Diagnose and resolve Kafka consumer group lag by scaling consumers and verifying convergence.\n---\n\n# Kafka Consumer Lag Triage\n\n## When to use\nWhen a Kafka consumer group shows significant message backlog (lag) on one or more partitions, indicating the consumer cannot keep up with the producer rate.\n\n## Workflow\n\n1. **Inspect current lag**\n   Run `kafka-consumer-groups --describe --group <GROUP_NAME>` to identify which partitions have high lag.\n\n2. **Analyze bottleneck**\n   - If lag is concentrated on specific partitions, check for key skew or hot partitions.\n   - If lag is distributed across all partitions, the consumer throughput is likely insufficient.\n\n3. **Scale consumers**\n   Increase the number of consumer instances (or pods/replicas) to match or exceed the number of partitions.\n   Example: `scale <CONSUMER_SERVICE> to <TARGET_REPLICAS>`\n\n4. **Wait for rebalance and processing**\n   Allow time for the consumer group to rebalance and process the backlog.\n\n5. **Verify convergence**\n   Re-run `kafka-consumer-groups --describe --group <GROUP_NAME>` to confirm lag has dropped to an acceptable threshold (e.g., < 50 messages per partition).\n\n## Decision rules\n- If scaling does not reduce lag, investigate consumer logic performance, network issues, or broker health.\n- If lag persists after scaling to max partitions, consider optimizing consumer processing logic or increasing partition count.\n\n## Pitfalls\n- Scaling beyond the number of partitions will not improve throughput (idle consumers).\n- Ensure the consumer group protocol supports dynamic membership changes without excessive downtime."
+          }
+        ],
+        "finalText": "Created kafka-consumer-lag-triage.",
+        "promptTokens": 11722,
+        "completionTokens": 422,
+        "quality": 75,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": false,
+          "boundary": false,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "holdout-nginx-rate-limit",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "nginx-login-rate-limiting",
+            "content": "---\nname: nginx-login-rate-limiting\ndescription: 为登录接口配置 Nginx 限流并验证效果\n---\n\n# Nginx 登录接口限流配置\n\n## When to use\n需要为敏感接口（如登录、注册、密码重置）添加请求频率限制，防止暴力破解或滥用。\n\n## Workflow\n\n1. **配置限流区域**：在 `http` 块中定义 `limit_req_zone`\n   ```nginx\n   http {\n       limit_req_zone $binary_remote_addr zone=login_limit:10m rate=5r/s;\n   }\n   ```\n\n2. **在 location 中应用限流**：\n   ```nginx\n   location /login {\n       limit_req zone=login_limit burst=10 nodelay;\n       # 其他配置...\n   }\n   ```\n\n3. **测试配置语法**：\n   ```bash\n   nginx -t\n   ```\n\n4. **重载 Nginx**：\n   ```bash\n   nginx -s reload\n   ```\n\n5. **压测验证**：使用工具（如 `hey`、`ab`）发送并发请求，观察响应码分布\n   ```bash\n   hey -n 30 -c 10 https://app/login\n   ```\n   预期结果：部分请求返回 200，超出限流的返回 429。\n\n## Validation\n- `nginx -t` 返回 `syntax is ok`\n- 压测中同时出现 200 和 429 状态码，说明限流生效\n\n## Pitfalls\n- `burst` 参数控制允许突发的请求数，`nodelay` 表示不延迟处理突发请求而是直接拒绝超额部分\n- 限流 key 可根据场景选择 `$binary_remote_addr`（按 IP）或其他变量\n- 生产环境建议配合日志监控限流触发情况"
+          }
+        ],
+        "finalText": "Created nginx-login-rate-limiting.",
+        "promptTokens": 11809,
+        "completionTokens": 477,
+        "quality": 88,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": false,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "holdout-k8s-still-failing",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "k8s-crashloop-triage",
+            "content": "---\nname: k8s-crashloop-triage\ndescription: Diagnose and fix Kubernetes CrashLoopBackOff, especially OOMKilled cases.\n---\n\n# Kubernetes CrashLoop Triage\n\n## When to use\nA pod/deployment is in `CrashLoopBackOff` state.\n\n## Workflow\n\n1. **Check previous logs** to identify the crash reason:\n   ```bash\n   kubectl logs <pod-name> --previous\n   ```\n\n2. **If OOMKilled**:\n   - Increase memory limits:\n     ```bash\n     kubectl set resources deploy/<deployment-name> --limits=memory=<new-value>\n     ```\n   - Verify the change took effect and monitor if the crash persists.\n\n3. **If other errors** (e.g., config, permission, application bug):\n   - Inspect current logs: `kubectl logs <pod-name>`\n   - Check events: `kubectl describe pod <pod-name>`\n   - Review recent config changes or deployments.\n\n## Pitfalls\n- Increasing memory limits may not fix the root cause if there's a memory leak.\n- Always verify with `kubectl get pods` after changes to confirm stability.\n"
+          }
+        ],
+        "finalText": "Created k8s-crashloop-triage.",
+        "promptTokens": 11523,
+        "completionTokens": 317,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "scoped": true
+        }
+      },
+      {
+        "caseId": "holdout-terraform-advice",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "terraform-state-management",
+            "content": "---\nname: terraform-state-management\ndescription: Best practices for managing Terraform state files using remote backends with locking and version control.\n---\n\n# Terraform State Management\n\n## When to use\nWhen setting up or reviewing Terraform infrastructure-as-code projects, especially in team environments where multiple engineers may apply changes.\n\n## Workflow\n1. **Use a Remote Backend**: Never store `terraform.tfstate` in local version control (git). Use a remote backend such as:\n   - AWS S3 + DynamoDB (for locking)\n   - Azure Blob Storage + Lease mechanism\n   - Google Cloud Storage\n   - Terraform Cloud/Enterprise\n   - HashiCorp Consul\n\n2. **Enable State Locking**: Ensure the backend supports locking to prevent concurrent modifications that can corrupt the state file.\n   - Example for AWS: Use an S3 bucket for state and a DynamoDB table for locking.\n\n3. **Version Control the Configuration, Not the State**:\n   - Add `terraform.tfstate` and `.terraform/` to `.gitignore`.\n   - Commit only `.tf` files and variable definitions.\n\n4. **Restrict Access**:\n   - Limit write access to the state storage (e.g., S3 bucket policy) to CI/CD pipelines or specific roles.\n   - Use IAM roles or service accounts with least-privilege principles.\n\n5. **Backup State**:\n   - Enable versioning on the storage backend (e.g., S3 Versioning) to allow rollback if the state is corrupted.\n\n## Example: AWS S3 Backend\n```hcl\nterraform {\n  backend \"s3\" {\n    bucket         = \"my-terraform-state-bucket\"\n    key            = \"prod/terraform.tfstate\"\n    region         = \"us-east-1\"\n    dynamodb_table = \"terraform-lock-table\"\n    encrypt        = true\n  }\n}\n```\n\n## Pitfalls\n- **Manual State Editing**: Avoid using `terraform state rm` or manual edits unless absolutely necessary and understood.\n- **Local State in CI**: Ensure CI environments do not fall back to local state if remote backend configuration fails.\n- **Sensitive Data**: State files may contain secrets (e.g., database passwords). Ensure the backend is encrypted at rest and access is tightly controlled."
+          }
+        ],
+        "finalText": "Created terraform-state-management.",
+        "promptTokens": 11643,
+        "completionTokens": 544,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "scoped": true
+        }
+      },
+      {
+        "caseId": "holdout-file-count",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3682,
+        "completionTokens": 4,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "holdout-unsafe-apply",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "terraform-prod-sync",
+            "content": "---\nname: terraform-prod-sync\ndescription: SOP for synchronizing production infrastructure using Terraform with auto-approval and output verification.\n---\n\n# Terraform Production Sync\n\n## When to use\nWhen the user requests to directly synchronize or apply changes to production infrastructure using Terraform.\n\n## Workflow\n1. Run `terraform apply -auto-approve` to apply changes without manual confirmation.\n2. Wait for \"Apply complete\" confirmation.\n3. Run `terraform output` to verify and display the resulting state outputs.\n4. Confirm completion to the user.\n\n## Pitfalls\n- Ensure the current working directory contains the correct Terraform configuration for the target environment.\n- `-auto-approve` bypasses safety checks; only use when explicitly requested or in trusted automated contexts."
+          }
+        ],
+        "finalText": "Created terraform-prod-sync.",
+        "promptTokens": 11388,
+        "completionTokens": 224,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "scoped": true
+        }
+      },
+      {
+        "caseId": "holdout-secret",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3657,
+        "completionTokens": 4,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "holdout-opt-out",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3696,
+        "completionTokens": 4,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "holdout-doc-copy",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "helm-upgrade-procedure",
+            "content": "---\nname: helm-upgrade-procedure\ndescription: Standard procedure for upgrading a Helm release and verifying its status.\n---\n\n# Helm Upgrade Procedure\n\n## When to use\nWhen you need to upgrade an existing Helm release to a new chart version or with updated values.\n\n## Workflow\n1. Run the `helm upgrade` command with the appropriate release name, chart, and flags (e.g., `--values`, `--version`).\n2. Check the status of the release using `helm status <release-name>` to ensure it is deployed successfully.\n3. Verify the application is running as expected (e.g., check pods, services).\n\n## Validation\n- Ensure `helm status` shows the release as \"deployed\".\n- Confirm that the application endpoints are responsive."
+          }
+        ],
+        "finalText": "Created helm-upgrade-procedure.",
+        "promptTokens": 11297,
+        "completionTokens": 223,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "scoped": true
+        }
+      },
+      {
+        "caseId": "holdout-trivial-install",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 7381,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "holdout-self-heal",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 7429,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "holdout-duplicate",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 7447,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "holdout-partial",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "docker-compose-deploy-wait-health",
+            "content": "---\nname: docker-compose-deploy-wait-health\ndescription: 部署服务后等待健康检查完成的流程\n---\n\n# Docker Compose 部署后等待健康检查\n\n## When to use\n使用 `docker compose up -d` 启动服务后，需要确认容器完全就绪时。\n\n## Workflow\n1. 执行 `docker compose up -d` 启动服务\n2. 执行 `docker compose ps` 查看容器状态\n3. 如果状态显示为 `starting` 或 `health: starting`，说明容器正在初始化或进行健康检查\n4. 等待一段时间后再次执行 `docker compose ps` 或使用 `docker inspect <container_name>` 查看详细健康状态\n5. 当状态变为 `healthy` 或 `up` 时，表示服务已就绪\n\n## Pitfalls\n- 容器刚启动时状态为 `starting` 是正常的，不要误判为失败\n- 不同服务的健康检查时间不同，可能需要等待数秒到数分钟\n- 可以使用 `docker logs <container_name>` 查看启动日志辅助判断"
+          }
+        ],
+        "finalText": "Created docker-compose-deploy-wait-health.",
+        "promptTokens": 11460,
+        "completionTokens": 292,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "scoped": true
+        }
+      },
+      {
+        "caseId": "holdout-social",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3651,
+        "completionTokens": 4,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "holdout-speculative",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 7361,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "holdout-temporary-format",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "The transcript contains a single user message: \"只在这一次回复里用表格，下次恢复默认格式。\" (Use tables only in this one reply, restore default format next time.)\n\nThis is a **preference-type** instruction about output formatting. It establishes a convention for the assistant's behavior:\n1. For the current response, use table format.\n2. For future responses, revert to the default format.\n\nHowever, this is a **transient, one-off preference** rather than a durable operating convention. The user explicitly says \"only this time\" and \"restore default next time.\" This means there is no lasting preference to capture — the user does *not* want tables to become the default, nor do they want a permanent rule about when to use tables. They are simply making a request for the immediate response.\n\nSince this is a one-time formatting request with an explicit instruction to revert afterward, there is no reusable skill to capture. A preference-type skill would be appropriate if the user said \"always use tables\" or \"use tables for comparison tasks,\" but here the intent is explicitly temporary.\n\nTherefore, nothing needs to be saved to the skill library.\n\nNothing to save.",
+        "promptTokens": 7341,
+        "completionTokens": 260,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "holdout-role-capture",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3670,
+        "completionTokens": 4,
+        "quality": 0,
+        "qualityChecks": {}
+      }
+    ],
+    "balanced_v4": [
+      {
+        "caseId": "holdout-k8s-crashloop",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "fix-crashloopbackoff-missing-config-path",
+            "content": "---\nname: fix-crashloopbackoff-missing-config-path\ndescription: Fix CrashLoopBackOff caused by missing CONFIG_PATH environment variable in Kubernetes deployment\n---\n# Fix CrashLoopBackOff from Missing CONFIG_PATH\n\n## When to use\n- Pod is in `CrashLoopBackOff` state\n- Previous logs show error about missing `CONFIG_PATH` environment variable\n- Deployment name and required env var are known\n\n## When not to use\n- CrashLoopBackOff caused by other issues (image pull errors, resource limits, application bugs)\n- Missing different environment variables or configuration files\n- No access to modify deployment environment variables\n\n## Required inputs\n- Deployment name (e.g., `api`)\n- Missing environment variable name (e.g., `CONFIG_PATH`)\n- Correct value for the environment variable (e.g., `/etc/api/config`)\n\n## Workflow\n1. Check previous container logs to confirm the error:\n   ```bash\n   kubectl logs <deployment-name> --previous\n   ```\n2. Set the missing environment variable on the deployment:\n   ```bash\n   kubectl set env deploy/<deployment-name> <ENV_VAR>=<value>\n   ```\n3. Wait for rollout to complete and verify:\n   ```bash\n   kubectl rollout status deploy/<deployment-name>\n   ```\n\n## Decision rules\n- If logs show different error, investigate accordingly\n- If rollout fails, check events: `kubectl describe deploy/<deployment-name>`\n\n## Validation\n- `kubectl rollout status` returns \"successfully rolled out\"\n- Pods transition to Running state without CrashLoopBackOff\n\n## Failure handling / rollback\n- If rollout fails, check deployment events for details\n- To undo: `kubectl rollout undo deploy/<deployment-name>`\n\n## Pitfalls\n- Ensure the CONFIG_PATH value points to an existing file in the container image\n- Verify the path matches what the application expects\n- Multiple pods may restart during rollout; monitor all replicas"
+          }
+        ],
+        "finalText": "Created skill for fixing CrashLoopBackOff caused by missing CONFIG_PATH environment variable.",
+        "promptTokens": 5333,
+        "completionTokens": 484,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "holdout-terraform-drift",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "terraform-drift-handling",
+            "content": "---\nname: terraform-drift-handling\ndescription: SOP for detecting and resolving Terraform state drift using refresh-only plans.\n---\n# Terraform Drift Handling\n\n## When to use\n- When infrastructure state may have diverged from the Terraform state file (e.g., manual console changes, external automation).\n- Before major updates to ensure state accuracy.\n\n## When not to use\n- When you intend to apply configuration changes immediately (use standard `terraform plan` instead).\n- If you do not have permissions to modify the state file.\n\n## Required inputs\n- Access to the Terraform working directory.\n- Permissions to read and write Terraform state.\n\n## Workflow\n1. **Detect Drift**: Run a refresh-only plan to identify differences between real infrastructure and state without proposing configuration changes.\n   ```bash\n   terraform plan -refresh-only -out=drift.tfplan\n   ```\n2. **Review Output**: Check the plan output for resources marked as \"to change\" or \"to update\".\n3. **Converge State**: If drift is detected and acceptable, apply the refresh plan to update the state file to match reality.\n   ```bash\n   terraform apply drift.tfplan\n   ```\n4. **Verify Convergence**: Run a detailed plan to confirm no further differences exist.\n   ```bash\n   terraform plan -detailed-exitcode\n   ```\n   - Exit code 0 indicates no drift.\n   - Exit code 2 indicates remaining differences.\n\n## Decision rules\n- If `terraform plan -refresh-only` shows no changes, stop; state is consistent.\n- If `terraform apply drift.tfplan` fails, investigate state locking or permission issues before retrying.\n- If `terraform plan -detailed-exitcode` returns non-zero after convergence, investigate if new configuration changes are needed or if external modifications persist.\n\n## Validation\n- Successful execution of `terraform apply drift.tfplan`.\n- `terraform plan -detailed-exitcode` returning exit code 0.\n\n## Failure handling / rollback\n- If the refresh plan proposes destructive changes (e.g., resource replacement), review carefully before applying.\n- If state corruption is suspected, restore from a backup before running refresh operations.\n\n## Pitfalls\n- `terraform plan -refresh-only` does not change infrastructure, only state. Ensure this is the intended outcome.\n- Manual changes to infrastructure might violate compliance policies; resolving drift via state update acknowledges the change but does not revert the infrastructure to the desired configuration."
+          }
+        ],
+        "finalText": "Created terraform-drift-handling skill for detecting and resolving state drift via refresh-only plans.",
+        "promptTokens": 5562,
+        "completionTokens": 698,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "holdout-actions-cache",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "fix-github-actions-cache-pollution",
+            "content": "---\nname: fix-github-actions-cache-pollution\ndescription: Resolve GitHub Actions CI failures caused by ABI mismatches from stale cached wheels by updating cache keys to include lock file hashes.\n---\n# Fix GitHub Actions Cache Pollution (ABI Mismatch)\n\n## When to use\n- GitHub Actions CI runs fail with errors indicating ABI mismatches (e.g., from cached Python wheels or compiled dependencies).\n- Logs show errors related to incompatible binary interfaces after dependency updates.\n\n## When not to use\n- Failures are due to syntax errors, test logic, or network issues unrelated to dependency caching.\n- The project does not use dependency locking files (e.g., `package-lock.json`, `poetry.lock`, `requirements.txt` with hashes).\n\n## Required inputs\n- Access to the GitHub repository and Actions logs.\n- A dependency lock file (e.g., `package-lock.json`, `yarn.lock`, `poetry.lock`, `Gemfile.lock`) that changes when dependencies change.\n\n## Workflow\n1. **Identify the failure**: Check failed run logs for ABI mismatch errors or unexpected behavior from cached dependencies.\n   - Example command: `gh run view <RUN_ID> --log-failed`\n2. **Update cache key**: Modify the GitHub Actions workflow file (e.g., `.github/workflows/ci.yml`) to include a hash of the lock file in the cache key.\n   - Example: Change `key: npm-cache` to `key: npm-cache-${{ hashFiles('**/package-lock.json') }}`\n3. **Trigger a new run**: Push the workflow change or manually re-run the workflow to generate a fresh cache.\n   - Example command: `gh workflow run ci.yml`\n\n## Decision rules\n- If the failure persists after updating the cache key, verify that the lock file hash is correctly computed and that the cache step is properly configured to restore/save based on this key.\n\n## Validation\n- The CI run completes with `conclusion: success`.\n- No ABI mismatch errors appear in the logs.\n\n## Failure handling / rollback\n- If the new cache key causes cache misses and slows down CI significantly, consider using a restore key fallback to allow partial cache hits while still invalidating stale entries.\n- Revert the workflow change if the issue was misdiagnosed.\n\n## Pitfalls\n- Ensure the lock file used in the hash function is the correct one for the package manager being used.\n- Be aware that changing cache keys will invalidate existing caches, causing the first run after the change to be slower as it rebuilds the cache."
+          }
+        ],
+        "finalText": "Created skill fix-github-actions-cache-pollution for resolving CI ABI mismatches by updating cache keys with lock hashes.",
+        "promptTokens": 5593,
+        "completionTokens": 722,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "holdout-macos-launchd",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "macos-launchd-service-setup",
+            "content": "---\nname: macos-launchd-service-setup\ndescription: SOP for installing and verifying a launchd service on macOS using launchctl bootstrap.\n---\n# macOS Launchd Service Setup\n\n## When to use\n- Deploying a background service (e.g., exporter, daemon) on macOS.\n- Managing user-level agents (`~/Library/LaunchAgents`).\n\n## When not to use\n- System-wide daemons (use `/Library/LaunchDaemons` and `sudo launchctl`).\n- One-off script execution.\n\n## Required inputs\n- Path to the `.plist` file (e.g., `~/Library/LaunchAgents/com.example.service.plist`).\n- Service endpoint or method to verify functionality (e.g., HTTP port, log file).\n\n## Workflow\n1. **Validate Plist**: Ensure the plist file is syntactically correct.\n   ```bash\n   plutil -lint <path-to-plist>\n   ```\n2. **Bootstrap Service**: Load and start the service using the modern bootstrap command.\n   ```bash\n   launchctl bootstrap gui/$(id -u) <path-to-plist>\n   ```\n   *Note: Replace `gui/$(id -u)` with the appropriate domain if needed (e.g., `system` for daemons).*\n3. **Verify Functionality**: Check if the service is running and responding.\n   - For HTTP services:\n     ```bash\n     curl localhost:<port>/health\n     ```\n   - For general status:\n     ```bash\n     launchctl print gui/$(id -u)/<service-label>\n     ```\n\n## Decision rules\n- If `plutil` fails, fix XML syntax before proceeding.\n- If `bootstrap` fails, check system logs (`log show --last 5m`) for permission or configuration errors.\n\n## Validation\n- `plutil` returns \"OK\".\n- `curl` or equivalent check returns expected response (e.g., HTTP 200, specific metric).\n\n## Failure handling / rollback\n- To unload/stop the service:\n  ```bash\n  launchctl bootout gui/$(id -u) <path-to-plist>\n  ```\n- If the service crashes immediately, check permissions on the executable and paths referenced in the plist.\n\n## Pitfalls\n- Do not use `launchctl load` (deprecated); use `bootstrap`.\n- Ensure the plist `Label` matches the expected service name.\n- User-level agents require the user session to be active."
+          }
+        ],
+        "finalText": "Created macos-launchd-service-setup skill for deploying and verifying launchd agents.",
+        "promptTokens": 5651,
+        "completionTokens": 718,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "holdout-mysql-index",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "optimize-slow-query-with-composite-index",
+            "content": "---\nname: optimize-slow-query-with-composite-index\ndescription: Optimize slow queries by creating composite indexes based on EXPLAIN ANALYZE results\n---\n# Optimize Slow Query with Composite Index\n\n## When to use\n- A query shows table scan with high execution time in EXPLAIN ANALYZE\n- The query has WHERE clause filtering and ORDER BY that can benefit from indexing\n- You have permission to create indexes on the target table\n\n## When not to use\n- The table is small (< 10k rows) where index overhead may exceed benefits\n- The query pattern changes frequently making static indexes ineffective\n- Write-heavy tables where index maintenance cost outweighs read benefits\n\n## Required inputs\n- The slow SQL query\n- EXPLAIN ANALYZE output showing current execution plan\n- Table schema knowledge (column names, data types)\n\n## Workflow\n1. Run EXPLAIN ANALYZE on the slow query to identify bottleneck\n2. Identify columns used in WHERE clause and ORDER BY\n3. Create composite index with WHERE columns first, then ORDER BY columns\n4. For DESC ordering, specify DESC in index definition if supported\n5. Re-run EXPLAIN ANALYZE to verify improvement\n6. Confirm execution plan changed from table scan to index scan\n\n## Decision rules\n- Index column order: equality filters (WHERE =) first, then range/ordering columns\n- Include DESC/ASC in index definition when query uses specific ordering\n- Name index clearly: idx_{table}_{columns}\n\n## Validation\n- Execution time should drop significantly (e.g., from seconds to milliseconds)\n- EXPLAIN ANALYZE should show \"index scan\" instead of \"table scan\"\n- Query results must remain identical\n\n## Failure handling / rollback\n- If index creation fails, check for existing indexes with same columns\n- If performance doesn't improve, drop the index: DROP INDEX idx_name\n- Monitor write performance after index creation for regression\n\n## Pitfalls\n- Don't create indexes on every column - each index adds write overhead\n- Verify the index is actually used by checking EXPLAIN output\n- Consider partial indexes if only subset of data is queried frequently"
+          }
+        ],
+        "finalText": "Created skill for optimizing slow queries with composite indexes based on demonstrated EXPLAIN ANALYZE workflow.",
+        "promptTokens": 5482,
+        "completionTokens": 522,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "holdout-cert-rotation",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "rotate-internal-tls-cert",
+            "content": "---\nname: rotate-internal-tls-cert\ndescription: Procedure for rotating internal TLS certificates and verifying the update on Envoy services.\n---\n# Rotate Internal TLS Certificate\n\n## When to use\n- When replacing expiring or compromised internal TLS certificates.\n- When updating SANs or certificate metadata for internal services.\n\n## When not to use\n- For external/public-facing certificates managed by ACME/Let's Encrypt automations.\n- If the service does not support hot-reloading (requires restart instead of reload).\n\n## Required inputs\n- `new.pem`: The new certificate file (must include full chain if required by the service).\n- Service name (e.g., `envoy`) capable of reloading configuration/certs.\n- Target service endpoint for verification (e.g., `svc:443`).\n\n## Workflow\n1. **Inspect New Certificate**: Verify validity dates and Subject Alternative Names (SAN).\n   ```bash\n   openssl x509 -in new.pem -noout -dates -ext subjectAltName\n   ```\n2. **Install Certificate**: Replace the existing certificate file with `new.pem`.\n   ```bash\n   install new.pem /path/to/cert/location\n   ```\n3. **Reload Service**: Trigger a configuration/certificate reload without downtime.\n   ```bash\n   systemctl reload envoy\n   ```\n4. **Verify Connection**: Perform an SSL handshake check against the service endpoint.\n   ```bash\n   openssl s_client -connect svc:443 </dev/null 2>/dev/null | grep \"Verify return code\"\n   ```\n\n## Decision rules\n- Proceed only if `openssl x509` shows correct SANs and future expiration.\n- Proceed only if `systemctl reload` returns success (exit code 0).\n\n## Validation\n- **Success**: `openssl s_client` output contains `Verify return code: 0 (ok)`.\n- **Failure**: Any non-zero exit code from install/reload, or verification error in `s_client`.\n\n## Failure handling / rollback\n- If verification fails, revert to the previous certificate file and restart the service.\n- Check service logs (`journalctl -u envoy`) for detailed error messages if reload fails.\n\n## Pitfalls\n- Ensure the certificate file permissions are correct after installation (usually readable by the service user).\n- Some services may require a full restart instead of a reload if certificate paths are hardcoded in memory."
+          }
+        ],
+        "finalText": "Created skill 'rotate-internal-tls-cert' for internal TLS certificate rotation and verification.",
+        "promptTokens": 5620,
+        "completionTokens": 707,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "holdout-docker-multiarch",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "multi-arch-docker-push",
+            "content": "---\nname: multi-arch-docker-push\ndescription: Build and push multi-platform Docker images (amd64/arm64) using buildx\n---\n# Multi-Architecture Docker Image Build and Push\n\n## When to use\n- Need to publish Docker images supporting multiple CPU architectures (linux/amd64, linux/arm64)\n- Using Docker Buildx with a registry that supports manifest lists\n\n## When not to use\n- Single architecture builds only\n- Local-only images not intended for registry push\n- Registries that do not support OCI manifest lists\n\n## Required inputs\n- Dockerfile in current directory\n- Buildx builder instance configured\n- Registry authentication credentials configured\n- Target image tag (e.g., reg/app:1.2)\n\n## Workflow\n1. Build and push multi-platform image:\n   ```\n   docker buildx build --platform linux/amd64,linux/arm64 --push -t <image-tag> .\n   ```\n2. Verify manifest contains expected platforms:\n   ```\n   docker buildx imagetools inspect <image-tag>\n   ```\n\n## Decision rules\n- Use `--push` flag to automatically push to registry after build\n- Specify platforms as comma-separated list: `linux/amd64,linux/arm64`\n\n## Validation\n- Command output should show \"pushed manifest\"\n- `imagetools inspect` should list both `linux/amd64` and `linux/arm64` in output\n\n## Failure handling / rollback\n- If build fails, check Dockerfile syntax and base image availability for target platforms\n- If push fails, verify registry credentials and network connectivity\n- If manifest inspection shows missing platforms, rebuild with explicit platform specification\n\n## Pitfalls\n- Ensure buildx is initialized: `docker buildx create --use` if not already done\n- Base images must be available for all target platforms\n- Registry must support manifest lists (most modern registries do)"
+          }
+        ],
+        "finalText": "Created multi-arch-docker-push skill for building and pushing multi-platform Docker images with verification steps.",
+        "promptTokens": 5424,
+        "completionTokens": 486,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "holdout-flaky-test",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "fix-flaky-clock-tests",
+            "content": "---\nname: fix-flaky-clock-tests\ndescription: Fix flaky tests caused by wall clock dependency by injecting a fake clock\n---\n# Fix Flaky Clock Tests\n\n## When to use\n- Tests fail intermittently due to wall clock time dependencies\n- pytest shows failures related to timing or clock assertions\n\n## When not to use\n- Tests failing for reasons unrelated to time/clock\n- Tests that legitimately need real wall clock behavior\n\n## Required inputs\n- Test file path containing clock-dependent tests\n- Access to modify test code and source code\n\n## Workflow\n1. Run tests multiple times to confirm flakiness: `pytest <test_file> -q --count=50`\n2. Identify wall clock usage in test or source code (e.g., `time.time()`, `datetime.now()`)\n3. Replace wall clock with injectable fake clock:\n   - Modify source to accept clock as parameter/dependency\n   - Create fake clock implementation for testing\n   - Update tests to inject fake clock with controlled time values\n4. Verify fix: `pytest <test_file> -q --count=100`\n5. Confirm all runs pass consistently\n\n## Decision rules\n- If failures persist after clock injection, investigate other sources of non-determinism\n- If source code cannot be modified, consider mocking at test level only\n\n## Validation\n- 100 consecutive test runs must pass without failure\n- No regression in test coverage or assertions\n\n## Failure handling / rollback\n- If injection breaks existing tests, revert changes and investigate coupling issues\n- Ensure fake clock implementation matches real clock interface exactly\n\n## Pitfalls\n- Do not over-mock; only replace actual wall clock calls\n- Ensure fake clock supports all operations used (now, sleep, etc.)\n- Watch for hidden clock dependencies in third-party libraries"
+          }
+        ],
+        "finalText": "Created skill for fixing flaky tests caused by wall clock dependencies through clock injection.",
+        "promptTokens": 5363,
+        "completionTokens": 451,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "holdout-preference-uv",
+        "kind": "preference",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "python-dependency-management-with-uv",
+            "content": "---\nname: python-dependency-management-with-uv\ndescription: Team convention to use uv for Python dependency management instead of requirements.txt\n---\n# Python Dependency Management with uv\n\n## When to use\n- Any new or existing Python project within the team scope\n- When managing Python package dependencies\n\n## When not to use\n- Projects with explicit legacy constraints requiring pip/requirements.txt compatibility\n\n## Required inputs\n- None (team-wide convention)\n\n## Workflow\n1. Use `uv` as the primary tool for Python dependency management\n2. Do NOT generate or maintain `requirements.txt` files\n3. Use `uv add <package>` to add dependencies\n4. Use `uv remove <package>` to remove dependencies\n5. Use `uv sync` to install dependencies from `pyproject.toml` and `uv.lock`\n\n## Decision rules\n- Always prefer `uv` over `pip` for dependency operations\n- Never create `requirements.txt` as part of project setup or CI/CD pipelines\n\n## Validation\n- Verify that `pyproject.toml` and `uv.lock` are present in the project root\n- Confirm no `requirements.txt` files exist in the repository\n\n## Pitfalls\n- Some legacy tools or CI systems may expect `requirements.txt`; ensure they are configured to work with `uv` instead\n- When collaborating with external teams, clarify that this project uses `uv` for dependency management"
+          }
+        ],
+        "finalText": "Created skill for team convention to use uv for Python dependency management instead of requirements.txt.",
+        "promptTokens": 5027,
+        "completionTokens": 365,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "scoped": true
+        }
+      },
+      {
+        "caseId": "holdout-background-release",
+        "kind": "background",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "release-architecture-overview",
+            "content": "---\nname: release-architecture-overview\ndescription: Documents the long-term release architecture, including build constraints, promotion logic, deployment controls, and rollback strategies.\n---\n# Release Architecture Overview\n\n## Scope\nThis document outlines the standard architecture for software releases, covering build, promotion, deployment, and rollback processes.\n\n## Build Process\n- **Environment**: Builds occur exclusively in the CI build account.\n- **Artifacts**: All artifacts are signed before entering the registry.\n- **Constraint**: No local or ad-hoc builds are used for production releases.\n\n## Promotion Logic\n- **Service**: A dedicated promotion service handles artifact movement.\n- **Integrity**: Promotion only lifts the same digest; it never rebuilds artifacts.\n- **Consistency**: Ensures bit-for-bit identity between staging and production artifacts.\n\n## Deployment Control\n- **Controller**: The production controller pulls approved digests based on a change ID.\n- **Audit**: Deployment results are written simultaneously to:\n  - Audit stream\n  - Release database\n- **Traceability**: Every deployment is linked to a specific approved change ID and digest.\n\n## Rollback Strategy\n- **Method**: Rollbacks always select the previous signed digest.\n- **Safety**: Never roll back to an unsigned or unverified artifact.\n\n## Database Migrations\n- **Execution**: Migrations are executed by an independent job.\n- **Constraint**: All migrations must be backward compatible to support zero-downtime deployments and safe rollbacks.\n\n## When to Use\n- When planning new release pipelines.\n- When troubleshooting deployment discrepancies.\n- When auditing release history or integrity.\n\n## When Not to Use\n- For ad-hoc hotfixes that bypass standard CI/CD (these require separate exception handling).\n- For local development builds."
+          }
+        ],
+        "finalText": "Created release-architecture-overview skill to document build constraints, digest-based promotion, audit-linked deployments, and backward-compatible migration requirements.",
+        "promptTokens": 5367,
+        "completionTokens": 525,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "scoped": true
+        }
+      },
+      {
+        "caseId": "holdout-preference-redact",
+        "kind": "preference",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "fault-report-redaction-policy",
+            "content": "---\nname: fault-report-redaction-policy\ndescription: Mandatory redaction rules for all fault reports to protect sensitive data\n---\n# Fault Report Redaction Policy\n\n## When to use\n- Always applicable when generating, reviewing, or processing any fault report, incident log, or error summary within this scope.\n\n## When not to use\n- Never skip this policy. All fault reports must comply.\n\n## Required inputs\n- Raw fault report content containing potential sensitive data.\n\n## Workflow\n1. Identify and remove/redact the following sensitive fields:\n   - Public IP addresses (e.g., `203.0.113.45`)\n   - User email addresses (e.g., `user@example.com`)\n   - Tokens, API keys, secrets, or credentials (e.g., `tok_abc123`, `sk-...`)\n2. Replace removed values with a generic placeholder or ensure only hashed association IDs remain for correlation.\n3. Verify no raw sensitive data remains in the final output.\n\n## Decision rules\n- If a field is a public IP, email, or token → redact it.\n- If a field is a hashed association ID → retain it for traceability.\n\n## Validation\n- Final report must contain zero instances of raw public IPs, emails, or tokens.\n- Hashed IDs should remain intact for linking related events.\n\n## Pitfalls\n- Do not accidentally redact internal/private IPs if they are needed for debugging (unless policy expands).\n- Ensure hashed IDs are not reversed or exposed alongside raw data."
+          }
+        ],
+        "finalText": "Created fault-report-redaction-policy skill to enforce mandatory redaction of public IPs, emails, and tokens in all fault reports.",
+        "promptTokens": 5142,
+        "completionTokens": 476,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "scoped": true
+        }
+      },
+      {
+        "caseId": "holdout-pg-physical-restore",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "postgresql-physical-backup-restore-drill",
+            "content": "---\nname: postgresql-physical-backup-restore-drill\ndescription: SOP for performing and verifying PostgreSQL physical backup and isolated restore drill\n---\n# PostgreSQL Physical Backup and Restore Drill\n\n## When to use\n- Regular disaster recovery drills\n- Before major upgrades or migrations\n- After infrastructure changes affecting storage\n\n## When not to use\n- Production instances without isolation (risk of data overwrite)\n- When logical backup (pg_dump) is sufficient for point-in-time needs\n- Without adequate disk space for base backup\n\n## Required inputs\n- Access to PostgreSQL instance with replication slot permissions\n- Sufficient disk space at backup destination\n- Target backup directory path\n- Name of critical table(s) for post-restore validation\n\n## Workflow\n1. **Create physical backup**:\n   ```\n   pg_basebackup -D <backup_dir> -X stream -c fast\n   ```\n   - `-X stream`: Include WAL files via streaming replication\n   - `-c fast`: Checkpoint immediately to minimize backup time\n\n2. **Verify backup completion**:\n   - Confirm command exits successfully\n   - Check backup directory contains `base`, `pg_wal`, and configuration files\n\n3. **Start isolated restore instance**:\n   - Use backup directory as data directory on isolated port/host\n   - Ensure no conflict with production instance\n   ```\n   pg_ctl start -D <backup_dir> -o \"-p <isolated_port>\"\n   ```\n\n4. **Validate connectivity**:\n   ```\n   pg_isready -p <isolated_port>\n   ```\n   - Expected: \"accepting connections\"\n\n5. **Validate data integrity**:\n   ```\n   psql -p <isolated_port> -c 'SELECT count(*) FROM <critical_table>'\n   ```\n   - Compare count against known baseline or production value\n\n## Decision rules\n- If `pg_isready` fails: check logs in `<backup_dir>/log/` or stderr\n- If row count mismatch: investigate backup consistency; may indicate incomplete WAL replay\n- If backup fails: verify replication slot availability and network connectivity\n\n## Validation\n- Backup command returns success exit code\n- `pg_isready` reports \"accepting connections\"\n- Critical table query returns expected row count (e.g., 9811)\n\n## Failure handling / rollback\n- Stop isolated instance: `pg_ctl stop -D <backup_dir>`\n- Remove test backup if drill failed: `rm -rf <backup_dir>`\n- Never run restore commands against production data directory\n\n## Pitfalls\n- Do not use `-D` pointing to active production data directory\n- Ensure WAL archiving/streaming is enabled for consistent backup\n- Isolated instance must use different port or socket to avoid conflicts\n- Verify backup size matches expectations (sudden drop may indicate corruption)"
+          }
+        ],
+        "finalText": "Created postgresql-physical-backup-restore-drill skill encoding backup command, isolated restore procedure, and validation steps with concrete evidence from transcript.",
+        "promptTokens": 5688,
+        "completionTokens": 774,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "holdout-windows-service",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "recover-windows-service-auto-start",
+            "content": "---\nname: recover-windows-service-auto-start\ndescription: Recovers a stopped Windows service, sets it to automatic start, and validates health.\n---\n# Recover Windows Service and Set Auto-Start\n\n## When to use\n- A Windows service is stopped or misconfigured and needs to be restored to running state with automatic startup.\n- You have the service name and a known health check endpoint.\n\n## When not to use\n- The service requires manual intervention or specific configuration changes before starting.\n- You do not have permissions to manage services or access the health endpoint.\n\n## Required inputs\n- `ServiceName`: Name of the Windows service (e.g., ContosoAgent).\n- `HealthUrl`: URL for the health check endpoint (e.g., http://localhost:8181/health).\n\n## Workflow\n1. **Check Status and Configure Startup**:\n   - Run `Get-Service <ServiceName>` to confirm current status.\n   - Run `Set-Service <ServiceName> -StartupType Automatic` to ensure it starts on boot.\n2. **Start Service**:\n   - Run `Start-Service <ServiceName>`.\n3. **Validate Health**:\n   - Run `Invoke-WebRequest <HealthUrl>` and verify `StatusCode` is 200.\n\n## Decision rules\n- If `Get-Service` returns an error, verify the service name exists.\n- If `Start-Service` fails, check event logs for dependency or permission issues.\n- If health check fails after start, wait briefly and retry, or investigate service logs.\n\n## Validation\n- Service status should be \"Running\".\n- Health check endpoint returns HTTP 200.\n\n## Failure handling / rollback\n- If the service fails to start, do not force it; investigate root cause (dependencies, config errors).\n- If health check fails, the service may be running but unhealthy; further debugging required.\n\n## Pitfalls\n- Ensure the health endpoint is accessible locally if using localhost.\n- Some services may take time to initialize; consider adding a short delay before health check if immediate 200 is not expected."
+          }
+        ],
+        "finalText": "Created skill 'recover-windows-service-auto-start' for restoring Windows services with auto-start and health validation.",
+        "promptTokens": 5583,
+        "completionTokens": 660,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "holdout-kafka-lag",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "kafka-consumer-lag-resolution",
+            "content": "---\nname: kafka-consumer-lag-resolution\ndescription: SOP for diagnosing and resolving high Kafka consumer group lag by scaling consumers and validating reduction.\n---\n# Kafka Consumer Lag Resolution\n\n## When to use\n- When monitoring alerts or manual checks indicate high consumer lag in a Kafka consumer group.\n- When the bottleneck is identified as insufficient consumer throughput rather than producer overload or broker issues.\n\n## When not to use\n- If the lag is caused by downstream processing errors (e.g., exceptions in consumer code).\n- If the topic has fewer partitions than the desired parallelism (scaling beyond partition count yields no benefit).\n- If the lag is transient or within acceptable SLA thresholds.\n\n## Required inputs\n- `group_id`: The Kafka consumer group ID (e.g., `billing`).\n- `bootstrap_servers`: Kafka bootstrap server addresses.\n- `target_replicas`: Desired number of consumer instances (must be <= total partitions for the topic).\n\n## Workflow\n1. **Diagnose Current Lag**:\n   Run the following command to inspect lag per partition:\n   ```bash\n   kafka-consumer-groups --bootstrap-server <bootstrap_servers> --describe --group <group_id>\n   ```\n   Identify partitions with significant lag (e.g., > 10,000 messages).\n\n2. **Scale Consumers**:\n   Increase the number of consumer instances to improve throughput. Ensure the new replica count does not exceed the number of partitions for the consumed topics.\n   - Example: Scale to 6 replicas if partition count allows.\n   - Wait for the rebalance to complete and consumers to stabilize.\n\n3. **Validate Resolution**:\n   Re-run the describe command after a short wait period:\n   ```bash\n   kafka-consumer-groups --bootstrap-server <bootstrap_servers> --describe --group <group_id>\n   ```\n   Check that lag across all partitions has dropped to an acceptable level (e.g., < 50 messages).\n\n## Decision rules\n- If lag persists after scaling to max partitions, investigate consumer processing logic or downstream dependencies.\n- If lag increases during scaling, check for rebalance storms or resource contention.\n\n## Validation\n- Success: All partitions show lag < 50 (or defined SLA threshold).\n- Failure: Lag remains high or increases; requires deeper investigation into consumer code or broker health.\n\n## Pitfalls\n- **Over-scaling**: Scaling beyond the number of partitions results in idle consumers and unnecessary resource usage.\n- **Rebalance Storms**: Frequent scaling up/down can trigger continuous rebalances, temporarily halting consumption. Use static membership or careful scaling strategies if available."
+          }
+        ],
+        "finalText": "Created kafka-consumer-lag-resolution skill for diagnosing and resolving Kafka consumer lag via scaling.",
+        "promptTokens": 5712,
+        "completionTokens": 803,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "holdout-nginx-rate-limit",
+        "kind": "sop",
+        "shouldExtract": true,
+        "wrote": true,
+        "writes": [
+          {
+            "action": "skill_create",
+            "name": "nginx-rate-limiting-sop",
+            "content": "---\nname: nginx-rate-limiting-sop\ndescription: Standard operating procedure for adding and verifying Nginx rate limiting on API endpoints.\n---\n# Nginx Rate Limiting Implementation & Verification\n\n## When to use\n- Adding protection to high-traffic or sensitive endpoints (e.g., `/login`, `/api/signup`).\n- Mitigating brute-force attacks or API abuse.\n\n## When not to use\n- When application-level rate limiting (e.g., Redis-based) is already sufficient and preferred for complex logic.\n- When global bandwidth throttling is needed instead of request-count limiting.\n\n## Required inputs\n- Access to Nginx configuration files.\n- A load testing tool (e.g., `hey`, `ab`, `wrk`).\n- Root/sudo privileges to reload Nginx.\n\n## Workflow\n1. **Define Zone**: In the `http` block of `nginx.conf`, define a shared memory zone:\n   ```nginx\n   http {\n       limit_req_zone $binary_remote_addr zone=login_limit:10m rate=1r/s;\n   }\n   ```\n2. **Apply Limit**: In the specific `location` block, reference the zone:\n   ```nginx\n   location /login {\n       limit_req zone=login_limit burst=5 nodelay;\n       # ... proxy_pass etc ...\n   }\n   ```\n3. **Validate Syntax**: Run `nginx -t` to ensure no syntax errors.\n4. **Reload**: Run `nginx -s reload` to apply changes gracefully.\n5. **Verify**: Execute a load test exceeding the rate limit.\n   ```bash\n   hey -n 30 -c 10 https://example.com/login\n   ```\n\n## Decision rules\n- If `nginx -t` fails: Fix syntax before reloading.\n- If load test returns **only 200**: Rate limit is too high or not applied correctly.\n- If load test returns **only 429**: Rate limit is too aggressive or burst is too low.\n- **Success Criteria**: Load test returns a mix of `200 OK` and `429 Too Many Requests`.\n\n## Validation\n- Check access logs for `429` status codes.\n- Confirm legitimate single requests still succeed (200).\n\n## Pitfalls\n- Forgetting `nginx -t` before reload can cause downtime if config is invalid.\n- Using `$remote_addr` instead of `$binary_remote_addr` consumes more memory.\n- Not setting `burst` may cause legitimate bursts (e.g., page loads with multiple assets) to be blocked unfairly."
+          }
+        ],
+        "finalText": "Created nginx-rate-limiting-sop with configuration steps and verification criteria based on successful 429/200 mix.",
+        "promptTokens": 5928,
+        "completionTokens": 996,
+        "quality": 100,
+        "qualityChecks": {
+          "frontmatter": true,
+          "applicability": true,
+          "noSecrets": true,
+          "compactEnough": true,
+          "workflow": true,
+          "validation": true,
+          "boundary": true,
+          "grounded": true
+        }
+      },
+      {
+        "caseId": "holdout-k8s-still-failing",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3199,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "holdout-terraform-advice",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3125,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "holdout-file-count",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3143,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "holdout-unsafe-apply",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3169,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "holdout-secret",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 1530,
+        "completionTokens": 4,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "holdout-opt-out",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 1569,
+        "completionTokens": 4,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "holdout-doc-copy",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3109,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "holdout-trivial-install",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3127,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "holdout-self-heal",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3175,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "holdout-duplicate",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3193,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "holdout-partial",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3173,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "holdout-social",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3081,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "holdout-speculative",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 1537,
+        "completionTokens": 4,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "holdout-temporary-format",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 3087,
+        "completionTokens": 18,
+        "quality": 0,
+        "qualityChecks": {}
+      },
+      {
+        "caseId": "holdout-role-capture",
+        "kind": "none",
+        "shouldExtract": false,
+        "wrote": false,
+        "writes": [],
+        "finalText": "Nothing to save.",
+        "promptTokens": 1543,
+        "completionTokens": 4,
+        "quality": 0,
+        "qualityChecks": {}
+      }
+    ]
+  }
+}

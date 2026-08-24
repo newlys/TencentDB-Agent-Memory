@@ -82,3 +82,15 @@ export {
   type SkillWorkerPoolOptions,
   type SkillWorkerResolvers,
 } from "./worker-pool.js";
+
+export {
+  evaluateSopBoundary,
+  countToolCalls as countSopToolCalls,
+  DEFAULT_SOP_BOUNDARY_CONFIG,
+  type SopBoundaryProfile,
+  type SopBoundaryPhase,
+  type SopBoundaryMessage,
+  type SopBoundaryConfig,
+  type SopBoundaryInput,
+  type SopBoundaryDecision,
+} from "./sop-boundary.js";

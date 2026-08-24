@@ -1,0 +1,97 @@
+# The launcher replaces __UPSTREAM_API_KEY__ in a gitignored runtime copy.
+server:
+  host: 127.0.0.1
+  port: 8096
+  forwardTimeoutMs: 600000
+
+upstream:
+  url: __UPSTREAM_BASE_URL__
+  apiKey: __UPSTREAM_API_KEY__
+
+# WorkBuddy accepts glm-5.1; the actual shared endpoint supports Responses for
+# qwen3.7-plus. Proxy model aliases keep the benchmark model fixed and explicit.
+creditPricing:
+  models:
+    - name: qwen3.7-plus
+      modelName: glm-5.1
+      input: 0
+      output: 0
+
+log:
+  file: __BASELINE_RUNTIME_DIR__/proxy-logs
+  verbose: true
+  level: debug
+  backend: console
+
+redis:
+  enabled: false
+
+storage:
+  enabled: true
+  backend: sqlite
+  ttlDays: 7
+  sqlite:
+    dbPath: __BASELINE_RUNTIME_DIR__/proxy.db
+
+auth:
+  enabled: true
+  url: http://127.0.0.1:8420
+  timeoutMs: 5000
+
+sessionInit:
+  enabled: true
+  maxRetries: 3
+  injectAgentContext: true
+  injectTaskContext: true
+  debugForceIdentity:
+    team_id: team-dyf7fb74wi
+    agent_id: agt-dyf7zr5fjh
+    task_id: task-dz57lia4lg
+  debugForceUserId: usr-dw4keqm922
+  debugVerboseLogging: true
+
+injection:
+  enabled: true
+  injectors: [skill, knowledge, tdai-memory]
+  externalGatewayUrl: http://127.0.0.1:8096
+  assetReflection:
+    markerOptIn: false
+
+extraction:
+  enabled: true
+  extractors: [skill, tdai-memory]
+
+skill:
+  endpoint: http://127.0.0.1:8420
+  serviceToken: local-dev-memory-key
+  serviceId: default
+  timeoutMs: 5000
+  routingProfile: __ROUTING_PROFILE__
+
+knowledge:
+  enabled: true
+  endpoint: http://127.0.0.1:8420
+  serviceToken: local-dev-memory-key
+  serviceId: default
+  timeoutMs: 5000
+
+tdai:
+  enabled: true
+  endpoint: http://127.0.0.1:8420
+  apiKey: local-dev-memory-key
+  serviceId: default
+  memory:
+    enabled: true
+    inject: true
+    writeL0: true
+    recallL1: true
+    injectL2L3: true
+    l1Limit: 5
+    l2Limit: 3
+    timeoutMs: 5000
+
+skillRuntime:
+  allowLlmWrite: false
+
+workbuddyRequestRouting:
+  enabled: true

@@ -112,7 +112,15 @@ skill:
     enabled: true                 # 需要顶层 llm 配置有效（baseUrl + apiKey）
     maxIterations: 16             # Review Agent tool-calling 最大迭代轮数
     # model: "deepseek-v3.2"      # 【复用】不填则复用顶层 llm.model
-    # toolCallThreshold: 10       # 预留字段，暂无消费者
+    # toolCallThreshold: 10       # 归档安全上限：累计工具调用达到此值时强制提取
+    # trigger:                    # 默认 legacy，保留当前版本行为
+    #   profile: "sop_v1"        # legacy | sop_v1（SOP 完成/主题切换边界）
+    #   minToolCalls: 2           # 少于此执行步数不视为可复用 SOP
+    #   completionScoreThreshold: 0.68
+    #   topicSwitchScoreThreshold: 0.72
+    # valueGate:
+    #   profile: "precision_v1"  # legacy | precision_v1（高置信负样本不调用抽取 LLM）
+    # reviewPromptProfile: "balanced_v4"  # legacy_v2 | precision_v3 | balanced_v4
     # 说明：headChars / tailChars 在 service 模式的 per-instance extractor 路径不透传，
     #      因此不在 yaml 暴露；如需调整请改 skill-extractor.ts 默认或补 server.ts 透传。
     queue:

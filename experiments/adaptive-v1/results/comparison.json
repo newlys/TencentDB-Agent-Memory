@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "metrics": {
+    "routing": {
+      "hit_rate": {
+        "old": 1,
+        "new": 1,
+        "absolute": 0,
+        "percent": 0
+      },
+      "precision_at_k": {
+        "old": 0.049999999999999996,
+        "new": 1,
+        "absolute": 0.95,
+        "percent": 1900
+      },
+      "mrr": {
+        "old": 1,
+        "new": 1,
+        "absolute": 0,
+        "percent": 0
+      },
+      "ndcg_at_k": {
+        "old": 1,
+        "new": 1,
+        "absolute": 0,
+        "percent": 0
+      },
+      "final_k": {
+        "old": 20,
+        "new": 1,
+        "absolute": -19,
+        "percent": -95
+      },
+      "injection_tokens": {
+        "old": 1607.7777777777778,
+        "new": 44,
+        "absolute": -1563.7777777777778,
+        "percent": -97.26330338631651
+      },
+      "route_latency_ms": {
+        "old": 44.80085555555554,
+        "new": 368.44444444444446,
+        "absolute": 323.6435888888889,
+        "percent": 722.4049292709442
+      }
+    },
+    "task1": {
+      "effective_call_rate": {
+        "old": 1,
+        "new": 1,
+        "absolute": 0,
+        "percent": 0
+      },
+      "false_call_rate": {
+        "old": 0,
+        "new": 0.2,
+        "absolute": 0.2,
+        "percent": null
+      },
+      "correct_tool_selection_rate": {
+        "old": 1,
+        "new": 0.7142857142857143,
+        "absolute": -0.2857142857142857,
+        "percent": -28.57142857142857
+      },
+      "injection_tokens": {
+        "old": 8176.5,
+        "new": 7324,
+        "absolute": -852.5,
+        "percent": -10.426221488411912
+      }
+    },
+    "task2": {
+      "pass_at_1": {
+        "old": 1,
+        "new": 1,
+        "absolute": 0,
+        "percent": 0
+      },
+      "avg_turns": {
+        "old": 20,
+        "new": 20.833333333333332,
+        "absolute": 0.8333333333333321,
+        "percent": 4.166666666666661
+      },
+      "avg_total_tokens": {
+        "old": 181638.16666666666,
+        "new": 185324.5,
+        "absolute": 3686.333333333343,
+        "percent": 2.0294927002309593
+      },
+      "skill_hit_rate": {
+        "old": 0.16666666666666666,
+        "new": 0,
+        "absolute": -0.16666666666666666,
+        "percent": -100
+      }
+    }
+  }
+}

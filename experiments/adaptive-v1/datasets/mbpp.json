@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source": "official MBPP",
+  "answer_policy": "Only problem text and tests are exposed to the agent; reference code is withheld.",
+  "sandbox": { "network": "none", "time_limit_seconds": 10, "memory_limit_mb": 512 },
+  "warmup": {
+    "strings": [602, 604], "lists": [610, 612], "numbers": [605, 627],
+    "sorting": [622, 635], "geometry": [654, 677], "dictionary_frequency": [653, 686]
+  },
+  "evaluation": [
+    11, 15, 18, 30, 73, 19, 22, 25, 34, 40,
+    21, 24, 32, 33, 35, 12, 37, 54, 57, 63,
+    14, 17, 52, 82, 163, 13, 87, 88, 115, 174
+  ],
+  "tracks": ["natural_extraction", "controlled_gold_skill"]
+}

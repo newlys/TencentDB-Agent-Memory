@@ -1,0 +1,62 @@
+[
+  {
+    "id": "skill_tdd",
+    "expected": "skill",
+    "prompt": "请从云端 Skill 中查找并加载最适合测试驱动开发的 Skill，然后只告诉我它的名称和第一条核心规则。"
+  },
+  {
+    "id": "skill_api_review",
+    "expected": "skill",
+    "prompt": "我要评审一个 REST API 的分页、错误码和鉴权设计。请先查找并加载最相关的云端 Skill，再给出三项检查点。"
+  },
+  {
+    "id": "skill_debugging",
+    "expected": "skill",
+    "prompt": "一个测试偶发失败但没有稳定复现步骤。请先加载 systematic-debugging 云端 Skill，再说第一步该做什么。"
+  },
+  {
+    "id": "memory_history",
+    "expected": "memory",
+    "prompt": "我们刚才做 baseline 冒烟时固定的真实上游模型是什么？请先查询 TDAI 云端记忆或历史对话再回答。"
+  },
+  {
+    "id": "memory_conversation",
+    "expected": "memory",
+    "prompt": "请在 TDAI 历史对话中查找 baseline-smoke-3，并概括那次验证了什么。不要只查本地 MEMORY.md。"
+  },
+  {
+    "id": "knowledge_baseline",
+    "expected": "knowledge",
+    "prompt": "根据团队知识库回答：baseline 的真实上游模型和 Skill 总数分别是什么？必须先 tools/list，再 tools/call。"
+  },
+  {
+    "id": "knowledge_task_scope",
+    "expected": "knowledge",
+    "prompt": "请查询团队知识库，说明 optimization task 1 和 task 2 分别评估什么。先发现工具再搜索页面。"
+  },
+  {
+    "id": "none_event_loop",
+    "expected": "none",
+    "prompt": "用两句话解释 JavaScript 事件循环和微任务队列，不需要查询任何项目历史或团队资料。"
+  },
+  {
+    "id": "none_binary_search",
+    "expected": "none",
+    "prompt": "写一个纯 JavaScript 的二分查找函数代码片段，输入已排序数组，找不到返回 -1。不要修改文件。"
+  },
+  {
+    "id": "none_git_concept",
+    "expected": "none",
+    "prompt": "简要比较 git merge 和 git rebase 的区别，各给一个适用场景。"
+  },
+  {
+    "id": "none_type_error",
+    "expected": "none",
+    "prompt": "解释为什么 TypeScript 中 unknown 比 any 更安全，并给一个五行以内的小例子。"
+  },
+  {
+    "id": "none_sql",
+    "expected": "none",
+    "prompt": "给出一条 SQL：按 customer_id 汇总 orders 表金额，只保留总额大于 1000 的客户。只输出 SQL。"
+  }
+]

@@ -1,0 +1,287 @@
+{
+  "schemaVersion": 1,
+  "source": "D:\\Desktop\\TencentDB-Agent-Memory\\experiments\\trigger-v2\\results\\task2-smoke-events.json",
+  "profiles": {
+    "baseline": {
+      "eligibleTasks": 6,
+      "passAt1": {
+        "value": 1,
+        "ci95": {
+          "low": 0.6096657120978346,
+          "high": 1
+        }
+      },
+      "averageTurns": {
+        "value": 20,
+        "ci95": {
+          "low": 17.5,
+          "high": 22.5
+        }
+      },
+      "averageAgentTokens": {
+        "value": 201383.16666666666,
+        "ci95": {
+          "low": 190409.66666666666,
+          "high": 207292.83333333334
+        }
+      },
+      "averageTotalTokensIncludingSkillOverhead": 201383.16666666666,
+      "skillOverheadTokens": 0,
+      "eligibleBoundaries": 0,
+      "skillCreates": 0,
+      "skillUpdates": 0,
+      "skillExtractionRate": {
+        "value": 0,
+        "ci95": {
+          "low": 0,
+          "high": 0
+        }
+      },
+      "skillReuseRate": {
+        "value": 0,
+        "ci95": {
+          "low": 0,
+          "high": 0
+        }
+      },
+      "taskSkillHitRate": {
+        "value": 0,
+        "ci95": {
+          "low": 2.7755575615628914e-17,
+          "high": 0.3903342879021653
+        }
+      }
+    },
+    "static": {
+      "eligibleTasks": 6,
+      "passAt1": {
+        "value": 1,
+        "ci95": {
+          "low": 0.6096657120978346,
+          "high": 1
+        }
+      },
+      "averageTurns": {
+        "value": 20,
+        "ci95": {
+          "low": 18.333333333333332,
+          "high": 22.333333333333332
+        }
+      },
+      "averageAgentTokens": {
+        "value": 181638.16666666666,
+        "ci95": {
+          "low": 169359.33333333334,
+          "high": 205424.66666666666
+        }
+      },
+      "averageTotalTokensIncludingSkillOverhead": 181638.16666666666,
+      "skillOverheadTokens": 0,
+      "eligibleBoundaries": 0,
+      "skillCreates": 0,
+      "skillUpdates": 0,
+      "skillExtractionRate": {
+        "value": 0,
+        "ci95": {
+          "low": 0,
+          "high": 0
+        }
+      },
+      "skillReuseRate": {
+        "value": 0,
+        "ci95": {
+          "low": 0,
+          "high": 0
+        }
+      },
+      "taskSkillHitRate": {
+        "value": 0.16666666666666666,
+        "ci95": {
+          "low": 0.030053369748306635,
+          "high": 0.5635028221864702
+        }
+      }
+    },
+    "adaptive_v1": {
+      "eligibleTasks": 6,
+      "passAt1": {
+        "value": 1,
+        "ci95": {
+          "low": 0.6096657120978346,
+          "high": 1
+        }
+      },
+      "averageTurns": {
+        "value": 20.833333333333332,
+        "ci95": {
+          "low": 18.833333333333332,
+          "high": 22.666666666666668
+        }
+      },
+      "averageAgentTokens": {
+        "value": 185324.5,
+        "ci95": {
+          "low": 173345.33333333334,
+          "high": 197229.66666666666
+        }
+      },
+      "averageTotalTokensIncludingSkillOverhead": 185324.5,
+      "skillOverheadTokens": 0,
+      "eligibleBoundaries": 0,
+      "skillCreates": 0,
+      "skillUpdates": 0,
+      "skillExtractionRate": {
+        "value": 0,
+        "ci95": {
+          "low": 0,
+          "high": 0
+        }
+      },
+      "skillReuseRate": {
+        "value": 0,
+        "ci95": {
+          "low": 0,
+          "high": 0
+        }
+      },
+      "taskSkillHitRate": {
+        "value": 0,
+        "ci95": {
+          "low": 2.7755575615628914e-17,
+          "high": 0.3903342879021653
+        }
+      }
+    },
+    "sop_v1": {
+      "eligibleTasks": 6,
+      "passAt1": {
+        "value": 1,
+        "ci95": {
+          "low": 0.6096657120978346,
+          "high": 1
+        }
+      },
+      "averageTurns": {
+        "value": 20.833333333333332,
+        "ci95": {
+          "low": 20.166666666666668,
+          "high": 21.833333333333332
+        }
+      },
+      "averageAgentTokens": {
+        "value": 183622,
+        "ci95": {
+          "low": 172684.16666666666,
+          "high": 194817.16666666666
+        }
+      },
+      "averageTotalTokensIncludingSkillOverhead": 183622,
+      "skillOverheadTokens": 0,
+      "eligibleBoundaries": 1,
+      "skillCreates": 0,
+      "skillUpdates": 0,
+      "skillExtractionRate": {
+        "value": 0,
+        "ci95": {
+          "low": 0,
+          "high": 0.7934506856227626
+        }
+      },
+      "skillReuseRate": {
+        "value": 0,
+        "ci95": {
+          "low": 0,
+          "high": 0
+        }
+      },
+      "taskSkillHitRate": {
+        "value": 0,
+        "ci95": {
+          "low": 2.7755575615628914e-17,
+          "high": 0.3903342879021653
+        }
+      }
+    }
+  },
+  "pairedAgainst": "baseline",
+  "paired": {
+    "static": {
+      "pairedRuns": 6,
+      "passAt1Delta": {
+        "value": 0,
+        "ci95": {
+          "low": 0,
+          "high": 0
+        }
+      },
+      "averageTurnDelta": {
+        "value": 0,
+        "ci95": {
+          "low": -3.6666666666666665,
+          "high": 4.166666666666667
+        }
+      },
+      "averageAgentTokenDelta": {
+        "value": -19745,
+        "ci95": {
+          "low": -37681.833333333336,
+          "high": 15035.666666666666
+        }
+      },
+      "negativeTransferRate": 0,
+      "positiveTransferRate": 0
+    },
+    "adaptive_v1": {
+      "pairedRuns": 6,
+      "passAt1Delta": {
+        "value": 0,
+        "ci95": {
+          "low": 0,
+          "high": 0
+        }
+      },
+      "averageTurnDelta": {
+        "value": 0.8333333333333334,
+        "ci95": {
+          "low": -1.3333333333333333,
+          "high": 3
+        }
+      },
+      "averageAgentTokenDelta": {
+        "value": -16058.666666666666,
+        "ci95": {
+          "low": -26890.666666666668,
+          "high": -5625.333333333333
+        }
+      },
+      "negativeTransferRate": 0,
+      "positiveTransferRate": 0
+    },
+    "sop_v1": {
+      "pairedRuns": 6,
+      "passAt1Delta": {
+        "value": 0,
+        "ci95": {
+          "low": 0,
+          "high": 0
+        }
+      },
+      "averageTurnDelta": {
+        "value": 0.8333333333333334,
+        "ci95": {
+          "low": -2.1666666666666665,
+          "high": 3.6666666666666665
+        }
+      },
+      "averageAgentTokenDelta": {
+        "value": -17761.166666666668,
+        "ci95": {
+          "low": -34562.333333333336,
+          "high": 3257.1666666666665
+        }
+      },
+      "negativeTransferRate": 0,
+      "positiveTransferRate": 0
+    }
+  }
+}

@@ -1,0 +1,720 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-21T11:57:05.4359062+08:00",
+  "target_total": 100,
+  "final_total": 100,
+  "scope": {
+    "team_id": "team-dyf7fb74wi",
+    "agent_id": "agt-dyf7zr5fjh",
+    "user_id": "usr-dw4keqm922",
+    "task_id": "default"
+  },
+  "sources": [
+    {
+      "repo": "https://github.com/obra/superpowers",
+      "commit": "b36e0829c6d0140e93cfef2ca599b1b07d4a7797",
+      "license": "MIT",
+      "preexisting_count": 2
+    },
+    {
+      "repo": "https://github.com/alirezarezvani/claude-skills",
+      "commit": "aa8d778811a557a2c28ccadda4cf3d0bd028a4cc",
+      "license": "MIT",
+      "imported_count": 98
+    }
+  ],
+  "import_policy": {
+    "only_skill_md": true,
+    "executable_resources_included": false,
+    "max_skill_bytes": 131072,
+    "deny_pattern_scan": "v1"
+  },
+  "imported": [
+    {
+      "name": "agent-designer",
+      "skill_id": "skl-EpSnT4UNy4Db",
+      "source_path": "engineering/skills/agent-designer/SKILL.md",
+      "sha256": "f922d5b154af01ea80edf597c11df5a38339fb40f9a164ebe857c516fa1ec1bd",
+      "bytes": 4317
+    },
+    {
+      "name": "agent-workflow-designer",
+      "skill_id": "skl-km6FFDIrQXzt",
+      "source_path": "engineering/skills/agent-workflow-designer/SKILL.md",
+      "sha256": "c3cfd33ac98ae288bcabd17fe66feedf4f2d5fcd5300541a09e4c4c321c5daca",
+      "bytes": 2807
+    },
+    {
+      "name": "api-design-reviewer",
+      "skill_id": "skl-H9mOxQ1nnAZg",
+      "source_path": "engineering/skills/api-design-reviewer/SKILL.md",
+      "sha256": "984d644fd5d0ef8fcdb22673491f6097f389cba344665d15595c6420e977f66f",
+      "bytes": 13336
+    },
+    {
+      "name": "api-test-suite-builder",
+      "skill_id": "skl-GkIXI339j9e6",
+      "source_path": "engineering/skills/api-test-suite-builder/SKILL.md",
+      "sha256": "661a1fcc8bd753e1f2962ab8f77a9e3fdc78b4724273e7bf9c4ee6d5e5c3ab66",
+      "bytes": 6486
+    },
+    {
+      "name": "browser-automation",
+      "skill_id": "skl-bXYAtMGMDxvc",
+      "source_path": "engineering/skills/browser-automation/SKILL.md",
+      "sha256": "b1f02ec229ca36d76bf5c2dc52029054630e3a7ef4b5a963fda32d99019f0029",
+      "bytes": 14082
+    },
+    {
+      "name": "changelog-generator",
+      "skill_id": "skl-A6BJAqTAINyZ",
+      "source_path": "engineering/skills/changelog-generator/SKILL.md",
+      "sha256": "0d65da3689616b5091130248ac75126f629dcecba7db53a32f0ee7abddb8e7a5",
+      "bytes": 7727
+    },
+    {
+      "name": "chaos-engineering",
+      "skill_id": "skl-QJY6YTMcq09b",
+      "source_path": "engineering/skills/chaos-engineering/SKILL.md",
+      "sha256": "fef2d66da2869fd5f185126406db880c901ff6a1e791b4d0d1c8d8b5568412b8",
+      "bytes": 10921
+    },
+    {
+      "name": "ci-cd-pipeline-builder",
+      "skill_id": "skl-x5O6PJ9s605p",
+      "source_path": "engineering/skills/ci-cd-pipeline-builder/SKILL.md",
+      "sha256": "f27bc28923ba2f894376a79870869bf00bd26833f9d52805d925ea4deda3ff84",
+      "bytes": 3317
+    },
+    {
+      "name": "codebase-onboarding",
+      "skill_id": "skl-pLDrcZ7L58Ct",
+      "source_path": "engineering/skills/codebase-onboarding/SKILL.md",
+      "sha256": "3f81f941a11c62db8064f643eb2e548f0518adbfeea28681e5d67ab79bb35a12",
+      "bytes": 2690
+    },
+    {
+      "name": "database-designer",
+      "skill_id": "skl-phNU7pBmmy2L",
+      "source_path": "engineering/skills/database-designer/SKILL.md",
+      "sha256": "2631b1cc6f005e5bc450227c3f91e77e3469bc55d9eaaec04c5fc85924127bd3",
+      "bytes": 13085
+    },
+    {
+      "name": "database-schema-designer",
+      "skill_id": "skl-bXtsUSY9tgQm",
+      "source_path": "engineering/skills/database-schema-designer/SKILL.md",
+      "sha256": "79b5f970648f1f77777bc6d754c22ff35aac4dd194bf7bc75d391385a3a1d45c",
+      "bytes": 7750
+    },
+    {
+      "name": "dependency-auditor",
+      "skill_id": "skl-GRDRwPZ6Shr8",
+      "source_path": "engineering/skills/dependency-auditor/SKILL.md",
+      "sha256": "9e4e5e475cbc5b6f5853ad6a42c64ff83a07e890b737f30ba76a6f69ff68e1ad",
+      "bytes": 4676
+    },
+    {
+      "name": "engineering-advanced-skills",
+      "skill_id": "skl-tzNCNdWD6aQT",
+      "source_path": "engineering/skills/engineering-advanced-skills/SKILL.md",
+      "sha256": "3d23a502f5b3ba439bc4836dd485d2934ed4b061c2c6257d809d6e2bc5373273",
+      "bytes": 4371
+    },
+    {
+      "name": "feature-flags-architect",
+      "skill_id": "skl-1EPPd866iOfr",
+      "source_path": "engineering/skills/feature-flags-architect/SKILL.md",
+      "sha256": "59783f3e5a8d545b48cc2637320a3fc822391ebfabe80140badaf6a40ce25e16",
+      "bytes": 10014
+    },
+    {
+      "name": "focused-fix",
+      "skill_id": "skl-BaQFvIeLkLX7",
+      "source_path": "engineering/skills/focused-fix/SKILL.md",
+      "sha256": "c84b7c193178d14a6449bb46cedc8375f43bf6bf62c1e41a302db8438beee112",
+      "bytes": 14096
+    },
+    {
+      "name": "full-page-screenshot",
+      "skill_id": "skl-BIqwZFztaqmq",
+      "source_path": "engineering/skills/full-page-screenshot/SKILL.md",
+      "sha256": "b347f861f835d64ef17637a0c51fc09121953142f6399de4c9c87f9af62eddc4",
+      "bytes": 5631
+    },
+    {
+      "name": "git-worktree-manager",
+      "skill_id": "skl-aRZAD6iNMq0C",
+      "source_path": "engineering/skills/git-worktree-manager/SKILL.md",
+      "sha256": "f482fc46d910ddc16321d5625c99eb63a885b4486487b56e81735ee6bc705f8e",
+      "bytes": 7282
+    },
+    {
+      "name": "interview-system-designer",
+      "skill_id": "skl-xlry80jsudUe",
+      "source_path": "engineering/skills/interview-system-designer/SKILL.md",
+      "sha256": "ca0c60545582f7a5181da2fab3fb5cc86144be2fce0f8f467ed04a494affc2d9",
+      "bytes": 2329
+    },
+    {
+      "name": "kubernetes-operator",
+      "skill_id": "skl-dgPHuHTOfpQJ",
+      "source_path": "engineering/skills/kubernetes-operator/SKILL.md",
+      "sha256": "5d6c3c97ba4e86c84f1d05007859390699b40eb8ca9511dda7ff4aaa300aed63",
+      "bytes": 11480
+    },
+    {
+      "name": "mcp-server-builder",
+      "skill_id": "skl-ngl0trpOwhi7",
+      "source_path": "engineering/skills/mcp-server-builder/SKILL.md",
+      "sha256": "7b052294865afb054e948d2d1920c2d66fa8b6f9fd178d5ef72d08591bc3ac26",
+      "bytes": 4044
+    },
+    {
+      "name": "migration-architect",
+      "skill_id": "skl-xSR2fm3rBcRF",
+      "source_path": "engineering/skills/migration-architect/SKILL.md",
+      "sha256": "3ae60dba31bef878bc8f5bc2c103153f229ea6e0d66bcb90f6a62f7f760ba64c",
+      "bytes": 17155
+    },
+    {
+      "name": "monorepo-navigator",
+      "skill_id": "skl-Mp788ypjxKEF",
+      "source_path": "engineering/skills/monorepo-navigator/SKILL.md",
+      "sha256": "d7dc049309654708a8c7c46b32e621e9e35ebeef3ffd1542e2beea7fa8526be2",
+      "bytes": 5045
+    },
+    {
+      "name": "observability-designer",
+      "skill_id": "skl-eijWnfcfSVG0",
+      "source_path": "engineering/skills/observability-designer/SKILL.md",
+      "sha256": "7062962cc74bb07cec6aafb0343a1176467923ef6b1c35e54f62e075a52d3f26",
+      "bytes": 14166
+    },
+    {
+      "name": "performance-profiler",
+      "skill_id": "skl-9pDurNQnW7a3",
+      "source_path": "engineering/skills/performance-profiler/SKILL.md",
+      "sha256": "d2c0957360c00c60caefb98212b2ada1b4f9681ed4a288b42df7f78cf7be753a",
+      "bytes": 2835
+    },
+    {
+      "name": "pr-review-expert",
+      "skill_id": "skl-bXSzRiSTLaGC",
+      "source_path": "engineering/skills/pr-review-expert/SKILL.md",
+      "sha256": "6d2e3ed34fa99b43136499e9d9de3a435dcd41594dec42f17b0e516b6b6b3e19",
+      "bytes": 13044
+    },
+    {
+      "name": "rag-architect",
+      "skill_id": "skl-8gmAXm9VOepj",
+      "source_path": "engineering/skills/rag-architect/SKILL.md",
+      "sha256": "8762dda7ecf6c3f1964d040722b4c50df025dc3c2c1d07ae22a6bb02507b12c7",
+      "bytes": 4577
+    },
+    {
+      "name": "runbook-generator",
+      "skill_id": "skl-CptJ4zDaOwv7",
+      "source_path": "engineering/skills/runbook-generator/SKILL.md",
+      "sha256": "2bb8c5a3a84f6f5e2fe2a49b6789623089cc1d7e9bda70c0ccbed2a73142dc47",
+      "bytes": 2215
+    },
+    {
+      "name": "self-eval",
+      "skill_id": "skl-dIuVCSAK2MUi",
+      "source_path": "engineering/skills/self-eval/SKILL.md",
+      "sha256": "016ec76108169f533c4b157204a2d399114fb93cef69018e2ad0469137965988",
+      "bytes": 8638
+    },
+    {
+      "name": "ship-gate",
+      "skill_id": "skl-gjCZgE4bOC73",
+      "source_path": "engineering/skills/ship-gate/SKILL.md",
+      "sha256": "671fc92004270c5fb1930016389007216fef7b9fd1b5a58df60ea3f7535dd71e",
+      "bytes": 6796
+    },
+    {
+      "name": "skill-tester",
+      "skill_id": "skl-1fSIGFggE5BB",
+      "source_path": "engineering/skills/skill-tester/SKILL.md",
+      "sha256": "17ac41f01eab5e48fbf6e1c49f4f3fd3ee54a95cc147a233075c45d9c84c1a55",
+      "bytes": 5167
+    },
+    {
+      "name": "slo-architect",
+      "skill_id": "skl-ykjbZEQbhRpy",
+      "source_path": "engineering/skills/slo-architect/SKILL.md",
+      "sha256": "1cc633ca26b98f7ef25b74abfc2167816b857a7a950246b2869915e73cee0ef3",
+      "bytes": 10767
+    },
+    {
+      "name": "spec-driven-workflow",
+      "skill_id": "skl-qUGkq4foJGhC",
+      "source_path": "engineering/skills/spec-driven-workflow/SKILL.md",
+      "sha256": "8d2983eaa6b7955b56b1697928ffdaf5841ec0cd677d8e1857b6ba2aeeddf8fe",
+      "bytes": 15979
+    },
+    {
+      "name": "sql-database-assistant",
+      "skill_id": "skl-MpSZFhM5brlT",
+      "source_path": "engineering/skills/sql-database-assistant/SKILL.md",
+      "sha256": "6ac859523f80da4f3a22ca31316c7ec68179976fed72a508305bb647406c3f47",
+      "bytes": 16534
+    },
+    {
+      "name": "tc-tracker",
+      "skill_id": "skl-UhIoRl85mtnj",
+      "source_path": "engineering/skills/tc-tracker/SKILL.md",
+      "sha256": "84e23e0931f5d5b35d02964e8f18cceb24a894c599b8ff0d23be8f404ca97d58",
+      "bytes": 10532
+    },
+    {
+      "name": "tech-debt-tracker",
+      "skill_id": "skl-LS5pLIYktjMU",
+      "source_path": "engineering/skills/tech-debt-tracker/SKILL.md",
+      "sha256": "feab857f0815bf637d51964c2c057a9d519edd0a3d00ce1aa1cef8c19deb7585",
+      "bytes": 4830
+    },
+    {
+      "name": "adversarial-reviewer",
+      "skill_id": "skl-5Tnxhcje0ZUJ",
+      "source_path": "engineering-team/skills/adversarial-reviewer/SKILL.md",
+      "sha256": "a2984c5a37300ef5cbbed0f50e6b88bc4c35eb9948c5a78986c79a12c0676e3c",
+      "bytes": 12147
+    },
+    {
+      "name": "aws-solution-architect",
+      "skill_id": "skl-jB0L8pupjfya",
+      "source_path": "engineering-team/skills/aws-solution-architect/SKILL.md",
+      "sha256": "457095ba706d54b76a129b7d563551a4b13b261daec750bfb73f901aa3ae0b65",
+      "bytes": 10460
+    },
+    {
+      "name": "azure-cloud-architect",
+      "skill_id": "skl-rgUdPLg6nTDu",
+      "source_path": "engineering-team/skills/azure-cloud-architect/SKILL.md",
+      "sha256": "a94668faa7fba7f3193daa5ec78d6c194f38f46ce53ad6bcb402c8b3b8cb83db",
+      "bytes": 14165
+    },
+    {
+      "name": "code-reviewer",
+      "skill_id": "skl-E48MnEeOqtz4",
+      "source_path": "engineering-team/skills/code-reviewer/SKILL.md",
+      "sha256": "5cbee60ac1fb0279a0ade848c48797b1547ceebc27711c642844b2a875855e84",
+      "bytes": 6704
+    },
+    {
+      "name": "engineering-skills",
+      "skill_id": "skl-ixtbCScmRMu6",
+      "source_path": "engineering-team/skills/engineering-skills/SKILL.md",
+      "sha256": "02b38dfb602872d2cfadcf675f773c71ff46edf07b9a39042565a2189606e0a7",
+      "bytes": 3642
+    },
+    {
+      "name": "epic-design",
+      "skill_id": "skl-c08MK0pQuqZP",
+      "source_path": "engineering-team/skills/epic-design/SKILL.md",
+      "sha256": "9db0c2264f06477de8ae57c344a684e59dd7f83cdeb9e6d0e1f3d942eba809a6",
+      "bytes": 16736
+    },
+    {
+      "name": "gcp-cloud-architect",
+      "skill_id": "skl-jey4hR9kf4Xu",
+      "source_path": "engineering-team/skills/gcp-cloud-architect/SKILL.md",
+      "sha256": "32954c004737c75bc89c032fd445fdbe1f19a37093fa2924f87c1d9f9d074789",
+      "bytes": 13349
+    },
+    {
+      "name": "incident-commander",
+      "skill_id": "skl-pgBrciYR1AE1",
+      "source_path": "engineering-team/skills/incident-commander/SKILL.md",
+      "sha256": "a390d5b1b4bb3407309639b50f269484476ac15894b91fa6cf72b65594d0779d",
+      "bytes": 15746
+    },
+    {
+      "name": "named-persona-adversarial-review",
+      "skill_id": "skl-9mcfFcoqv6rA",
+      "source_path": "engineering-team/skills/named-persona-adversarial-review/SKILL.md",
+      "sha256": "99fba0c83c5f6f75597e9540cabbc49c5a41ccc15c8f8e597d5ff50bf45578c3",
+      "bytes": 11111
+    },
+    {
+      "name": "senior-architect",
+      "skill_id": "skl-01dhxTsdMsW4",
+      "source_path": "engineering-team/skills/senior-architect/SKILL.md",
+      "sha256": "0e4ce0661ccff6b365a5dd23853ee584dac921e7f47654e6086772b918c88937",
+      "bytes": 11315
+    },
+    {
+      "name": "senior-backend",
+      "skill_id": "skl-T7jr4IU8VtZT",
+      "source_path": "engineering-team/skills/senior-backend/SKILL.md",
+      "sha256": "213d4445e0b4983e1e2bc2152caf6e08cb8514368b08ad1b23924e9fa915fa0f",
+      "bytes": 15579
+    },
+    {
+      "name": "senior-computer-vision",
+      "skill_id": "skl-3qSM3o7xnWLo",
+      "source_path": "engineering-team/skills/senior-computer-vision/SKILL.md",
+      "sha256": "782c5398c99fb39cd5f8a775c3f1d9629dce1350a74ffef23056596e767a3b1b",
+      "bytes": 13344
+    },
+    {
+      "name": "senior-data-engineer",
+      "skill_id": "skl-XAWccIHB6DRP",
+      "source_path": "engineering-team/skills/senior-data-engineer/SKILL.md",
+      "sha256": "eb37bc8a3ea0cd3f0f45f14d5f07e6ee86792e30699af53a2b88baab6daee34e",
+      "bytes": 5993
+    },
+    {
+      "name": "senior-data-scientist",
+      "skill_id": "skl-L1anTA1roGuv",
+      "source_path": "engineering-team/skills/senior-data-scientist/SKILL.md",
+      "sha256": "53739f58ae0ead847792536d54627d63f142c814da338882a888d658a7dacee2",
+      "bytes": 9621
+    },
+    {
+      "name": "senior-devops",
+      "skill_id": "skl-SJvTvRhPMGcL",
+      "source_path": "engineering-team/skills/senior-devops/SKILL.md",
+      "sha256": "3a4cee688a5d3deb7ab617ee072015bae17dcefbddb3173c3ea30ddc10ba99c1",
+      "bytes": 11124
+    },
+    {
+      "name": "senior-frontend",
+      "skill_id": "skl-RVAUEh5fPjTg",
+      "source_path": "engineering-team/skills/senior-frontend/SKILL.md",
+      "sha256": "0f6534012941056be4320a22975eed6cae7e2ce2266f61cd706031fea217d05c",
+      "bytes": 16272
+    },
+    {
+      "name": "senior-fullstack",
+      "skill_id": "skl-Lhv07em0h6Xw",
+      "source_path": "engineering-team/skills/senior-fullstack/SKILL.md",
+      "sha256": "9eb250368ee2589ff1e2f631b106e20ca2b3030d4dfb33edf2a978d41089c5f1",
+      "bytes": 15058
+    },
+    {
+      "name": "senior-ml-engineer",
+      "skill_id": "skl-Ch2RHilTEOLL",
+      "source_path": "engineering-team/skills/senior-ml-engineer/SKILL.md",
+      "sha256": "55d10eb3323e5560b4d30cfc134a6ca4c8385ee2c91ebc8a93d80d38f009231d",
+      "bytes": 9423
+    },
+    {
+      "name": "senior-prompt-engineer",
+      "skill_id": "skl-C4UGx0ayjNBW",
+      "source_path": "engineering-team/skills/senior-prompt-engineer/SKILL.md",
+      "sha256": "6b22f3d1f1c5f8298f85a7bf6660a98dedb836c643394ea50463b2bd2bb5ff26",
+      "bytes": 10093
+    },
+    {
+      "name": "senior-qa",
+      "skill_id": "skl-DOvOyJiX02GH",
+      "source_path": "engineering-team/skills/senior-qa/SKILL.md",
+      "sha256": "85d6970be9fa6442e77a6769de86a5cf871f535fcc6ee485f6c88605e153e637",
+      "bytes": 8919
+    },
+    {
+      "name": "senior-secops",
+      "skill_id": "skl-95hrY6mpD0Ub",
+      "source_path": "engineering-team/skills/senior-secops/SKILL.md",
+      "sha256": "c1b8a552b4330579145601c2104ef84ab639480b04fccc6e0abea9c49d70d8a2",
+      "bytes": 16567
+    },
+    {
+      "name": "senior-security",
+      "skill_id": "skl-OH2qdTrWvGS4",
+      "source_path": "engineering-team/skills/senior-security/SKILL.md",
+      "sha256": "8d550378e546ea38570cc200d74c2f6fe5670b6895f297376b74af25efbb25d8",
+      "bytes": 5252
+    },
+    {
+      "name": "tdd-guide",
+      "skill_id": "skl-bwd63liXbzZz",
+      "source_path": "engineering-team/skills/tdd-guide/SKILL.md",
+      "sha256": "faa63e59f2c8b1391bb2d038a80a6ebfbcbb94f819a7468bfb8a3f0d3f22e6ff",
+      "bytes": 14110
+    },
+    {
+      "name": "tech-stack-evaluator",
+      "skill_id": "skl-7JAfK6O4GScJ",
+      "source_path": "engineering-team/skills/tech-stack-evaluator/SKILL.md",
+      "sha256": "81853ce8ed905e6ab65049e6f9f21068de8138e7468c130947bedb3d41e17da1",
+      "bytes": 4532
+    },
+    {
+      "name": "competitive-teardown",
+      "skill_id": "skl-vRwekvGRX2fO",
+      "source_path": "product-team/skills/competitive-teardown/SKILL.md",
+      "sha256": "2c1cb3768563076d507294c3efdf66e82273938ced90e68555223e8d9d0848b7",
+      "bytes": 8595
+    },
+    {
+      "name": "experiment-designer",
+      "skill_id": "skl-JpGf84AmEUOt",
+      "source_path": "product-team/skills/experiment-designer/SKILL.md",
+      "sha256": "af52f9472fd1c8c6f739aa43c44473a44b7dfb7c0bfb6c15c75b0a25cde40379",
+      "bytes": 3233
+    },
+    {
+      "name": "landing-page-generator",
+      "skill_id": "skl-uN0FQbjDfUQB",
+      "source_path": "product-team/skills/landing-page-generator/SKILL.md",
+      "sha256": "2846f427333c93abdbc5e0e6629a0e8f3a850a434fcc7ad09e0ea0caa0f441a6",
+      "bytes": 10844
+    },
+    {
+      "name": "product-analytics",
+      "skill_id": "skl-aQg7EX5PO3KU",
+      "source_path": "product-team/skills/product-analytics/SKILL.md",
+      "sha256": "bb6365838762b29d1872d8ce1ee4aa1b39bcbe89a0190279e866b5610ec8f35c",
+      "bytes": 5648
+    },
+    {
+      "name": "product-discovery",
+      "skill_id": "skl-n33owXnrQTFG",
+      "source_path": "product-team/skills/product-discovery/SKILL.md",
+      "sha256": "2dba0cf30e07821f2787210af9cd2b227a82919f82e1feabdf209a6292bebe85",
+      "bytes": 3426
+    },
+    {
+      "name": "product-manager-toolkit",
+      "skill_id": "skl-CtkqGyLAZErq",
+      "source_path": "product-team/skills/product-manager-toolkit/SKILL.md",
+      "sha256": "60095157ce30a6e166ffe704d69498961706b0a0c114116ed6ebef59fd3c5ae4",
+      "bytes": 10444
+    },
+    {
+      "name": "product-skills",
+      "skill_id": "skl-9rcvJiMQE8zE",
+      "source_path": "product-team/skills/product-skills/SKILL.md",
+      "sha256": "50f8e7d6177922078d63f08995e7d739ecae392050b7323ab4bf5db84d52a179",
+      "bytes": 10661
+    },
+    {
+      "name": "product-strategist",
+      "skill_id": "skl-Np0tm1acV6Sn",
+      "source_path": "product-team/skills/product-strategist/SKILL.md",
+      "sha256": "8b07b38ec00437cdc2bcfec5cd164b505711bb776f2b4cb3c72d70ebcf66356d",
+      "bytes": 7552
+    },
+    {
+      "name": "roadmap-communicator",
+      "skill_id": "skl-4yiV1uTZYdzI",
+      "source_path": "product-team/skills/roadmap-communicator/SKILL.md",
+      "sha256": "da6b62194a0884ea67a6aa3dd87663e4193f393aab3d855761d48bcf27e12056",
+      "bytes": 2682
+    },
+    {
+      "name": "saas-scaffolder",
+      "skill_id": "skl-ZJkQySfmL0XC",
+      "source_path": "product-team/skills/saas-scaffolder/SKILL.md",
+      "sha256": "2e576e3354e6b852ac9fd1290ece09c5562265276d0c87f06f85f5b2353dedda",
+      "bytes": 11098
+    },
+    {
+      "name": "spec-to-repo",
+      "skill_id": "skl-bEVQzRLCtuwL",
+      "source_path": "product-team/skills/spec-to-repo/SKILL.md",
+      "sha256": "3b24b8b6392b078a35e3ed077a6300158893ebf7609d793cbb19aead8a459a5f",
+      "bytes": 11570
+    },
+    {
+      "name": "ui-design-system",
+      "skill_id": "skl-lFwAJhB7lujN",
+      "source_path": "product-team/skills/ui-design-system/SKILL.md",
+      "sha256": "ee2260a62ed41cc199072355db58a0530cfffd76ae412b294043781ea78cd81b",
+      "bytes": 11168
+    },
+    {
+      "name": "ux-researcher-designer",
+      "skill_id": "skl-KB6TaRtm1geW",
+      "source_path": "product-team/skills/ux-researcher-designer/SKILL.md",
+      "sha256": "0cd123f3304c8f7c774167724a174ee89538512dce1ccd47703699a0b0e8fbd1",
+      "bytes": 12426
+    },
+    {
+      "name": "clinical-research",
+      "skill_id": "skl-MTKVquXaAwLx",
+      "source_path": "research-ops/skills/clinical-research/SKILL.md",
+      "sha256": "d08d8fca0c345412049ad1cc01a20216076b13276a2b8c6d5981553ab88c7507",
+      "bytes": 11102
+    },
+    {
+      "name": "market-research",
+      "skill_id": "skl-HHaimJ3qyNHI",
+      "source_path": "research-ops/skills/market-research/SKILL.md",
+      "sha256": "1c886208f49aa246f66db5ac03946aef5859f300d57b41d147116d9e3d859cd4",
+      "bytes": 10422
+    },
+    {
+      "name": "product-research",
+      "skill_id": "skl-r9K833MF4KZi",
+      "source_path": "research-ops/skills/product-research/SKILL.md",
+      "sha256": "ec17451ed43f41966018e2b66cf89fb4cde4a8adb33cf631c1823fbf95dee22c",
+      "bytes": 11007
+    },
+    {
+      "name": "research-ops-skills",
+      "skill_id": "skl-gGOHF4rkLEvq",
+      "source_path": "research-ops/skills/research-ops-skills/SKILL.md",
+      "sha256": "001a0ee6070ceccfdf39a916b16f096ec1511fb007b9397e46b51af1d6064aa5",
+      "bytes": 11356
+    },
+    {
+      "name": "andreessen",
+      "skill_id": "skl-PVGvnk58mrIC",
+      "source_path": "productivity/andreessen/skills/andreessen/SKILL.md",
+      "sha256": "6ad4891ed76c47d04fd4a070a55c884e17e5985fa9434709b886d965e3649f2b",
+      "bytes": 12174
+    },
+    {
+      "name": "capture",
+      "skill_id": "skl-J7TyNRX3diJy",
+      "source_path": "productivity/capture/skills/capture/SKILL.md",
+      "sha256": "f358b66663fc54cbbbc0f64c5833370e651012560541da496a89d2cf07c81ec5",
+      "bytes": 11286
+    },
+    {
+      "name": "deep-work",
+      "skill_id": "skl-WPLuQyBqcicN",
+      "source_path": "productivity/deep-work/skills/deep-work/SKILL.md",
+      "sha256": "9bee7ee178bd103c89c396593bb2c8402e095318a586c641f49a6a9fff265681",
+      "bytes": 6195
+    },
+    {
+      "name": "inbox-setup",
+      "skill_id": "skl-MEbkuxQvn4nd",
+      "source_path": "productivity/email/skills/inbox-setup/SKILL.md",
+      "sha256": "e5a886958a8b33c209a560dc44e2bf71ef3661f63408d4c8b26cb4bb1eacb91e",
+      "bytes": 15549
+    },
+    {
+      "name": "inbox-triage",
+      "skill_id": "skl-YYMKhCW9g5eQ",
+      "source_path": "productivity/email/skills/inbox-triage/SKILL.md",
+      "sha256": "094c06ce9659e27b156f91c45469d569b2ac5d3cbb8b538fb58143499afef89d",
+      "bytes": 14517
+    },
+    {
+      "name": "fable-goal",
+      "skill_id": "skl-B3oXbZhOE0l7",
+      "source_path": "productivity/fable-goal/skills/fable-goal/SKILL.md",
+      "sha256": "095c4d8d2bf923c971c879d6687ff4a78d5e3ed012cc2920590381d85af69fd3",
+      "bytes": 9632
+    },
+    {
+      "name": "handoff",
+      "skill_id": "skl-oMCGa8FbW1R1",
+      "source_path": "productivity/handoff/skills/handoff/SKILL.md",
+      "sha256": "6065a56a0ea2fc2264d9a5a3281fef775ad0a0fe74b55483d0991eff0c155055",
+      "bytes": 10157
+    },
+    {
+      "name": "meetings",
+      "skill_id": "skl-WDGgz0nwAPq1",
+      "source_path": "productivity/meetings/skills/meetings/SKILL.md",
+      "sha256": "944075f23e54c2e52878c35a90eeddc7487a0d99e355fed81d42dcc2baf0c29d",
+      "bytes": 6100
+    },
+    {
+      "name": "reflect",
+      "skill_id": "skl-hc1iJ6jDLG2F",
+      "source_path": "productivity/reflect/skills/reflect/SKILL.md",
+      "sha256": "ab641f3b13cc8b4cd0c670a0138f3ed7125f2e1595d708d4ba302838c7ab8e72",
+      "bytes": 9960
+    },
+    {
+      "name": "weekly-review",
+      "skill_id": "skl-OdiIev6VCtdH",
+      "source_path": "productivity/weekly-review/skills/weekly-review/SKILL.md",
+      "sha256": "62e37e4d4df9780e40645681f7eabb1513af20a3d9c167121f7e4a5878c6cc1d",
+      "bytes": 5912
+    },
+    {
+      "name": "agent-harness",
+      "skill_id": "skl-PwkOfKlCFwrk",
+      "source_path": "engineering/agent-harness/skills/agent-harness/SKILL.md",
+      "sha256": "15d69a3df1446b38b3eeb34e4b7b78089d6df73e51597612c40647b8801c0a5e",
+      "bytes": 8175
+    },
+    {
+      "name": "agenthub",
+      "skill_id": "skl-07XPemoqp02W",
+      "source_path": "engineering/agenthub/skills/agenthub/SKILL.md",
+      "sha256": "b237fd9faae250d1d9026e567fcb173b67b86b50d660135a0121b4eadc8f74fd",
+      "bytes": 8159
+    },
+    {
+      "name": "board",
+      "skill_id": "skl-kB7hpC9FAlMi",
+      "source_path": "engineering/agenthub/skills/board/SKILL.md",
+      "sha256": "04b034279272f9cb3c7537030d868c15f513ae53adfb6467f6da364d96db051b",
+      "bytes": 2555
+    },
+    {
+      "name": "eval",
+      "skill_id": "skl-6uW0uqfqLy2O",
+      "source_path": "engineering/agenthub/skills/eval/SKILL.md",
+      "sha256": "66922d76b578eb0f12eb8a0057d2356e1cabfd47d52304e825c524aec2fdb8e8",
+      "bytes": 2559
+    },
+    {
+      "name": "init",
+      "skill_id": "skl-XvK2GfkKQCLw",
+      "source_path": "engineering/agenthub/skills/init/SKILL.md",
+      "sha256": "0c073fac6a3cbc7f45b3b97a3e932584b595b25d43df653143b3c3a8655ba1ad",
+      "bytes": 2899
+    },
+    {
+      "name": "merge",
+      "skill_id": "skl-W3636rlH8EUR",
+      "source_path": "engineering/agenthub/skills/merge/SKILL.md",
+      "sha256": "ac6b0a667e911272293528de9c985b2a0e734d32649bfe9695499e39f10c9c69",
+      "bytes": 2450
+    },
+    {
+      "name": "run",
+      "skill_id": "skl-GhGveaqSXmJi",
+      "source_path": "engineering/agenthub/skills/run/SKILL.md",
+      "sha256": "e2cc5e9c8dcc514fe9862b9d50673a295c333715f336ed64cfd30afad7ef636c",
+      "bytes": 3900
+    },
+    {
+      "name": "spawn",
+      "skill_id": "skl-oLrFUxeDQNQZ",
+      "source_path": "engineering/agenthub/skills/spawn/SKILL.md",
+      "sha256": "144b455e3bc4879f7d274c8680faffac4f6b26ac379286863a07b1e7bca3c0d0",
+      "bytes": 3428
+    },
+    {
+      "name": "status",
+      "skill_id": "skl-QSLSYINeybee",
+      "source_path": "engineering/agenthub/skills/status/SKILL.md",
+      "sha256": "8e8f47aebedc4d8164833555cd6f7838b0a3daa4dd4355964316eea775ba18e5",
+      "bytes": 2552
+    },
+    {
+      "name": "autoresearch-agent",
+      "skill_id": "skl-c7E9xIlZihmu",
+      "source_path": "engineering/autoresearch-agent/skills/autoresearch-agent/SKILL.md",
+      "sha256": "9354354b5fac75133f3b69d4e8a62216d062c40ffd1c936ec4cb10bc9f0ed44d",
+      "bytes": 12623
+    },
+    {
+      "name": "loop",
+      "skill_id": "skl-nq5KykKcCpro",
+      "source_path": "engineering/autoresearch-agent/skills/loop/SKILL.md",
+      "sha256": "00fa13c2d89b82521aea84efa8ac253d072453a1618b190437b1486cacdcbaed",
+      "bytes": 4341
+    },
+    {
+      "name": "resume",
+      "skill_id": "skl-xWplkls0RuSf",
+      "source_path": "engineering/autoresearch-agent/skills/resume/SKILL.md",
+      "sha256": "3aedeb5cb7cc15e2a8505797db3d030212a7effd70793ac2c26cbec9b117ddd4",
+      "bytes": 2185
+    }
+  ]
+}

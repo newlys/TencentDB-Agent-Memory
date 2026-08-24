@@ -209,6 +209,13 @@ export const listingRequestSchema = z.object({
   ...idFieldsShape,
   query: z.string().max(2048).optional(),
   char_budget: z.number().int().min(0).max(64_000).optional(),
+  routing_context: z.object({
+    complexity: z.enum(["simple", "moderate", "complex"]).optional(),
+    predicted_phases: z.array(z.enum(["explore", "implement", "test", "debug", "review"])).max(5).optional(),
+    current_phase: z.enum(["explore", "implement", "test", "debug", "review"]).optional(),
+    recent_actions: z.array(z.string().max(256)).max(8).optional(),
+    route_cache_hit: z.boolean().optional(),
+  }).optional(),
 }).superRefine(refineAgentNeedsTeam);
 
 /**

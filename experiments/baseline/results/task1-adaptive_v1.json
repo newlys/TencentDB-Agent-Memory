@@ -1,0 +1,620 @@
+{
+  "schema_version": 1,
+  "routing_profile": "adaptive_v1",
+  "started_at": "2026-08-21T06:33:32.683Z",
+  "completed_at": "2026-08-21T06:40:21.723Z",
+  "agent": "WorkBuddy CLI",
+  "requested_model": "glm-5.1",
+  "upstream_model": "qwen3.7-plus",
+  "cases": 12,
+  "positive_cases": 7,
+  "negative_cases": 5,
+  "success_rate": 1,
+  "effective_call_rate": 1,
+  "correct_tool_selection_rate": 0.7142857142857143,
+  "false_call_rate": 0.2,
+  "avg_input_tokens": 74072.75,
+  "avg_turns": 7.833333333333333,
+  "injection": {
+    "avg_chars": 14597.416666666666,
+    "avg_tokens_cl100k": 7324,
+    "unique_prefix_hashes": 12,
+    "prefix_stability_rate": 0.08333333333333333
+  },
+  "rows": [
+    {
+      "id": "skill_tdd",
+      "expected": "skill",
+      "session_id": "t1-skill_tdd-mt2kpibv",
+      "process_exit_code": 0,
+      "success": true,
+      "expected_called": true,
+      "correct_selection": true,
+      "categories": [
+        "skill"
+      ],
+      "cloud_call_count": 1,
+      "turns": 6,
+      "input_tokens": 67682,
+      "output_tokens": 358,
+      "cache_read_tokens": 0,
+      "duration_ms": 28575,
+      "injection": {
+        "system_chars": 31651,
+        "total_chars": 15442,
+        "total_tokens": 7512,
+        "hash": "8cb0e524ff2f954c69440d7fb5e435413ee011a9b33b0a26fa6368818e5e19bb",
+        "blocks": {
+          "skill_tools": {
+            "chars": 2290,
+            "tokens": 1197
+          },
+          "available_skills": {
+            "chars": 3858,
+            "tokens": 894
+          },
+          "memory_tools": {
+            "chars": 3098,
+            "tokens": 1464
+          },
+          "memory_guide": {
+            "chars": 1430,
+            "tokens": 959
+          },
+          "profile_memory": {
+            "chars": 1939,
+            "tokens": 1353
+          },
+          "knowledge_tools": {
+            "chars": 2827,
+            "tokens": 1645
+          }
+        }
+      }
+    },
+    {
+      "id": "skill_api_review",
+      "expected": "skill",
+      "session_id": "t1-skill_api_review-mt2kq9b7",
+      "process_exit_code": 0,
+      "success": true,
+      "expected_called": true,
+      "correct_selection": true,
+      "categories": [
+        "skill"
+      ],
+      "cloud_call_count": 1,
+      "turns": 7,
+      "input_tokens": 64276,
+      "output_tokens": 843,
+      "cache_read_tokens": 27904,
+      "duration_ms": 21550,
+      "injection": {
+        "system_chars": 31220,
+        "total_chars": 15011,
+        "total_tokens": 7402,
+        "hash": "4b45cf49661de5d1c068e68c812cce7a43cb9ff82513bde22a5ee6f5bcbc4796",
+        "blocks": {
+          "skill_tools": {
+            "chars": 2297,
+            "tokens": 1199
+          },
+          "available_skills": {
+            "chars": 3392,
+            "tokens": 774
+          },
+          "memory_tools": {
+            "chars": 3112,
+            "tokens": 1468
+          },
+          "memory_guide": {
+            "chars": 1430,
+            "tokens": 959
+          },
+          "profile_memory": {
+            "chars": 1939,
+            "tokens": 1353
+          },
+          "knowledge_tools": {
+            "chars": 2841,
+            "tokens": 1649
+          }
+        }
+      }
+    },
+    {
+      "id": "skill_debugging",
+      "expected": "skill",
+      "session_id": "t1-skill_debugging-mt2kquk7",
+      "process_exit_code": 0,
+      "success": true,
+      "expected_called": true,
+      "correct_selection": true,
+      "categories": [
+        "skill"
+      ],
+      "cloud_call_count": 1,
+      "turns": 6,
+      "input_tokens": 66211,
+      "output_tokens": 719,
+      "cache_read_tokens": 27904,
+      "duration_ms": 35951,
+      "injection": {
+        "system_chars": 32374,
+        "total_chars": 16165,
+        "total_tokens": 7682,
+        "hash": "886680f11898b08ed37f2c6a823d8ee50daf57159230bb0d133369fb019658b6",
+        "blocks": {
+          "skill_tools": {
+            "chars": 2296,
+            "tokens": 1198
+          },
+          "available_skills": {
+            "chars": 4551,
+            "tokens": 1059
+          },
+          "memory_tools": {
+            "chars": 3110,
+            "tokens": 1466
+          },
+          "memory_guide": {
+            "chars": 1430,
+            "tokens": 959
+          },
+          "profile_memory": {
+            "chars": 1939,
+            "tokens": 1353
+          },
+          "knowledge_tools": {
+            "chars": 2839,
+            "tokens": 1647
+          }
+        }
+      }
+    },
+    {
+      "id": "memory_history",
+      "expected": "memory",
+      "session_id": "t1-memory_history-mt2krs6f",
+      "process_exit_code": 0,
+      "success": true,
+      "expected_called": true,
+      "correct_selection": false,
+      "categories": [
+        "memory",
+        "knowledge"
+      ],
+      "cloud_call_count": 4,
+      "turns": 14,
+      "input_tokens": 138606,
+      "output_tokens": 1095,
+      "cache_read_tokens": 39168,
+      "duration_ms": 31660,
+      "injection": {
+        "system_chars": 30222,
+        "total_chars": 14013,
+        "total_tokens": 7198,
+        "hash": "21032ad15839ca114d589ef88d6f8eea467553c39cb9f91b34f352f89c48e217",
+        "blocks": {
+          "skill_tools": {
+            "chars": 2295,
+            "tokens": 1196
+          },
+          "available_skills": {
+            "chars": 2404,
+            "tokens": 585
+          },
+          "memory_tools": {
+            "chars": 3108,
+            "tokens": 1462
+          },
+          "memory_guide": {
+            "chars": 1430,
+            "tokens": 959
+          },
+          "profile_memory": {
+            "chars": 1939,
+            "tokens": 1353
+          },
+          "knowledge_tools": {
+            "chars": 2837,
+            "tokens": 1643
+          }
+        }
+      }
+    },
+    {
+      "id": "memory_conversation",
+      "expected": "memory",
+      "session_id": "t1-memory_conversation-mt2kskak",
+      "process_exit_code": 0,
+      "success": true,
+      "expected_called": true,
+      "correct_selection": false,
+      "categories": [
+        "memory",
+        "skill"
+      ],
+      "cloud_call_count": 4,
+      "turns": 14,
+      "input_tokens": 107449,
+      "output_tokens": 1175,
+      "cache_read_tokens": 40960,
+      "duration_ms": 54066,
+      "injection": {
+        "system_chars": 30624,
+        "total_chars": 14415,
+        "total_tokens": 7291,
+        "hash": "fda6814cc9bc787481b83f12e158af7fd13602f53e2c567c5ec937b3dd333b81",
+        "blocks": {
+          "skill_tools": {
+            "chars": 2300,
+            "tokens": 1196
+          },
+          "available_skills": {
+            "chars": 2781,
+            "tokens": 678
+          },
+          "memory_tools": {
+            "chars": 3118,
+            "tokens": 1462
+          },
+          "memory_guide": {
+            "chars": 1430,
+            "tokens": 959
+          },
+          "profile_memory": {
+            "chars": 1939,
+            "tokens": 1353
+          },
+          "knowledge_tools": {
+            "chars": 2847,
+            "tokens": 1643
+          }
+        }
+      }
+    },
+    {
+      "id": "knowledge_baseline",
+      "expected": "knowledge",
+      "session_id": "t1-knowledge_baseline-mt2ktue9",
+      "process_exit_code": 0,
+      "success": true,
+      "expected_called": true,
+      "correct_selection": true,
+      "categories": [
+        "knowledge"
+      ],
+      "cloud_call_count": 3,
+      "turns": 14,
+      "input_tokens": 128732,
+      "output_tokens": 1041,
+      "cache_read_tokens": 56192,
+      "duration_ms": 30340,
+      "injection": {
+        "system_chars": 31051,
+        "total_chars": 14842,
+        "total_tokens": 7355,
+        "hash": "1a2795b24ce4692feee05b2656c57120cf73dfaadc64f89dfe3fc7f2b1f93e96",
+        "blocks": {
+          "skill_tools": {
+            "chars": 2299,
+            "tokens": 1196
+          },
+          "available_skills": {
+            "chars": 3213,
+            "tokens": 742
+          },
+          "memory_tools": {
+            "chars": 3116,
+            "tokens": 1462
+          },
+          "memory_guide": {
+            "chars": 1430,
+            "tokens": 959
+          },
+          "profile_memory": {
+            "chars": 1939,
+            "tokens": 1353
+          },
+          "knowledge_tools": {
+            "chars": 2845,
+            "tokens": 1643
+          }
+        }
+      }
+    },
+    {
+      "id": "knowledge_task_scope",
+      "expected": "knowledge",
+      "session_id": "t1-knowledge_task_scope-mt2kuoe8",
+      "process_exit_code": 0,
+      "success": true,
+      "expected_called": true,
+      "correct_selection": true,
+      "categories": [
+        "knowledge"
+      ],
+      "cloud_call_count": 3,
+      "turns": 14,
+      "input_tokens": 128498,
+      "output_tokens": 1551,
+      "cache_read_tokens": 56192,
+      "duration_ms": 72261,
+      "injection": {
+        "system_chars": 30689,
+        "total_chars": 14480,
+        "total_tokens": 7280,
+        "hash": "b4871bbe4273b9b7f7b48d7125860eeca4984074848aa7ed3766b9cc6ab85f25",
+        "blocks": {
+          "skill_tools": {
+            "chars": 2301,
+            "tokens": 1197
+          },
+          "available_skills": {
+            "chars": 2841,
+            "tokens": 662
+          },
+          "memory_tools": {
+            "chars": 3120,
+            "tokens": 1464
+          },
+          "memory_guide": {
+            "chars": 1430,
+            "tokens": 959
+          },
+          "profile_memory": {
+            "chars": 1939,
+            "tokens": 1353
+          },
+          "knowledge_tools": {
+            "chars": 2849,
+            "tokens": 1645
+          }
+        }
+      }
+    },
+    {
+      "id": "none_event_loop",
+      "expected": "none",
+      "session_id": "t1-none_event_loop-mt2kwbpk",
+      "process_exit_code": 0,
+      "success": true,
+      "expected_called": true,
+      "correct_selection": true,
+      "categories": [],
+      "cloud_call_count": 0,
+      "turns": 3,
+      "input_tokens": 31127,
+      "output_tokens": 137,
+      "cache_read_tokens": 15232,
+      "duration_ms": 5685,
+      "injection": {
+        "system_chars": 30139,
+        "total_chars": 13930,
+        "total_tokens": 7195,
+        "hash": "3f2c12d8e0111e8bcd96f6d93278fd3b367c55cc97e3845ec0bf243a9f3ff137",
+        "blocks": {
+          "skill_tools": {
+            "chars": 2296,
+            "tokens": 1196
+          },
+          "available_skills": {
+            "chars": 2316,
+            "tokens": 582
+          },
+          "memory_tools": {
+            "chars": 3110,
+            "tokens": 1462
+          },
+          "memory_guide": {
+            "chars": 1430,
+            "tokens": 959
+          },
+          "profile_memory": {
+            "chars": 1939,
+            "tokens": 1353
+          },
+          "knowledge_tools": {
+            "chars": 2839,
+            "tokens": 1643
+          }
+        }
+      }
+    },
+    {
+      "id": "none_binary_search",
+      "expected": "none",
+      "session_id": "t1-none_binary_search-mt2kwk0l",
+      "process_exit_code": 0,
+      "success": true,
+      "expected_called": true,
+      "correct_selection": true,
+      "categories": [],
+      "cloud_call_count": 0,
+      "turns": 3,
+      "input_tokens": 31220,
+      "output_tokens": 190,
+      "cache_read_tokens": 15232,
+      "duration_ms": 7808,
+      "injection": {
+        "system_chars": 30652,
+        "total_chars": 14443,
+        "total_tokens": 7284,
+        "hash": "a9bf60edaab254f6601d461296a1636f2a6673d9d299804d26f73588f85d65e4",
+        "blocks": {
+          "skill_tools": {
+            "chars": 2299,
+            "tokens": 1197
+          },
+          "available_skills": {
+            "chars": 2814,
+            "tokens": 666
+          },
+          "memory_tools": {
+            "chars": 3116,
+            "tokens": 1464
+          },
+          "memory_guide": {
+            "chars": 1430,
+            "tokens": 959
+          },
+          "profile_memory": {
+            "chars": 1939,
+            "tokens": 1353
+          },
+          "knowledge_tools": {
+            "chars": 2845,
+            "tokens": 1645
+          }
+        }
+      }
+    },
+    {
+      "id": "none_git_concept",
+      "expected": "none",
+      "session_id": "t1-none_git_concept-mt2kwx35",
+      "process_exit_code": 0,
+      "success": true,
+      "expected_called": false,
+      "correct_selection": false,
+      "categories": [
+        "memory"
+      ],
+      "cloud_call_count": 1,
+      "turns": 7,
+      "input_tokens": 62572,
+      "output_tokens": 663,
+      "cache_read_tokens": 45696,
+      "duration_ms": 18050,
+      "injection": {
+        "system_chars": 29514,
+        "total_chars": 13305,
+        "total_tokens": 7063,
+        "hash": "397fb7c524c4ce93585c5c9675a600402a735146266f013492ec90db4c4164aa",
+        "blocks": {
+          "skill_tools": {
+            "chars": 2297,
+            "tokens": 1197
+          },
+          "available_skills": {
+            "chars": 1686,
+            "tokens": 445
+          },
+          "memory_tools": {
+            "chars": 3112,
+            "tokens": 1464
+          },
+          "memory_guide": {
+            "chars": 1430,
+            "tokens": 959
+          },
+          "profile_memory": {
+            "chars": 1939,
+            "tokens": 1353
+          },
+          "knowledge_tools": {
+            "chars": 2841,
+            "tokens": 1645
+          }
+        }
+      }
+    },
+    {
+      "id": "none_type_error",
+      "expected": "none",
+      "session_id": "t1-none_type_error-mt2kxj5j",
+      "process_exit_code": 0,
+      "success": true,
+      "expected_called": true,
+      "correct_selection": true,
+      "categories": [],
+      "cloud_call_count": 0,
+      "turns": 3,
+      "input_tokens": 31289,
+      "output_tokens": 157,
+      "cache_read_tokens": 15232,
+      "duration_ms": 6284,
+      "injection": {
+        "system_chars": 30945,
+        "total_chars": 14736,
+        "total_tokens": 7357,
+        "hash": "1b4728fd347968d0480175e8fdcf11eb32d710425c367e9292f538028fbd9fe1",
+        "blocks": {
+          "skill_tools": {
+            "chars": 2296,
+            "tokens": 1198
+          },
+          "available_skills": {
+            "chars": 3122,
+            "tokens": 734
+          },
+          "memory_tools": {
+            "chars": 3110,
+            "tokens": 1466
+          },
+          "memory_guide": {
+            "chars": 1430,
+            "tokens": 959
+          },
+          "profile_memory": {
+            "chars": 1939,
+            "tokens": 1353
+          },
+          "knowledge_tools": {
+            "chars": 2839,
+            "tokens": 1647
+          }
+        }
+      }
+    },
+    {
+      "id": "none_sql",
+      "expected": "none",
+      "session_id": "t1-none_sql-mt2kxthe",
+      "process_exit_code": 0,
+      "success": true,
+      "expected_called": true,
+      "correct_selection": true,
+      "categories": [],
+      "cloud_call_count": 0,
+      "turns": 3,
+      "input_tokens": 31211,
+      "output_tokens": 67,
+      "cache_read_tokens": 15232,
+      "duration_ms": 6859,
+      "injection": {
+        "system_chars": 30596,
+        "total_chars": 14387,
+        "total_tokens": 7269,
+        "hash": "d250352d81fa62b0dc99193dda60332e8ffe78fb64f47896ae9be1ec956b76f3",
+        "blocks": {
+          "skill_tools": {
+            "chars": 2289,
+            "tokens": 1195
+          },
+          "available_skills": {
+            "chars": 2808,
+            "tokens": 661
+          },
+          "memory_tools": {
+            "chars": 3096,
+            "tokens": 1460
+          },
+          "memory_guide": {
+            "chars": 1430,
+            "tokens": 959
+          },
+          "profile_memory": {
+            "chars": 1939,
+            "tokens": 1353
+          },
+          "knowledge_tools": {
+            "chars": 2825,
+            "tokens": 1641
+          }
+        }
+      }
+    }
+  ]
+}

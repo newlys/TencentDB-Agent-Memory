@@ -1,0 +1,139 @@
+{
+  "model": "qwen3.7-plus",
+  "generatedAt": "2026-08-23T16:37:30.597Z",
+  "judgeCalls": 21,
+  "inputChars": 11083,
+  "promptTokens": 5734,
+  "completionTokens": 1124,
+  "predictions": {
+    "langfuse-ubuntu-compose-success": [
+      {
+        "phase": "after_append",
+        "index": 3,
+        "confidence": 0.95,
+        "reason": "Agent executed a complete multi-step SOP (deploy Langfuse with Docker Compose), verified success via health check and container status, and explicitly confirmed completion."
+      }
+    ],
+    "langfuse-macos-explanation-only": [],
+    "langfuse-compose-recovery-success": [
+      {
+        "phase": "after_append",
+        "index": 3,
+        "confidence": 0.95,
+        "reason": "Agent executed a multi-step SOP (debug port conflict, modify config, redeploy) and achieved a verified successful outcome (health check OK) in the incoming block."
+      }
+    ],
+    "langfuse-k8s-intermediate-success": [
+      {
+        "phase": "after_append",
+        "index": 3,
+        "confidence": 0.95,
+        "reason": "Agent executed a complete multi-step SOP (Helm deploy, rollout wait, health check) and explicitly confirmed the final successful outcome in the incoming message."
+      }
+    ],
+    "langfuse-unfinished": [],
+    "langfuse-topic-switch-before": [
+      {
+        "phase": "after_append",
+        "index": 2,
+        "confidence": 0.95,
+        "reason": "Agent executed a multi-step SOP (deploy via docker compose, verify via curl health check) and confirmed a successful final outcome ('status: OK', '服务已经可用')."
+      }
+    ],
+    "nginx-ubuntu-tls-success": [
+      {
+        "phase": "after_append",
+        "index": 3,
+        "confidence": 0.95,
+        "reason": "Agent executed a complete multi-step SOP (Nginx config check, Certbot issuance, HTTPS verification, and renewal dry-run) with all steps returning verified successful outcomes."
+      }
+    ],
+    "nginx-502-recovery-success": [
+      {
+        "phase": "after_append",
+        "index": 2,
+        "confidence": 0.9,
+        "reason": "Agent executed a diagnostic SOP (check logs, check service status), identified the root cause (service inactive), and provided a verified conclusion resolving the initial 502 error."
+      }
+    ],
+    "nginx-reload-failed": [],
+    "nginx-logrotate-success": [
+      {
+        "phase": "after_append",
+        "index": 2,
+        "confidence": 0.95,
+        "reason": "Agent executed a multi-step SOP (dry-run then force rotate) and explicitly confirmed the final verified successful outcome in the incoming message."
+      }
+    ],
+    "nginx-config-advice": [],
+    "postgres-logical-backup-success": [
+      {
+        "phase": "after_append",
+        "index": 2,
+        "confidence": 0.95,
+        "reason": "Buffered pg_dump succeeded (exit 0). Incoming contains verification steps (pg_restore list, sha256sum) and assistant confirms successful backup with verified readability, completing the SOP."
+      }
+    ],
+    "postgres-restore-staging-success": [
+      {
+        "phase": "after_append",
+        "index": 2,
+        "confidence": 0.95,
+        "reason": "Agent executed restore and smoke test SOP with verified successful outcome in incoming."
+      }
+    ],
+    "postgres-backup-permission-recovery": [
+      {
+        "phase": "after_append",
+        "index": 3,
+        "confidence": 0.95,
+        "reason": "Buffered workflow (export backup) achieved verified success (exit 0 + assistant confirmation). Incoming is a distinct new task (inspect/restore), unrelated to the completed export SOP."
+      }
+    ],
+    "postgres-destructive-confirmation": [],
+    "postgres-topic-switch-before": [
+      {
+        "phase": "after_append",
+        "index": 2,
+        "confidence": 0.95,
+        "reason": "Agent executed a full restore and verification SOP with confirmed success in incoming."
+      }
+    ],
+    "redis-systemd-english-paraphrase": [
+      {
+        "phase": "after_append",
+        "index": 2,
+        "confidence": 0.95,
+        "reason": "Agent executed a multi-step SOP (install, bind, enable) and confirmed verified success via PONG and enabled status."
+      }
+    ],
+    "redis-aof-chinese-paraphrase": [
+      {
+        "phase": "after_append",
+        "index": 2,
+        "confidence": 0.95,
+        "reason": "Agent executed a multi-step SOP (enable AOF, set probe, restart, verify) and confirmed successful outcome with verified data persistence."
+      }
+    ],
+    "redis-replica-intermediate": [],
+    "redis-cli-advice-only": [],
+    "redis-auth-failed": [],
+    "redis-topic-switch-paraphrase": [
+      {
+        "phase": "after_append",
+        "index": 2,
+        "confidence": 0.95,
+        "reason": "Redis service enabled and verified active; PING/PONG confirms successful operational state, completing the SOP."
+      }
+    ],
+    "redis-claimed-done-no-verification": [],
+    "redis-rdb-success-minimal": [
+      {
+        "phase": "after_append",
+        "index": 2,
+        "confidence": 0.95,
+        "reason": "Agent executed a multi-step SOP (trigger BGSAVE, verify via LASTSAVE and redis-check-rdb) and confirmed a verified successful outcome (file valid, no corruption)."
+      }
+    ]
+  }
+}

@@ -121,6 +121,7 @@ export const DEFAULT_CONFIG: ProxyConfig = {
     serviceToken: "",
     serviceId: "context-proxy",
     timeoutMs: 1500,
+    routingProfile: "static",
   },
   knowledge: {
     enabled: false,
@@ -450,6 +451,7 @@ export function buildConfig(overrides: CliOverrides = {}): ProxyConfig {
       serviceToken: yaml.skill?.serviceToken ?? yaml.coreSkill?.serviceToken ?? DEFAULT_CONFIG.coreSkill.serviceToken,
       serviceId: yaml.skill?.serviceId ?? yaml.coreSkill?.serviceId ?? DEFAULT_CONFIG.coreSkill.serviceId,
       timeoutMs: yaml.skill?.timeoutMs ?? yaml.coreSkill?.timeoutMs ?? DEFAULT_CONFIG.coreSkill.timeoutMs,
+      routingProfile: yaml.skill?.routingProfile ?? yaml.coreSkill?.routingProfile ?? DEFAULT_CONFIG.coreSkill.routingProfile,
     },
     knowledge: {
       enabled: yaml.knowledge?.enabled ?? DEFAULT_CONFIG.knowledge.enabled,

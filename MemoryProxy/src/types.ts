@@ -303,6 +303,8 @@ export interface CoreSkillConfig {
   serviceId: string;
   /** Per-call timeout (ms). Default 1500 — RAG is on the session_init hot path. */
   timeoutMs: number;
+  /** Must match MemoryCore skill.routing.profile. Defaults to static. */
+  routingProfile?: "static" | "adaptive_v1";
 }
 
 /**

@@ -1,0 +1,17 @@
+[
+  {
+    "name": "http-client-reliability",
+    "description": "Reliable HTTP client changes: retry policy, Retry-After, timeout cleanup, idempotency, circuit breakers, and concurrent request coalescing.",
+    "body": "Use deterministic tests with a fake clock and scripted transport. Separate retry classification from backoff calculation. Retry safe/idempotent methods by default, always clear abort timers and listeners, allow one half-open breaker probe, and key single-flight only by semantically equivalent requests. Verify failure, cancellation, and concurrency paths."
+  },
+  {
+    "name": "safe-config-engineering",
+    "description": "Configuration engine implementation: safe deep merge, environment interpolation, precedence, schema coercion, provenance, and prototype-pollution protection.",
+    "body": "Treat only plain objects as recursively mergeable and replace arrays. Reject __proto__, prototype and constructor at every path. Keep precedence and source provenance in one traversal. Coerce only according to an explicit schema and produce path-aware errors. Test missing variables, defaults, unsafe nested keys, and source ties."
+  },
+  {
+    "name": "production-cache-patterns",
+    "description": "Production cache design: O(1) LRU, TTL, async single-flight, stale-while-revalidate, size-based eviction, and persistence version migration.",
+    "body": "Centralize entry lifecycle and recency updates. Inject the clock for TTL tests, delete rejected in-flight promises, share SWR refresh promises, track byte accounting on every replacement and eviction, and validate persisted schema versions before migration. Test concurrency with deferred promises rather than sleeps."
+  }
+]

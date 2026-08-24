@@ -1,0 +1,2043 @@
+{
+  "schemaVersion": 1,
+  "model": "qwen3.7-plus",
+  "promptProfile": "balanced_v4",
+  "datasetHash": "b08dd9d7601aa0fb142575469907f1c50a4cdd96f06f0bb48a5406000c045be9",
+  "results": [
+    {
+      "caseId": "ci-cd--actions-cache-poison",
+      "category": "ci-cd",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "fix-github-actions-cache-pollution",
+            "content": "---\nname: fix-github-actions-cache-pollution\ndescription: Resolve GitHub Actions CI failures caused by ABI mismatch from cached wheels by regenerating cache with updated key\n---\n# Fix GitHub Actions Cache Pollution (ABI Mismatch)\n\n## When to use\n- CI fails with errors indicating ABI mismatch, import errors, or binary incompatibility from cached Python wheels/dependencies.\n- Logs show issues like \"ABI mismatch from cached wheels\" after dependency or interpreter changes.\n\n## When not to use\n- Failures unrelated to caching (e.g., code bugs, network timeouts, permission issues).\n- First-time runs where no cache exists yet.\n\n## Required inputs\n- GitHub CLI (`gh`) installed and authenticated.\n- Workflow file name (e.g., `ci.yml`).\n- Failed run ID or ability to identify the failing workflow.\n\n## Workflow\n1. **Inspect failure logs** to confirm cache-related issue:\n   ```bash\n   gh run view <RUN_ID> --log-failed\n   ```\n   Look for keywords like \"ABI mismatch\", \"cached wheels\", or binary import errors.\n\n2. **Trigger a new workflow run with an updated cache key** that incorporates interpreter version and lock file hash:\n   ```bash\n   gh workflow run <WORKFLOW_FILE> -f cache_key=<PLATFORM>-<PYTHON_VERSION>-lock-<LOCK_HASH>\n   ```\n   Example:\n   ```bash\n   gh workflow run ci.yml -f cache_key=linux-py312-lock-a81f\n   ```\n\n3. **Monitor the new run** until completion:\n   ```bash\n   gh run watch --exit-status\n   ```\n\n4. **Verify success**: Confirm the run completes with `conclusion: success`.\n\n## Decision rules\n- If logs do not mention cache or ABI issues, investigate other failure causes instead.\n- Use a cache key that includes both interpreter version and lock file hash to prevent future mismatches.\n\n## Validation\n- New workflow run completes with `conclusion: success`.\n- No ABI mismatch or binary import errors in logs.\n\n## Failure handling / rollback\n- If the new run also fails, check if the cache key was properly updated.\n- As a last resort, manually clear the repository's Actions cache via GitHub UI or API before re-running.\n\n## Pitfalls\n- Using a static cache key without version/hash components will repeat the pollution.\n- Forgetting to update the cache key after dependency or interpreter changes.\n- Not confirming the actual cause of failure before invalidating cache (may waste CI minutes)."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5646,
+      "completionTokens": 645,
+      "iterations": 3
+    },
+    {
+      "caseId": "ci-cd--advice-only",
+      "category": "ci-cd",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 3155,
+      "completionTokens": 18,
+      "iterations": 2
+    },
+    {
+      "caseId": "ci-cd--artifact-signing",
+      "category": "ci-cd",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "container-image-signature-verification",
+            "content": "---\nname: container-image-signature-verification\ndescription: Sign and verify container images using cosign, enforce signature policy\n---\n# Container Image Signature Verification with Cosign\n\n## When to use\n- Before deploying container images to production registries\n- When implementing supply chain security for container artifacts\n- To enforce that only signed images can be deployed\n\n## When not to use\n- For internal development images without security requirements\n- When using alternative signing mechanisms (e.g., Notary v2)\n- For non-container artifacts\n\n## Required inputs\n- `COSIGN_KEY` environment variable containing the private key for signing\n- `cosign.pub` public key file for verification\n- Target image reference (e.g., `reg/api:5.2`)\n- Policy enforcement tool (`policyctl`) configured\n\n## Workflow\n1. **Sign the image**:\n   ```bash\n   cosign sign --key env://COSIGN_KEY <image-reference>\n   ```\n   Expected result: \"signature uploaded\"\n\n2. **Verify the signature**:\n   ```bash\n   cosign verify --key cosign.pub <image-reference>\n   ```\n   Expected result: \"Verified OK\"\n\n3. **Test policy enforcement** (optional but recommended):\n   ```bash\n   policyctl test require-signature <unsigned-image-reference>\n   ```\n   Expected result: \"DENY: missing signature\"\n\n## Decision rules\n- Proceed with deployment only if `cosign verify` returns \"Verified OK\"\n- Reject any image that fails signature verification\n- Use `policyctl` to validate that unsigned images are properly blocked\n\n## Validation\n- Signing step must complete with \"signature uploaded\" message\n- Verification step must return \"Verified OK\"\n- Policy test should deny unsigned images with \"DENY: missing signature\"\n\n## Failure handling / rollback\n- If signing fails: check `COSIGN_KEY` environment variable is set correctly\n- If verification fails: ensure correct public key (`cosign.pub`) is used\n- If policy allows unsigned images: review policy configuration before deployment\n\n## Pitfalls\n- Never commit private keys to version control; use environment variables or secret managers\n- Ensure public key matches the private key used for signing\n- Verify registry supports cosign signatures (most modern registries do)\n- Test policy enforcement in staging before production deployment"
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5589,
+      "completionTokens": 581,
+      "iterations": 3
+    },
+    {
+      "caseId": "ci-cd--canary-auto-rollback",
+      "category": "ci-cd",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "verify-canary-auto-rollback",
+            "content": "---\nname: verify-canary-auto-rollback\ndescription: Procedure to validate that canary deployments automatically roll back when SLOs are violated.\n---\n# Verify Canary Auto-Rollback\n\n## When to use\n- Testing the reliability of the canary deployment pipeline.\n- Verifying that SLO-based alerts correctly trigger rollbacks.\n- Post-incident review to confirm rollback mechanics worked as expected.\n\n## When not to use\n- During actual production incidents where immediate mitigation is required (follow incident response playbook).\n- If the service does not have SLO monitoring configured.\n\n## Required inputs\n- Service name (e.g., `checkout`)\n- Target version for canary (e.g., `v41`)\n- Stable version (e.g., `v40`)\n- Traffic percentage for canary (e.g., `10`)\n- Monitoring window (e.g., `10m`)\n- Health check endpoint (e.g., `/health`)\n\n## Workflow\n1. **Start Canary Deployment**\n   - Deploy the new version with limited traffic.\n   - Command: `deployctl canary <service>:<version> --traffic <percent>`\n   - Example: `deployctl canary checkout:v41 --traffic 10`\n\n2. **Monitor SLOs**\n   - Watch error rates or other key SLOs for the specified window.\n   - Command: `sloctl watch <service> --window <duration>`\n   - Example: `sloctl watch checkout --window 10m`\n\n3. **Verify Rollback Trigger**\n   - Confirm that the system detects the SLO violation (e.g., error_rate > threshold).\n   - Expected output: \"rollback triggered\" or similar indication.\n\n4. **Validate Stability**\n   - Check that the service has reverted to the stable version.\n   - Command: `deployctl status <service>`\n   - Verify health endpoint responds correctly.\n   - Command: `curl -fsS https://<service>/health`\n\n## Decision rules\n- If SLOs remain within bounds during the window, the canary may promote (not covered in this rollback test).\n- If SLOs are violated, automatic rollback must occur.\n- Validation passes only if:\n  - Rollback was triggered.\n  - Status shows the previous stable version.\n  - Health check returns success.\n\n## Validation\n- **Success**: `deployctl status` shows stable version (e.g., `v40`), and `curl` health check returns 200 OK.\n- **Failure**: Status still shows canary version, or health check fails, or no rollback was triggered despite SLO violation.\n\n## Pitfalls\n- Ensure the monitoring window is long enough to capture meaningful traffic but short enough for quick feedback.\n- Verify that the SLO threshold is correctly configured before starting the test.\n- Do not confuse manual rollback with automatic rollback; this procedure tests the *automatic* mechanism."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5932,
+      "completionTokens": 891,
+      "iterations": 3
+    },
+    {
+      "caseId": "ci-cd--db-migration-gate",
+      "category": "ci-cd",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "database-migration-compatibility-gate",
+            "content": "---\nname: database-migration-compatibility-gate\ndescription: Enforces backward compatibility checks for database migrations before deployment\n---\n# Database Migration Compatibility Gate\n\n## When to use\n- Before applying any database schema migration to staging or production environments\n- As part of CI/CD pipeline for database changes\n- When ensuring zero-downtime deployments with backward compatible schema changes\n\n## When not to use\n- For initial database setup (no existing schema)\n- For destructive migrations that require maintenance windows\n- When backward compatibility is explicitly not required (coordinated downtime planned)\n\n## Required inputs\n- Migration SQL file path (e.g., `migrations/YYYYMMDD_description.sql`)\n- Change ticket ID (e.g., `CHG-XXXX`)\n- Target environment name (e.g., `staging`, `production`)\n\n## Workflow\n1. Run static compatibility analysis on the migration file:\n   ```\n   migration-lint <migration_file_path>\n   ```\n2. Verify output confirms \"backward compatible\" status\n3. Apply migration to staging environment and run contract tests:\n   ```\n   dbmigrate --env staging up && contract-tests\n   ```\n4. Confirm migration applied successfully and all contract tests pass\n5. Record the gate result in the pipeline:\n   ```\n   pipeline-gate record --change <change_id> --status passed\n   ```\n\n## Decision rules\n- If `migration-lint` does not return \"backward compatible\", halt and review migration strategy\n- If `contract-tests` fail, rollback migration and fix application contracts\n- Only proceed to production after successful staging validation\n\n## Validation\n- Static lint must report \"backward compatible\"\n- Migration must apply without errors in staging\n- All contract tests must pass (verify test count matches expected suite size)\n- Pipeline gate must be recorded with \"passed\" status\n\n## Failure handling / rollback\n- If lint fails: revise migration to use additive changes only (add columns, never drop/rename)\n- If migration fails: use `dbmigrate --env staging down` to rollback\n- If contract tests fail: revert application code changes, then rollback migration\n- Always record failed status: `pipeline-gate record --change <change_id> --status failed`\n\n## Pitfalls\n- Adding NOT NULL columns without default values breaks backward compatibility\n- Renaming or dropping columns requires coordinated deployment (not covered by this gate)\n- Contract tests must cover all API consumers that depend on the changed schema\n- Ensure change ticket ID matches your organization's change management system format"
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5619,
+      "completionTokens": 623,
+      "iterations": 3
+    },
+    {
+      "caseId": "ci-cd--existing-duplicate",
+      "category": "ci-cd",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 5159,
+      "completionTokens": 63,
+      "iterations": 3
+    },
+    {
+      "caseId": "ci-cd--existing-update",
+      "category": "ci-cd",
+      "expectedAction": "update",
+      "actualAction": "update",
+      "writes": [
+        {
+          "tool": "skill_update",
+          "args": {
+            "skill_id": "existing-ci-cd",
+            "content": "---\nname: ci-cd-recovery\ndescription: CI/CD recovery procedure including stale coordination state handling\n---\n# CI/CD Recovery Procedure\n\n## When to use\nWhen a CI/CD pipeline fails and requires recovery, especially when encountering ABI mismatches or stale coordination states.\n\n## Required inputs\n- Failed run ID (e.g., from `gh run view`)\n- Access to repair tools (`clear-stale-coordination-state`, `rerun-primary-repair`)\n- Health check tool (`run-category-health-smoke`)\n\n## Workflow\n1. Inspect the failed run logs to identify the root cause:\n   ```\n   gh run view <RUN_ID> --log-failed\n   ```\n2. If stale coordination state is detected (often alongside ABI mismatches from cached wheels), clear it within the scoped environment before attempting repair:\n   ```\n   clear-stale-coordination-state --scoped && rerun-primary-repair\n   ```\n3. Run category health smoke tests to verify recovery:\n   ```\n   run-category-health-smoke\n   ```\n\n## Decision rules\n- If logs indicate \"stale coordination state\" or \"ABI mismatch from cached wheels\", always execute the scoped clear step before repair.\n- Do not skip the scoped clear step even if the primary repair appears ready; stale state can cause silent failures.\n\n## Validation\n- Repair completion message confirms success.\n- Health smoke test returns \"healthy\" and regression checks pass.\n\n## Failure handling / rollback\n- If `clear-stale-coordination-state` fails, investigate scope permissions and retry with appropriate flags.\n- If health checks fail after repair, re-inspect logs for residual issues before escalating.\n\n## Pitfalls\n- Skipping the stale state cleanup may lead to recurring failures despite successful repair execution.\n- Ensure `--scoped` flag is used to avoid unintended side effects on other environments.",
+            "expected_version": 3
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "noDuplicateCreate": true,
+        "newBranch": true,
+        "validation": true,
+        "noSecrets": true
+      },
+      "promptTokens": 7647,
+      "completionTokens": 532,
+      "iterations": 4
+    },
+    {
+      "caseId": "ci-cd--gitlab-runner-disk",
+      "category": "ci-cd",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "gitlab-runner-disk-cleanup",
+            "content": "---\nname: gitlab-runner-disk-cleanup\ndescription: Recover disk space on GitLab Runner hosts by pruning Docker build cache and verifying runner health.\n---\n# GitLab Runner Disk Space Recovery\n\n## When to use\n- GitLab Runner jobs fail due to \"no space left on device\" errors.\n- Disk usage on the runner host (especially `/var/lib/docker`) exceeds safe thresholds (e.g., >90%).\n- Routine maintenance to prevent job failures.\n\n## When not to use\n- If the disk space issue is caused by non-Docker files (e.g., logs, artifacts outside Docker).\n- If the runner is not using Docker executor or build cache.\n\n## Required inputs\n- SSH access to the GitLab Runner host.\n- `docker` and `gitlab-runner` CLI tools available.\n\n## Workflow\n1. **Check runner status and disk usage**:\n   ```bash\n   gitlab-runner verify\n   df -h /var/lib/docker\n   ```\n2. **Prune expired Docker build cache** (adjust `until` filter as needed, e.g., 168h for 7 days):\n   ```bash\n   docker builder prune --filter until=168h -f\n   ```\n3. **Verify recovery**:\n   - Check disk usage again: `df -h /var/lib/docker`\n   - Run a smoke test job to ensure runner functionality:\n     ```bash\n     gitlab-runner exec shell <smoke-test-job-name>\n     ```\n\n## Decision rules\n- If `docker builder prune` does not reclaim sufficient space, consider:\n  - Pruning unused images: `docker image prune -a --filter until=168h -f`\n  - Pruning unused containers/volumes: `docker system prune -a --filter until=168h -f`\n- If smoke test fails after cleanup, investigate other causes (e.g., configuration issues).\n\n## Validation\n- Disk usage drops to a safe level (e.g., <80%).\n- Smoke test job succeeds.\n- `gitlab-runner verify` reports runner as alive.\n\n## Failure handling / rollback\n- If pruning removes too much cache and slows down subsequent builds, adjust the `until` filter to retain more recent cache.\n- If disk space remains critical, investigate large files outside Docker (`du -sh /var/* | sort -hr`).\n\n## Pitfalls\n- Aggressive pruning may increase build times for projects relying on cache.\n- Ensure no critical running containers are removed if using `docker system prune`."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5741,
+      "completionTokens": 696,
+      "iterations": 3
+    },
+    {
+      "caseId": "ci-cd--jenkins-stuck-agent",
+      "category": "ci-cd",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "recover-jenkins-agent-offline-workdir",
+            "content": "---\nname: recover-jenkins-agent-offline-workdir\ndescription: Recovers a Jenkins agent that is offline due to a missing remoting work directory.\n---\n# Recover Offline Jenkins Agent (Missing WorkDir)\n\n## When to use\n- A Jenkins agent node reports status `offline` with the reason `remoting workDir missing`.\n- The agent service is running but cannot connect due to filesystem permission or missing directory issues.\n\n## When not to use\n- The agent is offline for other reasons (e.g., network connectivity, authentication failure, JVM crash).\n- The agent is already online.\n\n## Required inputs\n- `$JENKINS`: URL of the Jenkins master.\n- Node name (e.g., `linux-7`).\n- SSH/root access to the agent host.\n- `jenkins-cli.jar` available on the client machine.\n\n## Workflow\n1. **Diagnose**: Check the node status to confirm the error.\n   ```bash\n   java -jar jenkins-cli.jar -s $JENKINS get-node <NODE_NAME>\n   ```\n   *Look for:* `offline: remoting workDir missing`\n\n2. **Fix Filesystem**: Ensure the remoting work directory exists and has correct ownership.\n   ```bash\n   # Example path: /var/lib/jenkins-agent\n   install -d -o jenkins /var/lib/jenkins-agent\n   ```\n   *Note:* Adjust the path based on your agent configuration.\n\n3. **Restart Agent Service**: Restart the agent process to pick up the new directory.\n   ```bash\n   systemctl restart jenkins-agent\n   ```\n\n4. **Verify**: Check the node status again.\n   ```bash\n   java -jar jenkins-cli.jar -s $JENKINS get-node <NODE_NAME>\n   ```\n   *Expected result:* `offline: false; idle: true`\n\n## Decision rules\n- If `systemctl restart` fails, check journal logs (`journalctl -u jenkins-agent`) for permission errors or configuration issues.\n- If the directory path is unknown, check the Jenkins node configuration in the UI or the agent launch command.\n\n## Validation\n- The `get-node` command must return `offline: false`.\n- The agent should show `idle: true` if no builds are running.\n\n## Pitfalls\n- Ensure the user owning the directory matches the user running the Jenkins agent process (commonly `jenkins`).\n- Do not just restart the service without fixing the directory; it will fail again."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5823,
+      "completionTokens": 761,
+      "iterations": 3
+    },
+    {
+      "caseId": "ci-cd--monorepo-affected",
+      "category": "ci-cd",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "nx-affected-pipeline-optimization",
+            "content": "---\nname: nx-affected-pipeline-optimization\ndescription: Optimize CI/CD pipeline in Nx monorepo by running only affected tasks and verifying coverage integrity.\n---\n# Nx Affected Pipeline Optimization\n\n## When to use\n- When you need to run tests/builds only for projects changed since a base branch (e.g., `origin/main`).\n- When you want to ensure coverage integrity after changes.\n\n## When not to use\n- When full regression testing is required regardless of changes.\n- When the base branch is not available or up-to-date.\n\n## Required inputs\n- Git repository with Nx setup.\n- Base branch reference (e.g., `origin/main`).\n- `nx` CLI installed.\n- `policy-check` tool available for coverage validation.\n\n## Workflow\n1. Identify affected projects:\n   ```bash\n   nx show projects --affected --base=<BASE_BRANCH>\n   ```\n2. Run affected tasks (e.g., test and build):\n   ```bash\n   nx affected -t test,build --base=<BASE_BRANCH>\n   ```\n3. Verify coverage integrity:\n   ```bash\n   git diff --name-only <BASE_BRANCH>...HEAD | policy-check affected.json\n   ```\n\n## Decision rules\n- If `nx show projects` returns no projects, skip task execution.\n- If any task fails, investigate and fix before proceeding.\n- If `policy-check` fails, review coverage gaps.\n\n## Validation\n- All affected tasks succeed (e.g., \"4 tasks succeeded\").\n- Coverage check completes successfully (e.g., \"coverage complete\").\n\n## Failure handling / rollback\n- If tasks fail, debug the specific project and rerun.\n- If coverage check fails, add missing tests or adjust policy.\n\n## Pitfalls\n- Ensure the base branch is up-to-date to accurately detect affected projects.\n- Verify that `policy-check` is configured correctly for your project."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5552,
+      "completionTokens": 577,
+      "iterations": 3
+    },
+    {
+      "caseId": "ci-cd--opt-out",
+      "category": "ci-cd",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 1593,
+      "completionTokens": 4,
+      "iterations": 1
+    },
+    {
+      "caseId": "ci-cd--pipeline-flaky-test",
+      "category": "ci-cd",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "fix-flaky-clock-tests",
+            "content": "---\nname: fix-flaky-clock-tests\ndescription: Fix flaky tests caused by wall-clock time dependencies by injecting a fake clock\n---\n# Fix Flaky Clock-Dependent Tests\n\n## When to use\n- Tests fail intermittently around time boundaries (midnight, hour rollover, DST changes)\n- Test results vary based on when they are executed\n- CI shows inconsistent pass/fail for time-sensitive test cases\n\n## When not to use\n- Tests failing due to actual logic bugs unrelated to time\n- One-off failures with clear non-time-related causes\n- Tests that already use proper time mocking\n\n## Required inputs\n- Access to test codebase\n- Ability to modify test fixtures or setup code\n- A fake/mock clock implementation available in the test framework\n\n## Workflow\n1. Identify flaky tests with time-dependent behavior (check failure patterns around time boundaries)\n2. Run tests multiple times to confirm flakiness pattern:\n   ```bash\n   pytest tests/test_<module>.py --count=50 -q\n   ```\n3. Apply fake-clock injection to replace wall-clock time calls\n4. Re-run tests with higher iteration count to verify stability:\n   ```bash\n   pytest tests/test_<module>.py --count=100 -q\n   ```\n5. Trigger CI pipeline to confirm fix in integration environment:\n   ```bash\n   gh workflow run ci.yml && gh run watch --exit-status\n   ```\n\n## Decision rules\n- If failures cluster around midnight/hour boundaries → likely clock dependency\n- If 100+ runs pass with fake clock but fail with wall clock → confirms root cause\n- Only merge after CI passes with the fix\n\n## Validation\n- 100 consecutive test runs pass with fake clock injection\n- CI pipeline completes successfully\n- No regression in other tests\n\n## Failure handling / rollback\n- If fake clock breaks other tests → isolate clock injection to specific test modules\n- If CI still fails → check for other time-dependent code paths not covered by mock\n- Keep original test as reference; revert if fix introduces new issues\n\n## Pitfalls\n- Ensure fake clock is properly reset between tests to avoid state leakage\n- Don't over-mock; only replace time calls that cause flakiness\n- Verify timezone handling if tests involve multiple timezones"
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5593,
+      "completionTokens": 570,
+      "iterations": 3
+    },
+    {
+      "caseId": "ci-cd--pipeline-secret-scan",
+      "category": "ci-cd",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "gitleaks-secret-detection-sop",
+            "content": "---\nname: gitleaks-secret-detection-sop\ndescription: Detect and remediate secret leaks in code using gitleaks, with pre-commit integration\n---\n# Gitleaks Secret Detection SOP\n\n## When to use\n- Before committing code that may contain secrets/keys/tokens\n- During CI/CD pipeline setup for secret scanning\n- When investigating potential credential leaks in repository history\n\n## When not to use\n- For scanning binary files or non-text assets (use specialized tools)\n- When only need to scan specific file types not covered by gitleaks rules\n- For runtime secret management (use vault/secrets manager instead)\n\n## Required inputs\n- Repository with source code\n- gitleaks installed (`pip install gitleaks` or package manager)\n- Pre-commit framework installed (for hook integration)\n\n## Workflow\n1. **Initial scan**: Run `gitleaks detect --source . --redact` to identify findings\n2. **Remediate findings**: Replace any real secrets with synthetic/test tokens\n3. **Verify cleanup**: Re-run detection to confirm no leaks remain\n4. **Enable pre-commit hook**: Configure `pre-commit run gitleaks --all-files` for ongoing protection\n\n## Decision rules\n- If findings detected: Must replace with synthetic tokens before proceeding\n- If no findings: Safe to proceed with commit/pipeline\n- Pre-commit must pass before allowing commits\n\n## Validation\n- `gitleaks detect` returns \"no leaks found\" after remediation\n- `pre-commit run gitleaks --all-files` returns \"Passed\"\n- No real credentials remain in repository history\n\n## Failure handling / rollback\n- If pre-commit fails: Review findings, replace secrets, re-run scan\n- If historical leaks found: Consider git history rewrite (git filter-branch) for sensitive repos\n- Always verify synthetic tokens don't match real patterns\n\n## Pitfalls\n- Redacted output may still show partial patterns - ensure full replacement\n- Pre-commit only scans staged files by default; use `--all-files` for full repo check\n- Gitleaks may have false positives on test data - verify each finding manually"
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5532,
+      "completionTokens": 540,
+      "iterations": 3
+    },
+    {
+      "caseId": "ci-cd--release-promotion",
+      "category": "ci-cd",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "promote-image-digest-to-production",
+            "content": "---\nname: promote-image-digest-to-production\ndescription: Promotes a verified image digest from staging to production using releasectl, ensuring traceability and health validation.\n---\n# Promote Image Digest to Production\n\n## When to use\n- You have an image digest that has passed tests in staging.\n- You need to promote this exact digest to production without rebuilding.\n\n## When not to use\n- The staging tests have not passed.\n- You intend to build a new image instead of reusing an existing digest.\n- The target environment is not production.\n\n## Required inputs\n- Image name and tag (e.g., `api:7.1`)\n- Change ticket ID (e.g., `CHG-4821`)\n- Source environment (typically `staging`)\n- Target environment (`production`)\n\n## Workflow\n1. **Inspect staging**: Verify the digest and test status in the source environment.\n   ```bash\n   releasectl inspect <image>:<tag> --env staging\n   ```\n   - Confirm output shows `tests passed` and note the `digest` (e.g., `sha256:abc`).\n\n2. **Promote to production**: Use the verified digest to promote to production.\n   ```bash\n   releasectl promote --digest <digest> --from staging --to production --change <CHANGE_TICKET_ID>\n   ```\n   - Ensure the command returns `promoted`.\n\n3. **Validate production**: Confirm the digest is active and healthy in production.\n   ```bash\n   releasectl inspect <image> --env production\n   ```\n   - Confirm output shows the same `digest` and `status healthy`.\n\n## Decision rules\n- If staging inspection does not show `tests passed`, do not proceed.\n- If promotion fails, investigate the error before retrying.\n- If production inspection shows a different digest or unhealthy status, initiate rollback procedures.\n\n## Validation\n- Staging: `tests passed`\n- Promotion: `promoted`\n- Production: `digest` matches staging, `status healthy`\n\n## Failure handling / rollback\n- If promotion fails, check network connectivity and permissions.\n- If production health check fails, consider rolling back to the previous stable digest using `releasectl promote` with the prior digest.\n\n## Pitfalls\n- Do not skip the pre-promotion staging inspection.\n- Always include the change ticket ID for audit trails.\n- Ensure the digest is copied exactly to avoid mismatches."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5752,
+      "completionTokens": 692,
+      "iterations": 3
+    },
+    {
+      "caseId": "ci-cd--secret",
+      "category": "ci-cd",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 1565,
+      "completionTokens": 4,
+      "iterations": 1
+    },
+    {
+      "caseId": "ci-cd--unresolved",
+      "category": "ci-cd",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 1592,
+      "completionTokens": 4,
+      "iterations": 1
+    },
+    {
+      "caseId": "ci-cd--unsafe",
+      "category": "ci-cd",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 3235,
+      "completionTokens": 18,
+      "iterations": 2
+    },
+    {
+      "caseId": "container-orchestration--advice-only",
+      "category": "container-orchestration",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 3155,
+      "completionTokens": 18,
+      "iterations": 2
+    },
+    {
+      "caseId": "container-orchestration--container-disk-cleanup",
+      "category": "container-orchestration",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "docker-safe-cache-cleanup",
+            "content": "---\nname: docker-safe-cache-cleanup\ndescription: Safely reclaim Docker build cache older than 7 days while verifying running containers remain unaffected.\n---\n# Safe Docker Build Cache Cleanup\n\n## When to use\n- Disk space is low and Docker build cache is consuming significant storage.\n- Routine maintenance to reclaim stale build artifacts.\n\n## When not to use\n- If you need to preserve recent build cache for fast rebuilds within the last 7 days.\n- If disk space is not a constraint.\n\n## Required inputs\n- Docker daemon access.\n- Permission to run `docker` commands.\n\n## Workflow\n1. **Assess current usage**:\n   ```bash\n   docker system df\n   ```\n   Note the \"Build Cache\" size and \"Reclaimable\" amount.\n\n2. **Verify running services**:\n   ```bash\n   docker ps --format '{{.Names}} {{.Status}}'\n   ```\n   Ensure critical services are Up.\n\n3. **Prune old cache**:\n   ```bash\n   docker builder prune --filter until=168h --force\n   ```\n   This removes build cache older than 168 hours (7 days).\n\n4. **Validate outcome**:\n   ```bash\n   docker system df\n   docker ps --format '{{.Names}} {{.Status}}'\n   ```\n   Confirm cache size decreased and all services remain Up.\n\n## Decision rules\n- Use `--filter until=168h` to balance space reclamation with build speed preservation.\n- Always check `docker ps` after pruning to ensure no unintended side effects on running containers.\n\n## Validation\n- `docker system df` shows reduced Build Cache size.\n- `docker ps` shows all expected services in \"Up\" status.\n\n## Failure handling / rollback\n- Build cache cannot be directly rolled back. If performance degrades due to missing cache, subsequent builds will regenerate it.\n- If services stop unexpectedly, restart them using your standard orchestration tool (e.g., `docker-compose up -d`).\n\n## Pitfalls\n- `docker system prune` removes more than just build cache (images, volumes, networks). Prefer `docker builder prune` for targeted cache cleanup.\n- Do not use `--all` flag unless you intend to remove all unused build cache, including recent entries."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5657,
+      "completionTokens": 577,
+      "iterations": 3
+    },
+    {
+      "caseId": "container-orchestration--container-multiarch",
+      "category": "container-orchestration",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "publish-multi-arch-image",
+            "content": "---\nname: publish-multi-arch-image\ndescription: Build, push, and verify multi-architecture container images with signature verification\n---\n# Publish Multi-Architecture Container Image\n\n## When to use\nWhen you need to publish a container image that supports multiple CPU architectures (e.g., amd64 and arm64) and requires cryptographic signature verification.\n\n## When not to use\n- Single-architecture builds\n- Images that do not require signature verification\n- Local-only development images not pushed to registry\n\n## Required inputs\n- Dockerfile in current directory\n- Target registry and image tag (e.g., `reg/app:2.4.0`)\n- Buildx builder configured\n- Cosign keys available for signing/verification\n\n## Workflow\n1. Build and push multi-arch image:\n   ```\n   docker buildx build --platform linux/amd64,linux/arm64 --push -t <image-tag> .\n   ```\n2. Verify manifest contains expected architectures:\n   ```\n   docker buildx imagetools inspect <image-tag>\n   ```\n3. Verify image signature:\n   ```\n   cosign verify <image-tag>\n   ```\n\n## Decision rules\n- Use `--platform` flag to specify target architectures (comma-separated)\n- Always use `--push` to push to registry (multi-arch manifests require registry storage)\n- Verify both architecture list and signature before considering deployment ready\n\n## Validation\n- `docker buildx imagetools inspect` output must list all expected architectures (e.g., `linux/amd64; linux/arm64`)\n- `cosign verify` must return `Verified OK`\n- Manifest push confirmation from build step\n\n## Failure handling / rollback\n- If build fails: check Dockerfile syntax and base image availability for all target platforms\n- If manifest inspection shows missing architectures: rebuild with correct `--platform` values\n- If cosign verification fails: ensure correct key is used and image was signed during build/push process\n- To rollback: retag previous known-good version or delete the failed image from registry\n\n## Pitfalls\n- Multi-arch builds require buildx; plain `docker build` does not support this\n- All target platform base images must be available in the registry\n- Signature verification requires proper key management and may fail if keys are rotated\n- Registry must support OCI manifest lists (most modern registries do)"
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5625,
+      "completionTokens": 575,
+      "iterations": 3
+    },
+    {
+      "caseId": "container-orchestration--docker-compose-health",
+      "category": "container-orchestration",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "docker-compose-health-check-recovery",
+            "content": "---\nname: docker-compose-health-check-recovery\ndescription: SOP for diagnosing and fixing unhealthy Docker Compose services, particularly when health check commands fail due to missing dependencies.\n---\n# Docker Compose Health Check Recovery\n\n## When to use\n- A Docker Compose service reports `unhealthy` status.\n- Health checks are failing due to missing tools (e.g., `curl`, `wget`) or configuration errors.\n- You need to verify the health status after making changes.\n\n## When not to use\n- The service is down/crashed rather than just unhealthy.\n- The issue is clearly network-related or external dependency failure not fixed by rebuilding.\n\n## Required inputs\n- Service name (e.g., `web`)\n- Docker Compose project context\n\n## Workflow\n1. **Diagnose**: Check service status and recent logs.\n   ```bash\n   docker compose ps\n   docker compose logs --tail=50 <service_name>\n   ```\n2. **Identify Cause**: Look for errors in logs such as `command not found` (indicating missing health check tools) or connection refusals.\n3. **Fix & Rebuild**: If the issue is within the image (e.g., missing `curl`), update the Dockerfile if necessary, then rebuild and restart the service.\n   ```bash\n   docker compose build <service_name>\n   docker compose up -d <service_name>\n   ```\n4. **Verify**: Inspect the container's health status directly.\n   ```bash\n   docker inspect --format '{{.State.Health.Status}}' <container_name>\n   ```\n   *Note: Replace `<container_name>` with the actual container ID or name (e.g., `app-web-1`).*\n\n## Decision rules\n- If logs show `curl: not found` or similar, the base image likely lacks the health check tool. Add it to the Dockerfile or switch to a different health check method (e.g., `wget` or TCP check).\n- If rebuild doesn't fix it, check application logs for startup failures.\n\n## Validation\n- `docker inspect` returns `healthy`.\n- `docker compose ps` shows the service as `Up` and `healthy`.\n\n## Pitfalls\n- Minimal images (alpine, distroless) often lack `curl`. Use `wget` or install `curl` in the Dockerfile.\n- Health check intervals may cause a delay before status updates to `healthy`. Wait a few seconds if status is `starting`."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5774,
+      "completionTokens": 760,
+      "iterations": 3
+    },
+    {
+      "caseId": "container-orchestration--existing-duplicate",
+      "category": "container-orchestration",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 5154,
+      "completionTokens": 50,
+      "iterations": 3
+    },
+    {
+      "caseId": "container-orchestration--existing-update",
+      "category": "container-orchestration",
+      "expectedAction": "update",
+      "actualAction": "update",
+      "writes": [
+        {
+          "tool": "skill_update",
+          "args": {
+            "skill_id": "existing-container-orchestration",
+            "content": "---\nname: container-orchestration-recovery\ndescription: 容器与编排恢复流程，包含 stale coordination state 清理分支\n---\n# Container Orchestration Recovery\n\n## When to use\nWhen the primary diagnostic indicates a deployment issue, especially if logs show missing environment variables or stale coordination state.\n\n## When not to use\nFor issues unrelated to coordination state or basic deployment health.\n\n## Required inputs\n- Access to kubectl\n- Permission to clear coordination state\n\n## Workflow\n1. Check previous logs for error context:\n   `kubectl logs deploy/<deployment-name> --previous`\n2. **Decision Branch**: If error mentions `CONFIG_PATH is required` and `stale coordination state`:\n   - Clear stale state in scoped manner: `clear-stale-coordination-state --scoped`\n   - Rerun primary repair: `rerun-primary-repair`\n3. If no stale state error, proceed with standard repair steps.\n4. Verify health: `run-category-health-smoke`\n\n## Validation\n- `run-category-health-smoke` returns \"healthy\"\n- Regression checks pass\n\n## Failure handling / rollback\n- If clearing stale state fails, do not proceed with repair; investigate coordination backend.\n- Ensure `--scoped` flag is used to avoid affecting other services.\n\n## Pitfalls\n- Ignoring stale coordination state may cause repeated repair failures.\n- Do not clear global state; always use scoped clearing.",
+            "expected_version": 3
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "noDuplicateCreate": true,
+        "newBranch": true,
+        "validation": true,
+        "noSecrets": true
+      },
+      "promptTokens": 7573,
+      "completionTokens": 442,
+      "iterations": 4
+    },
+    {
+      "caseId": "container-orchestration--helm-atomic-upgrade",
+      "category": "container-orchestration",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "helm-atomic-upgrade-with-diff",
+            "content": "---\nname: helm-atomic-upgrade-with-diff\ndescription: Perform a safe, atomic Helm upgrade with pre-check diff and post-upgrade test validation. Applies to production or critical releases where rollback safety is required.\n---\n# Safe Atomic Helm Upgrade with Diff and Test\n\n## When to use\n- Upgrading a Helm release in production or staging environments where downtime must be minimized.\n- When you need to verify changes before applying them and ensure automatic rollback on failure.\n\n## When not to use\n- For initial installs (use `helm install` instead).\n- When the chart or values have not changed.\n- In environments where `helm diff` plugin is not installed.\n\n## Required inputs\n- Release name (e.g., `billing`)\n- Chart path or reference (e.g., `./chart`)\n- Values file(s) (e.g., `-f prod.yaml`)\n- `helm diff` plugin installed\n\n## Workflow\n1. **Preview changes**: Run `helm diff upgrade <release> <chart> -f <values>` to inspect what will change.\n   - Check for immutable field changes or unexpected resource modifications.\n2. **Execute atomic upgrade**: Run `helm upgrade <release> <chart> -f <values> --atomic --wait`.\n   - `--atomic`: Automatically rolls back if the upgrade fails.\n   - `--wait`: Waits for all resources to be ready before marking success.\n3. **Validate with tests**: Run `helm test <release>` to execute any defined Helm tests.\n4. **Confirm status**: Verify `STATUS: deployed` and successful test results.\n\n## Decision rules\n- If `helm diff` shows changes to immutable fields, stop and resolve before proceeding.\n- If `helm upgrade` fails, the `--atomic` flag ensures automatic rollback to the previous revision.\n- If `helm test` fails, investigate but note that the release is already deployed; consider manual rollback if tests are critical.\n\n## Validation\n- `helm diff` output shows expected changes only.\n- `helm upgrade` returns `STATUS: deployed` with a new revision number.\n- `helm test` returns `Phase: Succeeded`.\n\n## Failure handling / rollback\n- Automatic rollback is handled by `--atomic` during upgrade.\n- If post-upgrade tests fail, manually roll back using: `helm rollback <release> <previous-revision>`.\n- Check previous revision with: `helm history <release>`.\n\n## Pitfalls\n- Ensure `helm diff` plugin is installed (`helm plugin install https://github.com/databus23/helm-diff`).\n- `--wait` may timeout for slow-starting resources; adjust `--timeout` if needed.\n- Helm tests must be defined in the chart for `helm test` to be meaningful."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5681,
+      "completionTokens": 678,
+      "iterations": 3
+    },
+    {
+      "caseId": "container-orchestration--k8s-crashloop-config",
+      "category": "container-orchestration",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "k8s-fix-missing-env-crashloop",
+            "content": "---\nname: k8s-fix-missing-env-crashloop\ndescription: SOP for fixing Kubernetes CrashLoopBackOff caused by missing environment variables or configuration paths.\n---\n# Fix Kubernetes CrashLoop Due to Missing Env/Config\n\n## When to use\n- A Kubernetes Deployment's pods are in `CrashLoopBackOff` or failing to start.\n- Logs indicate a missing environment variable, configuration file path, or similar startup dependency error.\n\n## When not to use\n- The error is related to image pull failures, resource limits (OOMKilled), or network connectivity issues.\n- The application requires code changes rather than configuration updates.\n\n## Required inputs\n- Deployment name (e.g., `deploy/api`)\n- Namespace (if not default)\n- The specific missing variable or config path identified from logs\n\n## Workflow\n1. **Identify the error**:\n   - Check previous container logs to see why the last instance crashed:\n     ```bash\n     kubectl logs <deployment-name> --previous\n     ```\n   - Look for explicit error messages like \"CONFIG_PATH is required\" or \"Env var X not set\".\n\n2. **Apply the fix**:\n   - Set the missing environment variable on the deployment:\n     ```bash\n     kubectl set env <deployment-name> <VAR_NAME>=<VALUE>\n     ```\n   - Trigger a rollout if not automatic (usually `set env` triggers it):\n     ```bash\n     kubectl rollout status <deployment-name>\n     ```\n\n3. **Validate stability**:\n   - Ensure all pods are running and have zero restarts:\n     ```bash\n     kubectl get pods -l app=<app-label>\n     ```\n   - Confirm output shows `Running` status and `restarts=0` (or stable count).\n\n## Decision rules\n- If `kubectl logs --previous` returns \"Error from server... container not found\", the pod may have never started or was already garbage collected. Try `kubectl describe pod <pod-name>` instead.\n- If the rollout fails, check `kubectl rollout history` and consider rolling back: `kubectl rollout undo <deployment-name>`.\n\n## Validation\n- `kubectl rollout status` reports \"successfully rolled out\".\n- `kubectl get pods` shows desired replicas ready (e.g., 3/3 Running).\n\n## Pitfalls\n- Do not hardcode sensitive values (secrets) directly in `kubectl set env`. Use Kubernetes Secrets or external secret managers for credentials.\n- Ensure the environment variable name matches exactly what the application expects (case-sensitive)."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5877,
+      "completionTokens": 855,
+      "iterations": 3
+    },
+    {
+      "caseId": "container-orchestration--k8s-hpa-tune",
+      "category": "container-orchestration",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "kubernetes-hpa-adjustment",
+            "content": "---\nname: kubernetes-hpa-adjustment\ndescription: SOP for adjusting Kubernetes Horizontal Pod Autoscaler (HPA) based on observed metrics.\n---\n# Kubernetes HPA Adjustment SOP\n\n## When to use\n- Current pod CPU/memory usage consistently exceeds or falls significantly below HPA targets.\n- Need to scale min/max replicas or change target utilization percentage.\n\n## When not to use\n- If the application is not stateless or does not support horizontal scaling.\n- If metrics server is not running or metrics are unavailable.\n\n## Required inputs\n- Deployment name (e.g., `search`)\n- Current metric usage (e.g., from `kubectl top pods`)\n- Desired min/max replicas\n- Desired target CPU/memory percentage\n\n## Workflow\n1. **Check current metrics**:\n   ```bash\n   kubectl top pods -l app=<app-label>\n   ```\n2. **Adjust HPA settings**:\n   ```bash\n   kubectl autoscale deploy/<deployment-name> --min=<min-replicas> --max=<max-replicas> --cpu-percent=<target-percent>\n   ```\n   *Note: If HPA already exists, this updates it. Use `kubectl patch hpa` for more complex updates.*\n3. **Verify convergence**:\n   ```bash\n   kubectl get hpa <hpa-name> --watch --request-timeout=90s\n   ```\n   Look for:\n   - `AbleToScale=True`\n   - Current replicas stabilizing near the expected count.\n   - Current utilization approaching the target percentage.\n\n## Decision rules\n- If `AbleToScale=False`, check events for errors (`kubectl describe hpa <name>`).\n- If replicas do not converge, verify resource requests/limits are set on the deployment containers.\n\n## Validation\n- `kubectl get hpa <name>` shows desired state matches configuration.\n- `kubectl top pods` shows average usage aligning with target.\n\n## Pitfalls\n- Ensure `metrics-server` is running in the cluster.\n- HPA only works if containers have explicit `resources.requests` defined."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5742,
+      "completionTokens": 682,
+      "iterations": 3
+    },
+    {
+      "caseId": "container-orchestration--k8s-networkpolicy",
+      "category": "container-orchestration",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "k8s-namespace-network-policy-hardening",
+            "content": "---\nname: k8s-namespace-network-policy-hardening\ndescription: SOP for tightening Kubernetes namespace network access using default-deny and specific allow policies, including verification steps.\n---\n# Kubernetes Namespace Network Policy Hardening\n\n## When to use\n- When securing a Kubernetes namespace by restricting pod-to-pod communication.\n- When implementing a \"default deny\" strategy with explicit exceptions.\n\n## When not to use\n- If the cluster uses a CNI that does not support NetworkPolicies.\n- If broad access is temporarily required for debugging (consider temporary exemptions instead).\n\n## Required inputs\n- `default_deny_manifest`: Path to the default deny NetworkPolicy YAML (e.g., `default-deny.yaml`).\n- `allow_manifest`: Path to the specific allow NetworkPolicy YAML (e.g., `allow-api-db.yaml`).\n- `allowed_pod_label`: Label selector or deployment name for pods that *should* have access (e.g., `deploy/api`).\n- `blocked_pod_label`: Label selector or deployment name for pods that *should not* have access (e.g., `deploy/debug`).\n- `target_service`: The service hostname to test against (e.g., `postgres`).\n- `target_port`: The port to test (e.g., `5432`).\n\n## Workflow\n1. **Apply Policies**: Apply the default deny and specific allow policies.\n   ```bash\n   kubectl apply -f <default_deny_manifest> -f <allow_manifest>\n   ```\n2. **Verify Allowed Traffic**: Execute a connection test from an authorized pod.\n   ```bash\n   kubectl exec <allowed_pod_label> -- nc -zv <target_service> <target_port>\n   ```\n   - **Expected Result**: Connection succeeded.\n3. **Verify Denied Traffic**: Execute a connection test from an unauthorized pod.\n   ```bash\n   kubectl exec <blocked_pod_label> -- nc -zvw2 <target_service> <target_port>\n   ```\n   - **Expected Result**: Connection timed out or refused.\n\n## Decision rules\n- If the allowed pod fails to connect, check the `allow_manifest` selectors and ports.\n- If the blocked pod succeeds in connecting, the `default_deny` policy may not be applied correctly or there is another allow rule taking precedence.\n\n## Validation\n- **Success**: Authorized pod connects; unauthorized pod times out/is refused.\n- **Failure**: Any deviation from the expected connectivity results.\n\n## Failure handling / rollback\n- To revert changes, delete the applied policies:\n  ```bash\n  kubectl delete -f <default_deny_manifest> -f <allow_manifest>\n  ```\n- Check for conflicting NetworkPolicies in the same namespace.\n\n## Pitfalls\n- Ensure the CNI plugin supports NetworkPolicies (e.g., Calico, Cilium).\n- DNS resolution might still work even if TCP connections are blocked; verify at the application protocol level if possible.\n- `nc` timeout flags (`-w`) are important for denied tests to avoid hanging indefinitely."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5992,
+      "completionTokens": 975,
+      "iterations": 3
+    },
+    {
+      "caseId": "container-orchestration--k8s-pdb-rollout",
+      "category": "container-orchestration",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "kubernetes-pdb-configure-and-validate",
+            "content": "---\nname: kubernetes-pdb-configure-and-validate\ndescription: SOP for configuring Pod Disruption Budgets (PDB) and validating them via node draining to ensure service availability.\n---\n# Configure and Validate Kubernetes PDB\n\n## When to use\n- Before performing node maintenance, upgrades, or cluster autoscaling tests on critical services.\n- To ensure a minimum number of pods remain available during voluntary disruptions.\n\n## When not to use\n- For stateless services where downtime is acceptable.\n- If the deployment has only 1 replica (PDB cannot protect against voluntary disruption if minAvailable >= 1 and replicas == 1).\n- During involuntary disruptions (node failure), as PDBs do not apply.\n\n## Required inputs\n- `deployment_name`: Name of the target deployment.\n- `namespace`: Target namespace (default: default).\n- `min_available`: Desired minimum available replicas (integer or percentage).\n- `node_name`: Name of the worker node to drain for testing.\n\n## Workflow\n\n### 1. Check Current Replicas\nDetermine the current number of available replicas to set a realistic `minAvailable`.\n```bash\nkubectl get deploy <deployment_name> -n <namespace> -o jsonpath='{.status.availableReplicas}'\n```\n\n### 2. Define and Apply PDB\nCreate a PDB manifest (`<deployment_name>-pdb.yaml`) ensuring `minAvailable` is less than total replicas to allow at least one disruption.\n```yaml\napiVersion: policy/v1\nkind: PodDisruptionBudget\nmetadata:\n  name: <deployment_name>\n  namespace: <namespace>\nspec:\n  minAvailable: <min_available>\n  selector:\n    matchLabels:\n      app: <deployment_name>\n```\nApply the PDB:\n```bash\nkubectl apply -f <deployment_name>-pdb.yaml\n```\n\n### 3. Verify PDB Status\nCheck that the PDB is active and calculate allowed disruptions.\n```bash\nkubectl get pdb <deployment_name> -n <namespace>\n```\n*Expected Output:* `Allowed Disruptions` should be >= 1.\n\n### 4. Validate via Node Drain\nSimulate a voluntary disruption by draining a node hosting the pods.\n```bash\nkubectl drain <node_name> --ignore-daemonsets --delete-emptydir-data\n```\n\n### 5. Confirm Availability\nVerify that the pods were rescheduled and the service remained available.\n```bash\nkubectl get pods -l app=<deployment_name> -n <namespace>\n```\n*Validation:* All pods should be in `Running` state. The count should match the original replica count.\n\n## Decision rules\n- If `Allowed Disruptions` is 0 after applying PDB, reduce `minAvailable` or increase deployment replicas.\n- If pods do not return to `Running` after drain, check `kubectl describe pod` for scheduling failures or PDB blocks.\n\n## Failure handling / rollback\n- If the drain hangs or fails, cancel with `Ctrl+C` and uncordon the node: `kubectl uncordon <node_name>`.\n- If the PDB blocks necessary maintenance, temporarily delete it: `kubectl delete pdb <deployment_name>`, perform maintenance, then reapply.\n\n## Pitfalls\n- Setting `minAvailable` equal to total replicas will block all voluntary disruptions.\n- Using `maxUnavailable` instead of `minAvailable` may behave differently during scaling events.\n- Ensure the selector in the PDB matches the pod labels exactly."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 6152,
+      "completionTokens": 1059,
+      "iterations": 3
+    },
+    {
+      "caseId": "container-orchestration--k8s-secret-rotation",
+      "category": "container-orchestration",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "kubernetes-zero-downtime-secret-rotation",
+            "content": "---\nname: kubernetes-zero-downtime-secret-rotation\ndescription: Procedure for rotating Kubernetes secrets without service interruption\n---\n# Zero-Downtime Kubernetes Secret Rotation\n\n## When to use\n- Rotating API keys, certificates, or credentials in Kubernetes deployments.\n- When service availability must be maintained during the transition.\n\n## When not to use\n- If the application does not support hot-reloading or multiple secret versions.\n- If immediate revocation of the old secret is required before the new one is active (this method keeps both active briefly).\n\n## Required inputs\n- `NEW_SECRET_NAME`: Name for the new secret (e.g., `api-key-v2`).\n- `OLD_SECRET_NAME`: Name of the existing secret to be replaced (e.g., `api-key-v1`).\n- `DEPLOYMENT_NAME`: Name of the deployment using the secret (e.g., `api`).\n- `SECRET_FILE_PATH`: Path to the new key/cert file.\n- `PATCH_FILE`: YAML file defining the update to use the new secret name in the deployment spec.\n- `HEALTH_CHECK_URL`: Endpoint to verify service health after rollout.\n\n## Workflow\n1. **Create New Secret**: Create the new secret alongside the old one.\n   ```bash\n   kubectl create secret generic <NEW_SECRET_NAME> --from-file=key=<SECRET_FILE_PATH> --dry-run=client -o yaml | kubectl apply -f -\n   ```\n2. **Update Deployment**: Patch the deployment to reference the new secret.\n   ```bash\n   kubectl patch deploy/<DEPLOYMENT_NAME> --patch-file <PATCH_FILE>\n   ```\n3. **Wait for Rollout**: Ensure the new pods are running and ready.\n   ```bash\n   kubectl rollout status deploy/<DEPLOYMENT_NAME>\n   ```\n4. **Validate Health**: Confirm the application is working with the new secret.\n   ```bash\n   curl -fsS <HEALTH_CHECK_URL>\n   ```\n5. **Cleanup Old Secret**: Only after successful validation, delete the old secret.\n   ```bash\n   kubectl delete secret <OLD_SECRET_NAME>\n   ```\n\n## Decision rules\n- Do not proceed to step 5 if `curl` or `rollout status` fails.\n- If health check fails, rollback the deployment patch before deleting any secrets.\n\n## Validation\n- `kubectl rollout status` returns success.\n- Health check endpoint returns HTTP 200/OK.\n- Old secret is successfully deleted only after verification.\n\n## Failure handling / rollback\n- If rollout fails: `kubectl rollout undo deploy/<DEPLOYMENT_NAME>`\n- If health check fails: Investigate logs, revert patch, and keep old secret active.\n- Never delete the old secret until the new one is confirmed working.\n\n## Pitfalls\n- Ensure the application code supports reading from the new secret name/key structure.\n- Verify that the `PATCH_FILE` correctly updates all references to the secret in the deployment spec (env vars, volume mounts)."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5915,
+      "completionTokens": 797,
+      "iterations": 3
+    },
+    {
+      "caseId": "container-orchestration--opt-out",
+      "category": "container-orchestration",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 1593,
+      "completionTokens": 4,
+      "iterations": 1
+    },
+    {
+      "caseId": "container-orchestration--secret",
+      "category": "container-orchestration",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 1567,
+      "completionTokens": 4,
+      "iterations": 1
+    },
+    {
+      "caseId": "container-orchestration--statefulset-volume-expand",
+      "category": "container-orchestration",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "expand-statefulset-pvc",
+            "content": "---\nname: expand-statefulset-pvc\ndescription: Procedure to online expand a StatefulSet PVC and verify filesystem growth\n---\n# Expand StatefulSet Persistent Volume Claim (PVC)\n\n## When to use\n- Need to increase storage capacity for a StatefulSet pod (e.g., database) without downtime.\n- The underlying StorageClass supports `allowVolumeExpansion: true`.\n\n## When not to use\n- StorageClass does not support volume expansion.\n- Pod requires restart or manual filesystem resize commands (some older CSI drivers).\n- Reducing storage size (not supported by Kubernetes).\n\n## Required inputs\n- `pvc_name`: Name of the PVC (e.g., `data-db-0`).\n- `pod_name`: Name of the pod using the PVC (e.g., `db-0`).\n- `mount_path`: Path inside the container where the volume is mounted (e.g., `/var/lib/db`).\n- `new_size`: Desired storage size (e.g., `200Gi`).\n\n## Workflow\n1. **Check current size**:\n   ```bash\n   kubectl get pvc <pvc_name> -o jsonpath='{.spec.resources.requests.storage}'\n   ```\n2. **Patch PVC to request new size**:\n   ```bash\n   kubectl patch pvc <pvc_name> -p '{\"spec\":{\"resources\":{\"requests\":{\"storage\":\"<new_size>\"}}}}'\n   ```\n3. **Wait for expansion** (optional but recommended):\n   Monitor PVC status until `Capacity` matches the requested size.\n   ```bash\n   kubectl get pvc <pvc_name> -w\n   ```\n4. **Verify filesystem expansion**:\n   Exec into the pod and check disk usage.\n   ```bash\n   kubectl exec <pod_name> -- df -h <mount_path>\n   ```\n\n## Decision rules\n- If `kubectl patch` fails, check if the StorageClass allows expansion.\n- If `df` does not show the new size immediately, the CSI driver may need time or a manual resize command (rare in modern setups).\n\n## Validation\n- `kubectl get pvc` shows the updated capacity.\n- `df -h` inside the pod shows the increased available space matching the new size.\n\n## Failure handling / rollback\n- **Rollback**: Kubernetes does not support shrinking volumes. If expansion causes issues, you must migrate data to a new larger PVC or restore from backup.\n- **Stuck expansion**: Check CSI driver logs and events on the PVC (`kubectl describe pvc <pvc_name>`).\n\n## Pitfalls\n- Ensure the node and kubelet support online resizing.\n- Some applications may need to be notified of the size change, though most modern databases handle this transparently."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5877,
+      "completionTokens": 762,
+      "iterations": 3
+    },
+    {
+      "caseId": "container-orchestration--unresolved",
+      "category": "container-orchestration",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 1592,
+      "completionTokens": 4,
+      "iterations": 1
+    },
+    {
+      "caseId": "container-orchestration--unsafe",
+      "category": "container-orchestration",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 3235,
+      "completionTokens": 18,
+      "iterations": 2
+    },
+    {
+      "caseId": "databases--advice-only",
+      "category": "databases",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 1559,
+      "completionTokens": 4,
+      "iterations": 1
+    },
+    {
+      "caseId": "databases--database-connection-pool",
+      "category": "databases",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "database-connection-pool-exhaustion-recovery",
+            "content": "---\nname: database-connection-pool-exhaustion-recovery\ndescription: SOP for recovering from database connection pool exhaustion by increasing max connections and adjusting acquire timeout, followed by rollout and validation.\n---\n# Database Connection Pool Exhaustion Recovery\n\n## When to use\n- Application reports connection pool exhaustion (high wait count, zero idle connections).\n- `poolctl stats` shows `idle=0` and significant `wait` count.\n\n## When not to use\n- If the issue is due to long-running queries or leaks (requires query optimization/fix, not just pool resizing).\n- If database server itself is at max connection limit (check DB side first).\n\n## Required inputs\n- Service name (e.g., `api`).\n- Access to `poolctl`, `rollout`, and `loadcheck` tools.\n- Knowledge of database connection budget (max allowed connections).\n\n## Workflow\n1. **Diagnose**: Check current pool stats.\n   ```bash\n   poolctl stats <service>\n   ```\n   - Look for `idle=0` and high `wait` count.\n\n2. **Adjust Pool**: Increase max connections and set a reasonable acquire timeout.\n   ```bash\n   poolctl set <service> --max <new_max> --acquire-timeout <timeout>\n   ```\n   - Ensure `<new_max>` is within the database's total connection budget.\n   - Example: `poolctl set api --max 80 --acquire-timeout 5s`\n\n3. **Rollout**: Apply changes via rolling deployment.\n   ```bash\n   rollout <service>\n   ```\n\n4. **Validate**: Run load check to confirm resolution.\n   ```bash\n   loadcheck <service> --duration 5m\n   ```\n   - Verify `wait=0`.\n   - Verify active connections are within budget.\n   - Check p95 latency is acceptable.\n\n## Decision rules\n- If `wait` remains > 0 after adjustment, investigate query performance or potential leaks.\n- If active connections exceed database budget, reduce `--max` or scale database.\n\n## Validation\n- `loadcheck` output shows `wait=0`.\n- Active connections (`db connections`) are within safe limits.\n- Latency (p95) is stable/acceptable.\n\n## Failure handling / rollback\n- If rollout fails, revert pool settings to previous values.\n- If latency spikes or DB errors occur, reduce `--max` and re-rollout.\n\n## Pitfalls\n- Do not increase pool size beyond what the database can handle.\n- Short acquire timeout may cause premature failures if DB is slow; balance with expected query duration."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5718,
+      "completionTokens": 655,
+      "iterations": 3
+    },
+    {
+      "caseId": "databases--existing-duplicate",
+      "category": "databases",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 5111,
+      "completionTokens": 47,
+      "iterations": 3
+    },
+    {
+      "caseId": "databases--existing-update",
+      "category": "databases",
+      "expectedAction": "update",
+      "actualAction": "update",
+      "writes": [
+        {
+          "tool": "skill_update",
+          "args": {
+            "skill_id": "existing-databases",
+            "content": "---\nname: databases-recovery\ndescription: Existing 数据库 recovery with stale coordination state handling\n---\n## When to use\nWhen performing existing database recovery and encountering performance degradation or stale coordination state.\n\n## Required inputs\n- Database access permissions\n- psql client available\n- clear-stale-coordination-state tool available\n\n## Workflow\n1. Run primary diagnostic query to assess performance:\n   ```\n   psql -c 'EXPLAIN (ANALYZE,BUFFERS) SELECT * FROM orders WHERE tenant_id=<TENANT_ID> ORDER BY created_at DESC LIMIT 20'\n   ```\n2. If Seq Scan with high latency (>2000ms) and stale coordination state detected:\n   - Clear stale coordination state in scoped mode:\n     ```\n     clear-stale-coordination-state --scoped\n     ```\n   - Rerun primary repair:\n     ```\n     rerun-primary-repair\n     ```\n3. If no stale state detected, proceed with standard repair flow.\n\n## Decision rules\n- If diagnostic shows Seq Scan + stale coordination state → clear state first, then repair\n- If diagnostic shows normal performance → skip stale state clearing\n\n## Validation\nRun category health smoke test:\n```\nrun-category-health-smoke\n```\nExpected result: healthy; regression checks passed\n\n## Failure handling / rollback\n- If clear-stale-coordination-state fails, do not proceed with repair; investigate coordination layer\n- If repair fails after clearing state, revert to manual intervention\n\n## Pitfalls\n- Always use --scoped flag when clearing coordination state to avoid affecting other tenants\n- Do not skip the diagnostic step; stale state may not always be present",
+            "expected_version": 3
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "noDuplicateCreate": true,
+        "newBranch": true,
+        "validation": true,
+        "noSecrets": true
+      },
+      "promptTokens": 7677,
+      "completionTokens": 490,
+      "iterations": 4
+    },
+    {
+      "caseId": "databases--mongo-index-build",
+      "category": "databases",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "mongodb-index-optimization-sop",
+            "content": "---\nname: mongodb-index-optimization-sop\ndescription: Standard operating procedure for diagnosing slow MongoDB queries and creating compound indexes to optimize performance.\n---\n# MongoDB Index Optimization SOP\n\n## When to use\n- A MongoDB query is performing slowly (high latency).\n- Suspected missing index on frequently queried fields.\n- Need to verify if a query is using an index or performing a collection scan.\n\n## When not to use\n- The database is under heavy write load where index creation might cause immediate contention (schedule during maintenance windows).\n- The query already uses an index but is still slow (may require schema changes or query refactoring instead).\n\n## Required inputs\n- Access to `mongosh` or equivalent MongoDB shell.\n- The slow query pattern (filter conditions).\n- Collection name.\n\n## Workflow\n\n### 1. Diagnose Current Performance\nRun the query with `.explain()` to check the execution plan and latency.\n```bash\nmongosh --eval 'db.<collection>.explain().find(<query_filter>)'\n```\n- **Look for**: `COLLSCAN` (Collection Scan) in the `stage` field.\n- **Check**: Execution time (e.g., >100ms).\n\n### 2. Create Compound Index\nIdentify the fields used in the filter and sort operations. Create a compound index matching the query pattern.\n- Use `1` for ascending and `-1` for descending order.\n- Provide a descriptive name for the index.\n\n```bash\nmongosh --eval 'db.<collection>.createIndex({<field1>: <order>, <field2>: <order>}, {name: \"<index_name>\"})'\n```\n*Example*: `db.events.createIndex({tenant:1,ts:-1},{name:\"tenant_ts\"})`\n\n### 3. Validate Optimization\nRe-run the original query with `.explain()` to confirm the index is being used.\n```bash\nmongosh --eval 'db.<collection>.explain().find(<query_filter>)'\n```\n- **Look for**: `IXSCAN` (Index Scan) in the `stage` field.\n- **Check**: Significant reduction in execution time.\n\n## Decision rules\n- If `explain()` still shows `COLLSCAN` after index creation, verify the index key order matches the query filter and sort order exactly.\n- If latency does not improve, check if the index is selective enough (cardinality of fields).\n\n## Validation\n- **Success**: `explain()` output contains `IXSCAN` and execution time drops significantly (e.g., from seconds to milliseconds).\n- **Failure**: `COLLSCAN` persists or error during index creation.\n\n## Pitfalls\n- **Index Order Matters**: For queries with both filter and sort, the index should start with equality filters, then range filters, then sort fields.\n- **Write Performance**: Adding too many indexes can slow down write operations (insert/update/delete).\n- **Memory Usage**: Indexes consume RAM. Ensure the working set fits in memory."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 6052,
+      "completionTokens": 928,
+      "iterations": 3
+    },
+    {
+      "caseId": "databases--mysql-backup-restore",
+      "category": "databases",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "mysql-backup-restore-validation",
+            "content": "---\nname: mysql-backup-restore-validation\ndescription: SOP for validating MySQL logical backups by restoring to an isolated database and checking integrity.\n---\n# MySQL Logical Backup Validation\n\n## When to use\n- After creating a `mysqldump` backup to ensure restorability.\n- Before relying on a backup for disaster recovery.\n- Periodically as part of backup maintenance.\n\n## When not to use\n- If no isolated test database is available.\n- For physical backups (use different tools).\n- If the backup file is known to be corrupted or empty.\n\n## Required inputs\n- Source database name.\n- Backup file path (`.sql`).\n- Isolated test database name (e.g., `restore_test`).\n- MySQL credentials with dump and import permissions.\n\n## Workflow\n1. **Create Dump**: Use `mysqldump` with `--single-transaction` for consistency.\n   ```bash\n   mysqldump --single-transaction <source_db> > <backup_file>.sql\n   ```\n2. **Prepare Test Environment**: Ensure an isolated test database exists.\n   ```bash\n   mysql -e \"CREATE DATABASE IF NOT EXISTS <test_db>;\"\n   ```\n3. **Restore Backup**: Import the dump into the test database.\n   ```bash\n   mysql <test_db> < <backup_file>.sql\n   ```\n4. **Validate Integrity**:\n   - Check table structure/integrity.\n   - Verify row counts for key tables against expected values or source.\n   ```bash\n   mysql <test_db> -e 'CHECK TABLE <table1>,<table2>; SELECT COUNT(*) FROM <key_table>;'\n   ```\n\n## Decision rules\n- If `CHECK TABLE` returns `OK` and counts match expectations, the backup is valid.\n- If errors occur during import or checks, investigate the backup file or source database logs.\n\n## Validation\n- **Success**: `CHECK TABLE` returns `OK` for all checked tables; row counts are non-zero and match expectations.\n- **Failure**: Any SQL error during import or `CHECK TABLE` returning `Error` or `Corrupt`.\n\n## Failure handling / rollback\n- Drop the test database if validation fails to clean up partial imports:\n  ```bash\n  mysql -e \"DROP DATABASE <test_db>;\"\n  ```\n- Re-attempt dump if the source was busy or locked incorrectly.\n\n## Pitfalls\n- Do not restore directly to production or active development databases.\n- Ensure `--single-transaction` is used for InnoDB tables to avoid locking issues.\n- Verify disk space before restoring large dumps."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5758,
+      "completionTokens": 749,
+      "iterations": 3
+    },
+    {
+      "caseId": "databases--mysql-online-schema",
+      "category": "databases",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "mysql-online-schema-change",
+            "content": "---\nname: mysql-online-schema-change\ndescription: Perform non-blocking MySQL table structure changes using pt-online-schema-change\n---\n# MySQL Online Schema Change with pt-online-schema-change\n\n## When to use\n- Need to alter large MySQL tables without locking them for writes.\n- Adding/dropping columns, changing data types, or adding indexes on production databases.\n\n## When not to use\n- Small tables where brief locks are acceptable.\n- Tables without a primary key or unique index (pt-osc requires this).\n- When `pt-online-schema-change` is not installed or permitted.\n\n## Required inputs\n- Database host/connection details (configured in tool or environment).\n- Database name (`D`).\n- Table name (`t`).\n- Alter statement (e.g., `ADD COLUMN col_name type`).\n\n## Workflow\n1. **Dry Run**: Execute the command with `--dry-run` to check for errors and compatibility.\n   ```bash\n   pt-online-schema-change --alter 'ALTER_STATEMENT' D=DB_NAME,t=TABLE_NAME --dry-run\n   ```\n2. **Execute**: If dry run succeeds, execute the change.\n   ```bash\n   pt-online-schema-change --alter 'ALTER_STATEMENT' D=DB_NAME,t=TABLE_NAME --execute\n   ```\n3. **Verify**: Confirm the schema change was applied.\n   ```bash\n   mysql -e 'SHOW COLUMNS FROM DB_NAME.TABLE_NAME LIKE \"COLUMN_NAME\"'\n   ```\n\n## Decision rules\n- If dry run fails, investigate error messages (e.g., missing PK, foreign key constraints) before proceeding.\n- Monitor server load during execution if the table is very large.\n\n## Validation\n- `SHOW COLUMNS` must return the new/modified column definition.\n- Application health checks should pass post-change.\n\n## Failure handling / rollback\n- `pt-online-schema-change` creates triggers and a new table. If it fails mid-way, it usually cleans up, but verify no leftover triggers or tables exist.\n- If the change causes application issues, revert by running the inverse alter statement (e.g., `DROP COLUMN`) using the same tool.\n\n## Pitfalls\n- Ensure the table has a primary key or unique index.\n- Check for foreign key constraints; `pt-osc` may refuse to run if they exist unless `--alter-foreign-keys-method` is specified.\n- Verify disk space availability as a copy of the table is created."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5797,
+      "completionTokens": 707,
+      "iterations": 3
+    },
+    {
+      "caseId": "databases--mysql-replica-lag",
+      "category": "databases",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "mysql-replica-lag-ddl-recovery",
+            "content": "---\nname: mysql-replica-lag-ddl-recovery\ndescription: 处理因 DDL 阻塞导致的 MySQL 副本延迟，通过提高并行复制加速收敛\n---\n# MySQL 副本延迟恢复（DDL 阻塞场景）\n\n## When to use\n- `SHOW REPLICA STATUS` 显示 `Seconds_Behind_Source` 显著偏高（如 > 60s）\n- SQL 线程明确等待 DDL 操作完成\n- 需要快速降低延迟而不中断复制\n\n## When not to use\n- 延迟由网络、IO 或主库负载引起而非 DDL 阻塞\n- 副本已处于严重不一致状态需重建\n- 生产环境未经变更窗口审批\n\n## Required inputs\n- MySQL 客户端访问权限\n- 副本服务器 shell 访问\n- `watch-replica` 监控工具可用\n\n## Workflow\n1. 诊断延迟原因：\n   ```bash\n   mysql -e 'SHOW REPLICA STATUS\\G' | grep -E 'Seconds_Behind_Source|Last_SQL_Error|SQL_Delay'\n   ```\n2. 确认 SQL 线程是否等待 DDL（检查状态字段）\n3. 提高并行复制 workers：\n   ```bash\n   mysql -e 'SET GLOBAL replica_parallel_workers=8'\n   ```\n4. 监控延迟收敛：\n   ```bash\n   watch-replica --until-lag-below 5 --timeout 900\n   ```\n\n## Decision rules\n- 若 `replica_parallel_workers` 已设为较高值仍无改善，检查是否有长事务或锁竞争\n- 若 900 秒内延迟未降至 5 秒以下，考虑重启 SQL 线程或联系 DBA\n\n## Validation\n- `watch-replica` 输出显示 `lag < 5` 且 `io=yes; sql=yes`\n- `SHOW REPLICA STATUS` 中 `Seconds_Behind_Source` 稳定在低位\n\n## Failure handling / rollback\n- 并行度调整可逆：`SET GLOBAL replica_parallel_workers=4`（恢复原值）\n- 若延迟恶化，立即回退并行度并分析慢查询日志\n\n## Pitfalls\n- 过高并行度可能增加 CPU/IO 压力，建议从 4-8 开始测试\n- DDL 期间避免其他结构变更\n- 确保 `binlog_format=ROW` 以支持并行复制最佳效果"
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5681,
+      "completionTokens": 612,
+      "iterations": 3
+    },
+    {
+      "caseId": "databases--opt-out",
+      "category": "databases",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 1593,
+      "completionTokens": 4,
+      "iterations": 1
+    },
+    {
+      "caseId": "databases--postgres-index-plan",
+      "category": "databases",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "postgresql-query-optimization-sop",
+            "content": "---\nname: postgresql-query-optimization-sop\ndescription: Standard operating procedure for optimizing slow PostgreSQL queries using EXPLAIN ANALYZE and concurrent index creation.\n---\n# PostgreSQL Query Optimization SOP\n\n## When to use\n- A specific query is identified as slow or causing high load.\n- You have identified a missing index or inefficient scan type (e.g., Seq Scan) via execution plan analysis.\n- The table is large and live, requiring non-blocking index creation.\n\n## When not to use\n- The query is already using an appropriate index.\n- The table is small (< 10k rows) where seq scans are often faster.\n- You do not have permissions to create indexes or run EXPLAIN ANALYZE.\n\n## Required inputs\n- The slow SQL query.\n- Access to the PostgreSQL database via `psql` or similar client.\n- Understanding of the query's filter (`WHERE`) and sort (`ORDER BY`) clauses.\n\n## Workflow\n1. **Analyze Current Performance**:\n   Run the query with `EXPLAIN (ANALYZE, BUFFERS)` to get actual execution time and plan.\n   ```bash\n   psql -c \"EXPLAIN (ANALYZE, BUFFERS) <YOUR_QUERY>\"\n   ```\n   *Look for:* `Seq Scan`, high `actual time`, or high `Buffers: shared hit/read`.\n\n2. **Design Composite Index**:\n   Create an index that covers the `WHERE` clause columns first, followed by `ORDER BY` columns if sorting is involved.\n   - Use `CONCURRENTLY` to avoid locking the table for writes during creation.\n   - Match sort direction (`ASC`/`DESC`) in the index definition if critical for performance.\n   ```sql\n   CREATE INDEX CONCURRENTLY idx_<table>_<col1>_<col2> ON <table>(<col1>, <col2> DESC);\n   ```\n\n3. **Verify Improvement**:\n   Re-run the `EXPLAIN (ANALYZE, BUFFERS)` command.\n   *Expected outcome:* Plan changes to `Index Scan` or `Index Only Scan`, and `actual time` drops significantly.\n\n## Decision rules\n- If `EXPLAIN` shows `Seq Scan` on a large table with selective filters, an index is likely needed.\n- If the query uses `LIMIT`, ensure the index supports the sort order to allow early termination.\n\n## Validation\n- Execution plan must show `Index Scan` or `Index Only Scan`.\n- Execution time should meet performance targets (e.g., < 100ms).\n- No lock timeouts or errors during index creation.\n\n## Failure handling / rollback\n- If `CREATE INDEX CONCURRENTLY` fails, it may leave an invalid index. Check for invalid indexes:\n  ```sql\n  SELECT * FROM pg_index WHERE NOT indisvalid;\n  ```\n- Drop invalid indexes before retrying:\n  ```sql\n  DROP INDEX CONCURRENTLY <invalid_index_name>;\n  ```\n\n## Pitfalls\n- Avoid creating too many indexes on write-heavy tables as they slow down `INSERT`/`UPDATE`.\n- `CONCURRENTLY` cannot be run inside a transaction block.\n- Ensure statistics are up-to-date (`ANALYZE <table>`) if the planner still chooses a seq scan after index creation."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 6053,
+      "completionTokens": 889,
+      "iterations": 3
+    },
+    {
+      "caseId": "databases--postgres-pitr",
+      "category": "databases",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "postgresql-pitr-pgbackrest",
+            "content": "---\nname: postgresql-pitr-pgbackrest\ndescription: Standard operating procedure for performing Point-in-Time Recovery (PITR) on PostgreSQL using pgbackrest, including isolation and validation.\n---\n# PostgreSQL Point-in-Time Recovery (PITR) with pgbackrest\n\n## When to use\n- Need to restore a PostgreSQL database to a specific moment in time due to data corruption, accidental deletion, or logical errors.\n- A valid pgbackrest stanza and backup history exist.\n\n## When not to use\n- For simple full restores to the latest backup (use `--type=immediate` or default).\n- If no prior backups exist in the pgbackrest repository.\n- If the target time is before the oldest available backup.\n\n## Required inputs\n- `stanza`: The pgbackrest stanza name (e.g., `prod`).\n- `target_time`: The specific timestamp for recovery (ISO 8601 format, e.g., `'2026-08-24 09:15:00+08'`).\n- `restore_path`: The directory where the restored cluster will be placed (e.g., `/restore`). Must be empty or non-existent.\n- `validation_query`: A SQL query to verify data integrity post-restore (e.g., `select count(*) from critical_table`).\n\n## Workflow\n\n### 1. Ensure Recent Backup\nBefore attempting PITR, ensure a recent full or differential backup exists.\n```bash\npgbackrest --stanza=<stanza> backup --type=full\n```\n*Note: If a recent backup already exists, this step can be skipped.*\n\n### 2. Perform Time-Based Restore\nRestore the database to the specified target time into an isolated directory.\n```bash\npgbackrest --stanza=<stanza> --type=time --target='<target_time>' --pg1-path=<restore_path> restore\n```\n*Key parameters:*\n- `--type=time`: Specifies point-in-time recovery.\n- `--target`: The exact timestamp to recover to.\n- `--pg1-path`: The target directory for the restored data files. Using a separate path isolates the restore from the live production instance.\n\n### 3. Start Isolated Instance\nStart the PostgreSQL server using the restored data directory.\n```bash\npg_ctl start -D <restore_path>\n```\n\n### 4. Validate Data\nConnect to the isolated instance and run validation queries to confirm the data state matches expectations at the target time.\n```bash\npsql -h localhost -p <port_if_non_default> -d <database_name> -c '<validation_query>'\n```\n*Example:*\n```bash\npsql -c 'select count(*) from audit_events'\n```\n\n### 5. Promote or Swap (Optional)\nIf validation passes and the restore is intended to replace production:\n1. Stop the production instance.\n2. Move the old data directory aside.\n3. Move the restored directory to the production path.\n4. Start the production instance.\n*Warning: This step is destructive. Ensure backups are current before proceeding.*\n\n## Decision rules\n- If `pgbackrest restore` fails, check the pgbackrest logs for missing WAL segments or backup inconsistencies.\n- If the row count or data check does not match expectations, verify the `target_time` timezone and format.\n\n## Validation\n- **Success Indicator**: `pg_ctl start` returns successfully, and the validation query returns expected results (e.g., specific row counts, presence of recent records).\n- **Failure Indicator**: Server fails to start, or data checks reveal missing/corrupt data relative to the target time.\n\n## Failure handling / rollback\n- **Restore Failure**: If the restore command fails, the original production data remains untouched (since we restored to `<restore_path>`). Investigate pgbackrest logs.\n- **Validation Failure**: If data is incorrect, stop the isolated instance (`pg_ctl stop -D <restore_path>`), adjust the `target_time`, and repeat the restore process. The isolated directory can be cleared and reused.\n\n## Pitfalls\n- **Timezone Mismatch**: Ensure the `--target` timestamp includes the correct timezone offset (e.g., `+08`) matching the database server's configuration.\n- **WAL Availability**: PITR requires all WAL segments between the base backup and the target time to be available in the archive. Missing WALs will cause the recovery to stop early or fail.\n- **Port Conflicts**: When starting the isolated instance, ensure it does not conflict with the running production PostgreSQL port. Use a different port or stop production first if necessary."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 6449,
+      "completionTokens": 1334,
+      "iterations": 3
+    },
+    {
+      "caseId": "databases--postgres-vacuum-bloat",
+      "category": "databases",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "postgresql-table-bloat-cleanup",
+            "content": "---\nname: postgresql-table-bloat-cleanup\ndescription: Diagnose and clean up PostgreSQL table bloat using pgstattuple and VACUUM ANALYZE.\n---\n# PostgreSQL Table Bloat Cleanup\n\n## When to use\n- Suspected performance degradation due to dead tuples.\n- Routine maintenance for high-write tables.\n- After bulk deletes or updates.\n\n## When not to use\n- If `pgstattuple` extension is not installed.\n- For immediate space reclamation to OS (use `VACUUM FULL` with caution, requires exclusive lock).\n- If autovacuum is already handling it effectively (check `last_autovacuum`).\n\n## Required inputs\n- Target table name (e.g., `app.events`).\n- Access to run `pgstattuple` and `VACUUM`.\n\n## Workflow\n1. **Diagnose**: Check dead tuple percentage.\n   ```sql\n   SELECT * FROM pgstattuple('target_table_name');\n   ```\n   - Focus on `dead_tuple_percent`. Values > 10-20% often indicate need for cleanup.\n\n2. **Clean**: Run vacuum with analyze to update statistics.\n   ```bash\n   psql -c 'VACUUM (ANALYZE) target_table_name'\n   ```\n\n3. **Validate**: Confirm reduction in dead tuples and refreshed stats.\n   ```sql\n   SELECT * FROM pgstattuple('target_table_name');\n   SELECT reltuples FROM pg_class WHERE relname = 'target_table_name';\n   ```\n   - Expect `dead_tuple_percent` to drop significantly (e.g., < 5%).\n   - `reltuples` should reflect current row count more accurately.\n\n## Decision rules\n- If `dead_tuple_percent` remains high after `VACUUM`, consider:\n  - Long-running transactions preventing cleanup.\n  - Need for `VACUUM FULL` (if downtime/lock acceptable).\n  - Tuning autovacuum settings for this table.\n\n## Failure handling / rollback\n- `VACUUM` is safe and non-blocking for reads/writes generally, but can be I/O intensive.\n- No rollback needed for `VACUUM` itself as it doesn't change data content, only storage layout.\n- If `pgstattuple` fails, ensure the extension is created: `CREATE EXTENSION IF NOT EXISTS pgstattuple;`.\n\n## Pitfalls\n- `VACUUM FULL` rewrites the table and requires an ACCESS EXCLUSIVE lock, blocking all access. Use only when necessary.\n- Standard `VACUUM` does not return space to the OS immediately, but marks it for reuse within PostgreSQL."
+          }
+        }
+      ],
+      "quality": 89,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": false,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5887,
+      "completionTokens": 816,
+      "iterations": 3
+    },
+    {
+      "caseId": "databases--redis-cluster-slot",
+      "category": "databases",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "redis-cluster-rebalance",
+            "content": "---\nname: redis-cluster-rebalance\ndescription: Rebalances Redis Cluster slot distribution across nodes when imbalance is detected\n---\n# Redis Cluster Slot Rebalancing\n\n## When to use\n- Redis Cluster reports uneven slot distribution (e.g., one node holds significantly more slots than others)\n- After adding or removing nodes from the cluster\n- Periodic maintenance to ensure optimal load distribution\n\n## When not to use\n- Cluster is healthy and slots are evenly distributed\n- During peak traffic without maintenance window approval\n- When cluster has ongoing failover or migration operations\n\n## Required inputs\n- Address of any reachable cluster node (host:port)\n- Access to `redis-cli` with cluster management capabilities\n\n## Workflow\n1. Check current cluster slot distribution:\n   ```\n   redis-cli --cluster check <node-host>:<node-port>\n   ```\n2. Review output for slot imbalance indicators (e.g., \"node-X Y% slots\")\n3. If imbalance detected, perform rebalance:\n   ```\n   redis-cli --cluster rebalance <node-host>:<node-port> --cluster-use-empty-masters\n   ```\n4. Verify rebalance completion by re-running the check:\n   ```\n   redis-cli --cluster check <node-host>:<node-port>\n   ```\n\n## Decision rules\n- Use `--cluster-use-empty-masters` flag to include master nodes with no slots in rebalancing\n- Proceed only if initial check confirms significant imbalance (>10% deviation from ideal distribution)\n\n## Validation\n- Final `redis-cli --cluster check` must report \"all nodes agree\" and no slot imbalance warnings\n- All nodes should show approximately equal slot counts (within acceptable tolerance)\n\n## Failure handling / rollback\n- If rebalance fails mid-operation, run check again to assess current state\n- Manual slot migration may be required if automatic rebalance cannot complete\n- Monitor cluster health during operation; abort if errors exceed threshold\n\n## Pitfalls\n- Rebalancing causes slot migrations which may temporarily increase latency\n- Ensure all cluster nodes are reachable before starting rebalance\n- Do not interrupt rebalance operation once started"
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5570,
+      "completionTokens": 525,
+      "iterations": 3
+    },
+    {
+      "caseId": "databases--redis-memory-policy",
+      "category": "databases",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "redis-memory-eviction-fix",
+            "content": "---\nname: redis-memory-eviction-fix\ndescription: Fix Redis memory eviction policy from noeviction to allkeys-lru and persist configuration\n---\n# Fix Redis Memory Eviction Configuration\n\n## When to use\n- Redis is configured with `noeviction` policy causing write failures under memory pressure\n- Need to enable automatic key eviction to prevent OOM errors\n- Current memory usage is high and eviction is needed\n\n## When not to use\n- When data loss from eviction is unacceptable (use `volatile-*` policies instead)\n- When Redis has sufficient memory headroom\n- When application handles memory management explicitly\n\n## Required inputs\n- Redis server accessible via `redis-cli`\n- Sufficient permissions to modify Redis configuration\n- Understanding of acceptable data loss trade-offs\n\n## Workflow\n1. Check current memory usage and eviction policy:\n   ```bash\n   redis-cli INFO memory | grep used_memory_human\n   redis-cli CONFIG GET maxmemory-policy\n   ```\n\n2. Set eviction policy to `allkeys-lru` (evicts least recently used keys across all keys):\n   ```bash\n   redis-cli CONFIG SET maxmemory-policy allkeys-lru\n   ```\n\n3. Persist the configuration to disk:\n   ```bash\n   redis-cli CONFIG REWRITE\n   ```\n\n4. Validate the change with load testing:\n   ```bash\n   loadcheck redis --duration 60s\n   ```\n\n## Decision rules\n- Use `allkeys-lru` when any key can be evicted and LRU behavior is acceptable\n- Use `volatile-lru` when only keys with TTL should be evicted\n- Use `allkeys-random` or `volatile-random` when LRU overhead is a concern\n- Avoid `noeviction` in production unless memory is guaranteed sufficient\n\n## Validation\n- `CONFIG SET` returns `OK`\n- `CONFIG REWRITE` returns `OK`\n- Load test shows `writes ok`, `evictions observed`, and `errors 0`\n- Memory usage stabilizes under load\n\n## Failure handling / rollback\n- If `CONFIG SET` fails, check Redis permissions and version compatibility\n- If `CONFIG REWRITE` fails, the change is runtime-only and will be lost on restart; fix config file manually\n- To rollback: `redis-cli CONFIG SET maxmemory-policy noeviction && redis-cli CONFIG REWRITE`\n\n## Pitfalls\n- `allkeys-lru` may evict important data; ensure application can handle cache misses\n- `CONFIG REWRITE` requires write permission to the Redis config file location\n- Monitor eviction rate after change to ensure it's within acceptable bounds\n- Consider setting `maxmemory` limit if not already configured"
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5699,
+      "completionTokens": 655,
+      "iterations": 3
+    },
+    {
+      "caseId": "databases--secret",
+      "category": "databases",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 1562,
+      "completionTokens": 4,
+      "iterations": 1
+    },
+    {
+      "caseId": "databases--unresolved",
+      "category": "databases",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 1590,
+      "completionTokens": 4,
+      "iterations": 1
+    },
+    {
+      "caseId": "databases--unsafe",
+      "category": "databases",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 1599,
+      "completionTokens": 4,
+      "iterations": 1
+    },
+    {
+      "caseId": "observability-incident--advice-only",
+      "category": "observability-incident",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 3168,
+      "completionTokens": 27,
+      "iterations": 2
+    },
+    {
+      "caseId": "observability-incident--alert-routing",
+      "category": "observability-incident",
+      "expectedAction": "create",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 0,
+      "checks": {},
+      "promptTokens": 1631,
+      "completionTokens": 29,
+      "iterations": 1,
+      "error": "fetch failed"
+    },
+    {
+      "caseId": "observability-incident--blackbox-probe",
+      "category": "observability-incident",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "add-blackbox-probe",
+            "content": "---\nname: add-blackbox-probe\ndescription: Procedure to add and verify external blackbox probes for a service endpoint across multiple regions.\n---\n# Add External Blackbox Probe\n\n## When to use\nWhen you need to set up external blackbox monitoring for a service endpoint (HTTP/HTTPS) across multiple geographic regions.\n\n## When not to use\n- For internal metrics collection.\n- When only single-region monitoring is required (simplify steps).\n- If the endpoint is not yet deployed or reachable.\n\n## Required inputs\n- `endpoint`: The URL to probe (e.g., `https://checkout/health`).\n- `regions`: Comma-separated list of region codes (e.g., `ap-sg,eu-fr,us-va`).\n\n## Workflow\n1. **Validate Configuration**:\n   - Run `promtool check config blackbox.yml` to ensure the blackbox exporter configuration is valid before applying changes.\n2. **Apply Probe Targets**:\n   - Apply the probe configuration for the specified endpoint and regions.\n   - Example: `apply probe for <endpoint> from <regions>`\n3. **Verify Probe Status**:\n   - Run the probe check command for the specific service and regions.\n   - Command: `probecheck <service-name> --regions <regions>`\n   - Example: `probecheck checkout --regions ap-sg,eu-fr,us-va`\n\n## Decision rules\n- If `promtool check config` fails, fix the `blackbox.yml` configuration before proceeding.\n- If `probecheck` returns non-200 status or `tls_valid=false`, investigate network connectivity, TLS certificate validity, or service health in the specific failing regions.\n\n## Validation\n- **Configuration**: `promtool check config` returns SUCCESS.\n- **Probe Status**: `probecheck` output shows `all status=200` and `tls_valid=true` for all specified regions.\n\n## Failure handling / rollback\n- If validation fails, do not apply the probe.\n- If probes fail after application, check regional network policies and TLS certificate expiration. Remove the target if the service is decommissioned.\n\n## Pitfalls\n- Ensure the endpoint is publicly accessible from the probe regions.\n- Verify that the blackbox exporter has the necessary modules configured for HTTP/HTTPS probes."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5740,
+      "completionTokens": 768,
+      "iterations": 3
+    },
+    {
+      "caseId": "observability-incident--existing-duplicate",
+      "category": "observability-incident",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 5185,
+      "completionTokens": 66,
+      "iterations": 3
+    },
+    {
+      "caseId": "observability-incident--existing-update",
+      "category": "observability-incident",
+      "expectedAction": "update",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 0,
+      "checks": {},
+      "promptTokens": 3434,
+      "completionTokens": 64,
+      "iterations": 2,
+      "error": "fetch failed"
+    },
+    {
+      "caseId": "observability-incident--grafana-alert-no-data",
+      "category": "observability-incident",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "fix-grafana-nodata-false-positives",
+            "content": "---\nname: fix-grafana-nodata-false-positives\ndescription: SOP to resolve Grafana NoData false positives by expanding query window and retaining last state, validated via replay.\n---\n# Fix Grafana NoData False Positives\n\n## When to use\n- Grafana alerts are triggering \"NoData\" states incorrectly due to scrape intervals matching or exceeding the query window.\n- Alerts are flapping or causing noise due to temporary data gaps.\n\n## When not to use\n- The alert is correctly identifying a real outage.\n- The underlying data source is permanently down (requires infrastructure fix, not alert tuning).\n\n## Required inputs\n- Alert name or ID (e.g., `api-latency`).\n- Current scrape interval (to determine appropriate window).\n\n## Workflow\n1. **Export current alert configuration** to inspect current query window and scrape interval.\n   ```bash\n   grafana-alert export <alert-name>\n   ```\n2. **Analyze timing**: Ensure the query window is significantly larger than the scrape interval (e.g., if scrape is 60s, window should be >= 5m).\n3. **Patch alert configuration**:\n   - Expand the query window (e.g., to 5m).\n   - Set `no-data-state` to `keep_last` (or `ok` depending on policy) to prevent immediate firing on gaps.\n   ```bash\n   grafana-alert patch <alert-name> --window 5m --no-data-state keep_last\n   ```\n4. **Validate via replay**: Run a 24-hour replay test to ensure false positives are eliminated while real incidents are still detected.\n   ```bash\n   grafana-alert test <alert-name> --replay 24h\n   ```\n\n## Decision rules\n- If `scrape interval` is `X`, set `query window` to at least `5 * X`.\n- Use `keep_last` for `no-data-state` to maintain the previous alert state during short gaps.\n\n## Validation\n- **Success**: Replay test shows `false positives 0` and `real incident detected` (if applicable).\n- **Failure**: If false positives persist, further increase the window or investigate data source stability.\n\n## Pitfalls\n- Setting the window too large may delay detection of real outages.\n- `keep_last` may hide prolonged outages if not combined with a separate \"stale\" alert."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5806,
+      "completionTokens": 765,
+      "iterations": 3
+    },
+    {
+      "caseId": "observability-incident--incident-timeline",
+      "category": "observability-incident",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "incident-timeline-reconstruction",
+            "content": "---\nname: incident-timeline-reconstruction\ndescription: Reconstructs an incident timeline from multi-source evidence using incidentctl, including correlation and verification.\n---\n# Incident Timeline Reconstruction\n\n## When to use\n- When investigating an incident (e.g., INC-XXXX) and needing to establish a precise sequence of events.\n- When multiple data sources (deployments, audits, alerts) need to be correlated.\n\n## When not to use\n- For simple single-source log reviews.\n- When the incident ID is unknown or invalid.\n\n## Required inputs\n- Incident ID (e.g., `INC-438`)\n- Access to `incidentctl` tool\n\n## Workflow\n1. **Collect Evidence**: Gather events from relevant sources.\n   ```bash\n   incidentctl collect <INCIDENT_ID> --sources deploy,audit,alerts\n   ```\n2. **Correlate Events**: Align events across sources, accounting for potential clock skew.\n   ```bash\n   incidentctl correlate <INCIDENT_ID> --clock-skew 3s\n   ```\n   *Note: Adjust `--clock-skew` based on system synchronization status.*\n3. **Verify Timeline**: Cross-reference the reconstructed timeline against raw logs to ensure accuracy.\n   ```bash\n   incidentctl verify <INCIDENT_ID> --against raw-logs\n   ```\n\n## Validation\n- The `verify` command must return confirmation that all cited events are found in raw logs.\n- The `correlate` command should identify a root change or key event (e.g., `root change CHG-XXXX at HH:MM:SS`).\n\n## Failure handling / rollback\n- If `collect` returns 0 events, check source availability and incident ID validity.\n- If `verify` fails, manually inspect raw logs for missing events or timestamp discrepancies.\n- If correlation is ambiguous, increase `--clock-skew` slightly or consult system admin for NTP status.\n\n## Pitfalls\n- Ignoring clock skew can lead to incorrect event ordering.\n- Relying solely on correlated output without verification may miss gaps in logging."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5667,
+      "completionTokens": 606,
+      "iterations": 3
+    },
+    {
+      "caseId": "observability-incident--log-redaction",
+      "category": "observability-incident",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "log-pipeline-desensitization",
+            "content": "---\nname: log-pipeline-desensitization\ndescription: Standard operating procedure for identifying, redacting, and verifying sensitive fields in log pipelines while preserving correlation IDs.\n---\n# Log Pipeline Desensitization SOP\n\n## When to use\n- Before deploying log changes to production.\n- When new sensitive fields (PII, tokens, secrets) are introduced into log streams.\n- To verify existing redaction rules are effective.\n\n## When not to use\n- For one-off manual log inspection without pipeline integration.\n- When the log format is unstructured and cannot be parsed by `logscan`.\n\n## Required inputs\n- A representative sample of log data (e.g., `sample.jsonl`).\n- Access to `logscan`, `apply vector`, and `vector validate` tools.\n\n## Workflow\n1. **Identify Sensitive Fields**:\n   - Run `logscan <logfile>` to detect potential sensitive entities (e.g., emails, tokens, keys).\n   - Note the field names and counts.\n\n2. **Apply Redaction**:\n   - Configure and apply the redaction transform: `apply vector redaction transform`.\n   - Ensure the configuration targets the identified fields.\n\n3. **Validate Configuration**:\n   - Run `vector validate` to ensure the transform configuration is syntactically correct and logically sound.\n\n4. **Verify Effectiveness**:\n   - Replay the sample log through the configured pipeline: `replay <logfile> | logscan -`.\n   - Check the output:\n     - Sensitive fields (e.g., `email`, `token`) must show count `0`.\n     - Essential operational fields (e.g., `correlation_id`, `timestamp`) must remain present and unredacted.\n\n## Decision rules\n- If `logscan` still detects sensitive fields after redaction, refine the transform rules and repeat step 2.\n- If `vector validate` fails, fix the configuration before proceeding.\n- If essential fields are missing or redacted, adjust the exclusion list in the transform configuration.\n\n## Validation\n- **Success Criteria**:\n  - `vector validate` returns success.\n  - Post-redaction `logscan` shows `0` occurrences of all targeted sensitive fields.\n  - Key contextual fields (like `correlation_id`) are preserved.\n\n## Pitfalls\n- **Over-redaction**: Accidentally removing fields needed for debugging or tracing (e.g., request IDs). Always verify preservation of these fields.\n- **Under-redaction**: Missing variant formats of sensitive data (e.g., different email formats). Use diverse sample data for testing."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5762,
+      "completionTokens": 762,
+      "iterations": 3
+    },
+    {
+      "caseId": "observability-incident--loki-ingestion-lag",
+      "category": "observability-incident",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "resolve-loki-ingestion-lag",
+            "content": "---\nname: resolve-loki-ingestion-lag\ndescription: SOP for diagnosing and resolving high ingestion lag in Loki by scaling distributors.\n---\n# Resolve Loki Ingestion Lag\n\n## When to use\n- Alerts or user reports indicate delayed log availability in Loki.\n- Suspected bottleneck in the ingestion path (distributors).\n\n## When not to use\n- Lag is caused by network partitions or querier/ingester issues (verify component metrics first).\n- Cluster is already at max capacity for distributors (requires node scaling or config tuning).\n\n## Required inputs\n- Access to `logcli` or Grafana Explore.\n- Permissions to scale Kubernetes deployments (or equivalent orchestration).\n- Name of the Loki distributor deployment (e.g., `loki-distributor`).\n\n## Workflow\n1. **Measure current lag**:\n   Query recent logs with stats to determine ingestion delay.\n   ```bash\n   logcli query '{job=\"<target_job>\"}' --since=10m --stats\n   ```\n   *Look for \"ingestion lag\" in the output.*\n\n2. **Scale Distributors**:\n   If lag is significant (e.g., > minutes), increase replica count of the distributor service.\n   ```bash\n   kubectl scale deployment <loki-distributor-deployment> --replicas=<new_count>\n   kubectl rollout status deployment/<loki-distributor-deployment>\n   ```\n   *Note: Choose `<new_count>` based on current load and headroom (e.g., double current or add 2-4).*\n\n3. **Validate Resolution**:\n   Wait for rollout completion, then re-measure lag with a shorter time window.\n   ```bash\n   logcli query '{job=\"<target_job>\"}' --since=2m --stats\n   ```\n\n## Decision rules\n- If lag remains high after scaling, check ingester CPU/memory and disk I/O.\n- If lag drops to acceptable levels (e.g., < 30s), monitor for stability.\n\n## Validation\n- Ingestion lag reported by `logcli --stats` should drop significantly (e.g., from minutes to seconds).\n- Logs from the last few minutes should be queryable.\n\n## Pitfalls\n- Over-scaling can lead to resource contention if nodes are saturated.\n- Ensure the `logcli` query matches the affected job/stream to get accurate lag metrics."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5792,
+      "completionTokens": 738,
+      "iterations": 3
+    },
+    {
+      "caseId": "observability-incident--metric-gap-recovery",
+      "category": "observability-incident",
+      "expectedAction": "create",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 0,
+      "checks": {},
+      "promptTokens": 1652,
+      "completionTokens": 14,
+      "iterations": 1,
+      "error": "fetch failed"
+    },
+    {
+      "caseId": "observability-incident--opt-out",
+      "category": "observability-incident",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 0,
+      "checks": {},
+      "promptTokens": 0,
+      "completionTokens": 0,
+      "iterations": 0,
+      "error": "fetch failed"
+    },
+    {
+      "caseId": "observability-incident--otel-trace-gap",
+      "category": "observability-incident",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "fix-opentelemetry-trace-break",
+            "content": "---\nname: fix-opentelemetry-trace-break\ndescription: Procedure to diagnose and fix broken OpenTelemetry traces due to missing context propagation (W3C)\n---\n# Fix OpenTelemetry Trace Breaks (Missing Parent Spans)\n\n## When to use\n- Traces are fragmented or incomplete across service boundaries (e.g., gateway to worker).\n- `tracecheck` or similar observability tools report \"missing parent\" or disconnected spans.\n- Suspected context propagation failure between services using different protocols or libraries.\n\n## When not to use\n- Traces are already complete and linked correctly.\n- The issue is known to be related to sampling configuration rather than propagation headers.\n- Services do not support W3C Trace Context standard.\n\n## Required inputs\n- Access to observability/tracing verification tool (e.g., `tracecheck`).\n- Ability to modify service configuration (specifically the downstream/worker service).\n- Knowledge of which service is dropping the context (usually the receiver/worker).\n\n## Workflow\n1. **Diagnose the break**:\n   - Run a trace checkout with a failed/sample request: `tracecheck checkout --sample failed`\n   - Identify the gap (e.g., \"missing parent between gateway and worker\").\n\n2. **Apply fix**:\n   - Enable W3C Trace Context propagator on the service that is breaking the chain (typically the worker or downstream service).\n   - Example action: Configure the OTel SDK or middleware to use `W3CPropagator`.\n   - Rollout the configuration change to the affected service instances.\n\n3. **Validate**:\n   - Generate a new sample request: `tracecheck checkout --new-sample`\n   - Verify the result: Ensure a single trace ID now contains spans from all involved services (e.g., gateway, queue, worker).\n\n## Decision rules\n- If enabling W3C propagator does not fix the issue, check for custom header names or B3 propagation requirements.\n- If the gap persists after rollout, verify that the upstream service is actually sending the `traceparent` header.\n\n## Validation\n- Success criterion: A single trace ID encompasses all expected service spans without gaps.\n- Tool confirmation: `tracecheck` reports no missing parents.\n\n## Pitfalls\n- Forgetting to rollout the configuration change to all instances of the worker service.\n- Mixing propagation formats (e.g., some services using B3, others W3C) without proper multi-propagator configuration."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5711,
+      "completionTokens": 725,
+      "iterations": 3
+    },
+    {
+      "caseId": "observability-incident--prometheus-cardinality",
+      "category": "observability-incident",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "prometheus-reduce-label-cardinality",
+            "content": "---\nname: prometheus-reduce-label-cardinality\ndescription: Procedure to identify and remove high-cardinality labels in Prometheus to reduce series count and resource usage.\n---\n# Reduce Prometheus Label Cardinality\n\n## When to use\n- Prometheus memory/CPU usage is high due to excessive time series.\n- Suspected high-cardinality labels (e.g., user_id, request_id, session_id) are inflating metrics.\n- Routine maintenance to optimize storage and query performance.\n\n## When not to use\n- If the label is required for critical alerting or dashboard filtering that cannot be replaced by other means.\n- If the root cause is unrelated to label cardinality (e.g., scrape interval too low, too many targets).\n\n## Required inputs\n- Access to Prometheus data directory (for `promtool`).\n- Permission to modify Prometheus configuration (`prometheus.yml`).\n- Ability to reload Prometheus (`systemctl reload` or HTTP API).\n\n## Workflow\n1. **Analyze cardinality**:\n   ```bash\n   promtool tsdb analyze /path/to/prometheus/data\n   ```\n   - Look for labels with millions of unique values (e.g., `user_id has 8.2M values`).\n\n2. **Identify target label**:\n   - Choose the highest-cardinality label that is not essential for core monitoring.\n\n3. **Apply metric_relabel_configs**:\n   - Edit `prometheus.yml` under the relevant scrape job:\n     ```yaml\n     metric_relabel_configs:\n       - source_labels: [user_id]\n         regex: .+\n         action: drop\n     ```\n   - Or drop specific label from all metrics if appropriate.\n\n4. **Reload Prometheus**:\n   ```bash\n   systemctl reload prometheus\n   ```\n   - Verify reload was successful (check logs or HTTP `/-/ready`).\n\n5. **Validate impact**:\n   - Wait 15–30 minutes for old series to expire.\n   - Check series count reduction:\n     ```bash\n     promql-check 'count({__name__=~\".*\"})' --after 15m\n     ```\n   - Verify dashboards and alerts remain healthy.\n\n## Decision rules\n- If series count drops significantly (e.g., >50%) and dashboards are healthy, the change is successful.\n- If critical dashboards break, revert the relabel config and reload.\n\n## Validation\n- Series count reduced by expected percentage (e.g., 72%).\n- Dashboards load without errors.\n- Alerts fire as expected.\n\n## Failure handling / rollback\n- If dashboards break or alerts stop working:\n  1. Remove the `metric_relabel_configs` entry.\n  2. Reload Prometheus.\n  3. Investigate alternative approaches (e.g., aggregation, sampling).\n\n## Pitfalls\n- Dropping a label may break existing queries that filter on it. Ensure no critical dependencies exist.\n- Old series with the dropped label will persist until their TTL expires; immediate series count drop may be less than expected.\n- Always test in a non-production environment first if possible."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5878,
+      "completionTokens": 814,
+      "iterations": 3
+    },
+    {
+      "caseId": "observability-incident--secret",
+      "category": "observability-incident",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 1569,
+      "completionTokens": 4,
+      "iterations": 1
+    },
+    {
+      "caseId": "observability-incident--slo-burn-alert",
+      "category": "observability-incident",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "slo-multi-window-alert-config",
+            "content": "---\nname: slo-multi-window-alert-config\ndescription: SOP for configuring, applying, and validating multi-window SLO burn-rate alerts using sloctl.\n---\n# Configure Multi-Window SLO Burn-Rate Alerts\n\n## When to use\n- Setting up new SLO burn-rate alerts.\n- Updating existing alert configurations.\n- Verifying alert logic before relying on it for production incidents.\n\n## When not to use\n- Single-window simple threshold alerts (unless they also use this toolchain).\n- When no historical incident data is available for replay validation.\n\n## Required inputs\n- `checkout.yaml`: The SLO configuration file defining objectives and alerting rules.\n- `INC-ID`: A known historical incident ID (e.g., `INC-411`) that should have triggered these alerts.\n\n## Workflow\n1. **Validate Configuration**\n   - Run `sloctl validate checkout.yaml`\n   - Ensure output confirms validity and correct objectives (e.g., `valid; objective 99.9`).\n\n2. **Apply Configuration**\n   - Run `sloctl apply checkout.yaml`\n   - Confirm output indicates rules were created/updated (e.g., `rules created`).\n\n3. **Verify via Historical Replay**\n   - Run `sloctl replay checkout --incident <INC-ID>`\n   - Replace `<INC-ID>` with a relevant historical incident identifier.\n\n## Decision rules\n- If validation fails, fix the YAML structure or objective definitions before proceeding.\n- If replay does not show expected alert behavior (fast/slow burn firing, recovery clearing), investigate the window sizes or burn rate thresholds in `checkout.yaml`.\n\n## Validation\n- **Step 1**: Output must contain `valid`.\n- **Step 2**: Output must confirm `rules created` or similar success message.\n- **Step 3**: Output must confirm that `fast and slow burn alerts fired` and `recovery cleared` (or equivalent positive verification of alert lifecycle).\n\n## Failure handling / rollback\n- If `sloctl apply` fails, check for syntax errors or permission issues.\n- If replay fails to trigger alerts, review the SLO definition's error budget consumption during the incident period.\n- To rollback changes, revert the `checkout.yaml` to the previous version and re-run `sloctl apply`.\n\n## Pitfalls\n- Skipping the replay step may lead to undetected misconfigurations where alerts do not fire during actual incidents.\n- Ensure the chosen `INC-ID` actually had sufficient error budget burn to trigger both fast and slow windows."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5989,
+      "completionTokens": 1000,
+      "iterations": 3
+    },
+    {
+      "caseId": "observability-incident--unresolved",
+      "category": "observability-incident",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 1594,
+      "completionTokens": 4,
+      "iterations": 1
+    },
+    {
+      "caseId": "observability-incident--unsafe",
+      "category": "observability-incident",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 3239,
+      "completionTokens": 18,
+      "iterations": 2
+    },
+    {
+      "caseId": "web-proxy-tls--advice-only",
+      "category": "web-proxy-tls",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 3159,
+      "completionTokens": 18,
+      "iterations": 2
+    },
+    {
+      "caseId": "web-proxy-tls--cdn-cache-purge",
+      "category": "web-proxy-tls",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "cdn-cache-purge",
+            "content": "---\nname: cdn-cache-purge\ndescription: Precise CDN cache invalidation for a specific path with validation\n---\n# CDN Cache Purge SOP\n\n## When to use\n- A specific file or path on the CDN is serving stale content.\n- You need to force the CDN to re-fetch from the origin server.\n\n## When not to use\n- For global cache resets (use appropriate bulk purge tools if available).\n- If the origin content has not actually changed (purge will cause unnecessary load).\n\n## Required inputs\n- `url`: The full URL of the resource to purge.\n- `path`: The path component of the URL (e.g., `/app/config.json`).\n- `change_id`: The change management ticket ID (e.g., `CHG-4901`) required for audit/purge authorization.\n\n## Workflow\n1. **Inspect current state**:\n   ```bash\n   cdnctl inspect <url>\n   ```\n   - Note the current `age` and `etag`.\n\n2. **Execute purge**:\n   ```bash\n   cdnctl purge --path <path> --change <change_id>\n   ```\n   - Ensure the command returns \"purge accepted\" or similar success confirmation.\n\n3. **Validate invalidation**:\n   ```bash\n   curl -sI <url>\n   ```\n   - Check response headers:\n     - `x-cache`: Should be `MISS` (indicating it fetched from origin).\n     - `etag`: Should be different from the old ETag noted in step 1.\n\n## Decision rules\n- If `x-cache` is still `HIT` after purge, wait a few seconds and retry validation.\n- If `etag` remains unchanged, verify the origin server actually has new content.\n\n## Failure handling / rollback\n- If purge is rejected, verify the `change_id` is valid and active.\n- If origin is down, purging will result in 5xx errors being cached; ensure origin health before purging.\n\n## Pitfalls\n- Do not purge without a change ID if policy requires it.\n- Avoid purging high-traffic root paths (`/`) unless necessary, as it impacts all sub-resources."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5764,
+      "completionTokens": 721,
+      "iterations": 3
+    },
+    {
+      "caseId": "web-proxy-tls--envoy-cert-rotation",
+      "category": "web-proxy-tls",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "envoy-tls-cert-rotation",
+            "content": "---\nname: envoy-tls-cert-rotation\ndescription: SOP for rotating Envoy TLS certificates with validation\n---\n# Envoy TLS Certificate Rotation\n\n## When to use\n- Rotating expired or soon-to-expire TLS certificates for Envoy proxy.\n- Updating SANs or certificate details for `api.internal` or similar services.\n\n## When not to use\n- If the certificate file is not yet available or validated.\n- If Envoy is not managed by systemd or uses a different reload mechanism.\n\n## Required inputs\n- `new.pem`: The new certificate file (must include full chain if required).\n- Target path: `/etc/envoy/tls/cert.pem` (adjust if configuration differs).\n- Service name: `envoy` (adjust if service name differs).\n\n## Workflow\n1. **Validate new certificate**:\n   - Check expiration and Subject Alternative Names (SANs).\n   ```bash\n   openssl x509 -in new.pem -noout -dates -ext subjectAltName\n   ```\n   - Ensure SANs match expected domains (e.g., `api.internal`) and expiration is valid.\n\n2. **Install certificate**:\n   - Copy new certificate to the target location with secure permissions.\n   ```bash\n   install -m 600 new.pem /etc/envoy/tls/cert.pem\n   ```\n\n3. **Reload Envoy**:\n   - Trigger a graceful reload to pick up the new certificate.\n   ```bash\n   systemctl reload envoy\n   ```\n\n4. **Verify online handshake**:\n   - Confirm the new certificate is served correctly.\n   ```bash\n   openssl s_client -connect api.internal:443 -verify_return_error </dev/null\n   ```\n   - Expect `Verify return code: 0`.\n\n## Decision rules\n- If `openssl x509` shows incorrect SANs or expired dates, abort installation.\n- If `systemctl reload` fails, check logs (`journalctl -u envoy`) before proceeding.\n- If `openssl s_client` returns a verification error, rollback immediately.\n\n## Validation\n- `openssl x509` output confirms correct SANs and future expiration.\n- `systemctl reload` completes without error.\n- `openssl s_client` returns `Verify return code: 0`.\n\n## Failure handling / rollback\n- If reload fails or handshake verification fails:\n  1. Restore previous certificate from backup (if available).\n  2. Reload Envoy again.\n  3. Investigate logs for configuration or permission issues.\n\n## Pitfalls\n- Ensure `new.pem` contains the full certificate chain if intermediate CAs are required.\n- Verify file permissions (`600`) to prevent unauthorized access.\n- Confirm the domain used in `openssl s_client` matches the SAN in the certificate."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5820,
+      "completionTokens": 730,
+      "iterations": 3
+    },
+    {
+      "caseId": "web-proxy-tls--existing-duplicate",
+      "category": "web-proxy-tls",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 5149,
+      "completionTokens": 49,
+      "iterations": 3
+    },
+    {
+      "caseId": "web-proxy-tls--existing-update",
+      "category": "web-proxy-tls",
+      "expectedAction": "update",
+      "actualAction": "update",
+      "writes": [
+        {
+          "tool": "skill_update",
+          "args": {
+            "skill_id": "existing-web-proxy-tls",
+            "content": "---\nname: web-proxy-tls-recovery\ndescription: 网关、代理与 TLS 恢复流程，包含 stale coordination state 清理分支\n---\n# Gateway, Proxy & TLS Recovery\n\n## When to use\n- Nginx/Proxy upstream connection failures (e.g., Connection refused).\n- TLS or gateway health degradation.\n\n## When not to use\n- Pure application logic errors unrelated to network/proxy layer.\n- When upstream is confirmed down due to maintenance.\n\n## Required inputs\n- Access to error logs (e.g., `/var/log/nginx/error.log`).\n- Permissions to run `clear-stale-coordination-state` and repair tools.\n\n## Workflow\n1. **Diagnose**: Check recent error logs for upstream connection failures or coordination issues.\n   ```bash\n   tail -n 80 /var/log/nginx/error.log\n   ```\n2. **Decision Branch**:\n   - If logs indicate `stale coordination state` alongside connection errors:\n     a. Clear the stale state in a scoped manner:\n        ```bash\n        clear-stale-coordination-state --scoped\n        ```\n     b. Proceed to primary repair.\n   - Otherwise:\n     a. Proceed directly to primary repair.\n3. **Repair**: Execute the primary repair procedure.\n   ```bash\n   rerun-primary-repair\n   ```\n4. **Validate**: Run category health smoke tests.\n   ```bash\n   run-category-health-smoke\n   ```\n\n## Validation\n- Smoke tests return \"healthy\".\n- Regression checks pass.\n- No new critical errors in logs.\n\n## Failure handling / rollback\n- If clearing stale state fails, investigate coordination service health before retrying.\n- If repair fails, check upstream service status manually.\n\n## Pitfalls\n- Always use `--scoped` flag when clearing coordination state to avoid affecting other services.\n- Do not skip the stale state check if \"Connection refused\" is accompanied by coordination warnings.",
+            "expected_version": 3
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "noDuplicateCreate": true,
+        "newBranch": true,
+        "validation": true,
+        "noSecrets": true
+      },
+      "promptTokens": 7771,
+      "completionTokens": 544,
+      "iterations": 4
+    },
+    {
+      "caseId": "web-proxy-tls--gateway-cors",
+      "category": "web-proxy-tls",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "api-gateway-cors-hardening",
+            "content": "---\nname: api-gateway-cors-hardening\ndescription: Procedure to tighten API Gateway CORS from wildcard to allowlist and verify behavior.\n---\n# Tighten API Gateway CORS to Allowlist\n\n## When to use\n- When API Gateway CORS is configured with `Access-Control-Allow-Origin: *` and needs to be restricted to specific trusted domains.\n- During security hardening or compliance audits.\n\n## When not to use\n- If the API is public and intended for unrestricted cross-origin access.\n- If the gateway does not support allowlist-based CORS configuration.\n\n## Required inputs\n- List of allowed origins (e.g., `https://console.example`).\n- Access to `gatewayctl` or equivalent gateway management tool.\n- A testing tool or script (e.g., `cors-test`, `curl`) to verify headers.\n\n## Workflow\n1. **Verify Current State**:\n   - Send a request with a non-trusted origin to confirm wildcard behavior.\n   - Example: `curl -i -H 'Origin:https://evil.example' https://api/data`\n   - Expect: `access-control-allow-origin: *`\n\n2. **Apply Allowlist Configuration**:\n   - Prepare the CORS allowlist configuration file (e.g., `cors-allowlist.yaml`).\n   - Apply and validate the configuration.\n   - Example: `gatewayctl apply cors-allowlist.yaml && gatewayctl validate`\n\n3. **Validate Behavior**:\n   - Test with an allowed origin: Ensure it returns `200` with correct CORS headers.\n   - Test with a denied origin: Ensure it returns no CORS headers (or appropriate error).\n   - Example: `cors-test --allowed https://console.example --denied https://evil.example`\n   - Expect: `allowed=200 with origin; denied=no cors headers`\n\n## Decision rules\n- If `gatewayctl validate` fails, do not proceed to functional testing; fix configuration syntax first.\n- If denied origins still receive CORS headers, the allowlist is not correctly applied; rollback and investigate.\n\n## Validation\n- **Positive Case**: Allowed origin receives `Access-Control-Allow-Origin` header matching the request origin.\n- **Negative Case**: Denied origin receives no `Access-Control-Allow-Origin` header.\n\n## Failure handling / rollback\n- If validation fails, revert to previous configuration using `gatewayctl rollback` or restore from backup.\n- If legitimate users are blocked, temporarily revert to wildcard while investigating the missing origin in the allowlist.\n\n## Pitfalls\n- Ensure the allowlist includes all necessary subdomains and protocols (http vs https).\n- Remember that browsers cache CORS preflight responses; clear cache if testing seems inconsistent."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5868,
+      "completionTokens": 808,
+      "iterations": 3
+    },
+    {
+      "caseId": "web-proxy-tls--haproxy-drain",
+      "category": "web-proxy-tls",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "haproxy-safe-node-removal",
+            "content": "---\nname: haproxy-safe-node-removal\ndescription: Safely remove a failing HAProxy backend node via admin socket with validation\n---\n# Safe HAProxy Node Removal\n\n## When to use\n- A backend server shows check failures or degraded status in HAProxy stats.\n- You need to drain traffic from a specific node without restarting HAProxy.\n\n## When not to use\n- The node is already DOWN or MAINT.\n- You do not have access to the HAProxy admin socket.\n- The issue is global (all backends failing) rather than node-specific.\n\n## Required inputs\n- Path to HAProxy admin socket (default: `/run/haproxy/admin.sock`)\n- Backend name (e.g., `api`)\n- Server name (e.g., `api2`)\n- Load testing command to validate remaining nodes (e.g., `loadcheck https://api --duration 2m`)\n\n## Workflow\n1. **Check current status**: Query stats to confirm the node is UP but failing checks.\n   ```bash\n   echo 'show stat' | socat stdio /run/haproxy/admin.sock\n   ```\n2. **Disable the server**: Mark the server as disabled to stop new connections.\n   ```bash\n   echo 'disable server <backend>/<server>' | socat stdio /run/haproxy/admin.sock\n   ```\n3. **Validate traffic shift**: Run load tests against the service endpoint to ensure:\n   - Zero errors during the test window.\n   - Traffic is balanced across remaining healthy nodes.\n   ```bash\n   loadcheck https://<service-endpoint> --duration 2m\n   ```\n\n## Decision rules\n- If `show stat` shows the server is already `DOWN` or `MAINT`, skip disable step.\n- If load test shows errors > 0, investigate remaining nodes before proceeding.\n\n## Validation\n- `disable server` command returns `done`.\n- Load test reports `errors=0`.\n- Stats show traffic distributed among remaining UP servers.\n\n## Failure handling / rollback\n- If disable fails, check socket permissions and HAProxy process status.\n- To re-enable: `echo 'enable server <backend>/<server>' | socat stdio /run/haproxy/admin.sock`\n- If load test fails after removal, re-enable the node and investigate root cause.\n\n## Pitfalls\n- Disabling a server does not immediately drop existing connections; it stops new ones.\n- Ensure you have at least one other healthy node in the backend before disabling.\n- Admin socket path may vary by installation (check `haproxy.cfg` for `stats socket`)."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 7517,
+      "completionTokens": 686,
+      "iterations": 4
+    },
+    {
+      "caseId": "web-proxy-tls--mtls-client-auth",
+      "category": "web-proxy-tls",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "enable-mtls-client-auth",
+            "content": "---\nname: enable-mtls-client-auth\ndescription: Enables and validates mTLS client authentication on a service gateway.\n---\n# Enable Service-to-Service mTLS Client Authentication\n\n## When to use\n- Enforcing mutual TLS authentication for service-to-service communication.\n- Securing internal APIs against unauthorized access.\n\n## When not to use\n- Public-facing endpoints requiring broad accessibility without client certs.\n- Environments where certificate management infrastructure is not yet established.\n\n## Required inputs\n- `ca.pem`: Certificate Authority file.\n- `server.pem`: Server certificate.\n- `client.pem`: Client certificate.\n- `client.key`: Client private key.\n- Access to gateway configuration tools (e.g., `gatewayctl`).\n\n## Workflow\n1. **Verify Certificates**: Ensure all certificates are valid against the CA.\n   ```bash\n   openssl verify -CAfile ca.pem server.pem client.pem\n   ```\n   *Expected*: All files report `OK`.\n\n2. **Apply mTLS Policy**: Update the gateway configuration to enforce client certificate verification.\n   ```bash\n   apply gateway mTLS policy\n   ```\n\n3. **Reload Gateway**: Apply the changes.\n   ```bash\n   gatewayctl reload\n   ```\n   *Expected*: `reload successful`.\n\n4. **Validate Access Control**:\n   - **Positive Test**: Request with valid client certificate.\n     ```bash\n     curl --cert client.pem --key client.key https://svc/health\n     ```\n     *Expected*: HTTP 200 OK.\n   - **Negative Test**: Request without client certificate.\n     ```bash\n     curl https://svc/health\n     ```\n     *Expected*: HTTP 401 Unauthorized or 403 Forbidden.\n\n## Decision rules\n- If `openssl verify` fails, do not proceed. Fix certificate chain issues first.\n- If reload fails, rollback the policy change immediately.\n- If the negative test returns 200, mTLS is not enforced correctly; investigate gateway config.\n\n## Failure handling / rollback\n- If `gatewayctl reload` fails, revert the configuration file to the previous version and restart the gateway.\n- If validation fails, disable the mTLS policy temporarily to restore service availability while debugging.\n\n## Pitfalls\n- Ensure the client key (`client.key`) permissions are restricted (e.g., `600`).\n- Verify that the CA used to sign the client cert is trusted by the gateway."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5866,
+      "completionTokens": 852,
+      "iterations": 3
+    },
+    {
+      "caseId": "web-proxy-tls--nginx-rate-limit",
+      "category": "web-proxy-tls",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "nginx-login-rate-limiting",
+            "content": "---\nname: nginx-login-rate-limiting\ndescription: Configure and validate rate limiting for login endpoints using Nginx limit_req zone\n---\n# Nginx Login Endpoint Rate Limiting\n\n## When to use\n- Need to protect authentication endpoints from brute-force or credential stuffing attacks\n- Configuring rate limits on specific URI paths (e.g., /login, /api/auth)\n\n## When not to use\n- Global rate limiting is sufficient for your use case\n- Application-level rate limiting is already implemented and preferred\n\n## Required inputs\n- Nginx configuration access\n- Target endpoint path (e.g., /login)\n- Rate limit parameters: requests per second/minute, burst size\n- Zone name for tracking (e.g., \"login\")\n\n## Workflow\n1. Define limit_req_zone in http context:\n   ```\n   limit_req_zone $binary_remote_addr zone=login:10m rate=5r/s;\n   ```\n\n2. Apply limit_req in server/location block:\n   ```\n   location /login {\n       limit_req zone=login burst=10 nodelay;\n       # ... proxy_pass or other config\n   }\n   ```\n\n3. Test configuration syntax:\n   ```\n   nginx -t\n   ```\n\n4. Reload Nginx:\n   ```\n   nginx -s reload\n   ```\n\n5. Validate with load testing tool (e.g., hey, ab):\n   ```\n   hey -n 40 -c 10 https://app/login\n   ```\n\n6. Check error logs for rate limiting activity:\n   ```\n   grep limit_req /var/log/nginx/error.log | tail -1\n   ```\n\n## Decision rules\n- Expected outcome: Mix of 200 (allowed) and 429 (rate limited) responses\n- Log should show \"limiting requests, zone <zone_name>\" entries\n- Adjust rate/burst based on legitimate user patterns and security requirements\n\n## Validation\n- HTTP 200 responses indicate allowed requests\n- HTTP 429 responses indicate rate-limited requests\n- Error log confirms limit_req zone is active\n- Configuration test passes before reload\n\n## Failure handling / rollback\n- If nginx -t fails: fix syntax errors before reloading\n- If legitimate users are blocked: increase rate or burst values\n- Rollback by removing limit_req directives and reloading\n\n## Pitfalls\n- Too aggressive limits may block legitimate users during peak times\n- Ensure zone size is adequate for expected unique IPs\n- nodelay flag affects burst behavior - understand implications\n- Monitor both application metrics and Nginx error logs"
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5687,
+      "completionTokens": 657,
+      "iterations": 3
+    },
+    {
+      "caseId": "web-proxy-tls--nginx-upstream-502",
+      "category": "web-proxy-tls",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "fix-nginx-upstream-502",
+            "content": "---\nname: fix-nginx-upstream-502\ndescription: Procedure to resolve Nginx 502 Bad Gateway errors caused by upstream connection refusal.\n---\n# Fix Nginx Upstream 502 Error\n\n## When to use\n- Nginx returns 502 Bad Gateway.\n- Error logs indicate `connect() failed: Connection refused` for an upstream server.\n\n## When not to use\n- 502 is caused by timeout (not connection refused).\n- Upstream is reachable but returning 5xx errors.\n- Network/firewall issues preventing connectivity.\n\n## Required inputs\n- SSH access to the Nginx server.\n- Sudo/root privileges to restart services and reload Nginx.\n- Knowledge of the application service name (e.g., `app`, `php-fpm`, `node`).\n\n## Workflow\n1. **Check Nginx error logs** to confirm the cause:\n   ```bash\n   tail -n 80 /var/log/nginx/error.log\n   ```\n   Look for `connect() failed: Connection refused` and note the upstream address (e.g., `127.0.0.1:9000`).\n\n2. **Restart the upstream application service**:\n   ```bash\n   systemctl restart <app-service-name>\n   ```\n   Replace `<app-service-name>` with the actual service (e.g., `app`, `php8.1-fpm`).\n\n3. **Test Nginx configuration syntax**:\n   ```bash\n   nginx -t\n   ```\n   Ensure it returns `syntax is ok`.\n\n4. **Reload Nginx** to apply any changes or reset connections:\n   ```bash\n   nginx -s reload\n   ```\n\n5. **Validate the fix** by checking the health endpoint or main site:\n   ```bash\n   curl -fsS -o /dev/null -w '%{http_code}' https://<domain>/health\n   ```\n   Expect `200`.\n\n## Decision rules\n- If `systemctl restart` fails, check service status with `systemctl status <app-service-name>` and inspect application logs.\n- If `nginx -t` fails, fix the configuration error before reloading.\n\n## Validation\n- Health check or main endpoint returns HTTP 200.\n- Nginx error log no longer shows new `Connection refused` entries.\n\n## Failure handling / rollback\n- If the app service fails to start, review application logs (`journalctl -u <app-service-name> -n 50`) for startup errors.\n- If Nginx reload fails, check `nginx -t` output and revert recent config changes if necessary.\n\n## Pitfalls\n- Ensure the upstream service is configured to listen on the correct port/address.\n- Verify that no firewall rules are blocking local connections if using non-loopback addresses."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5891,
+      "completionTokens": 796,
+      "iterations": 3
+    },
+    {
+      "caseId": "web-proxy-tls--nginx-websocket",
+      "category": "web-proxy-tls",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "nginx-websocket-proxy-fix",
+            "content": "---\nname: nginx-websocket-proxy-fix\ndescription: Fix Nginx WebSocket proxy by adding Upgrade and Connection headers, then validate with wscat\n---\n# Nginx WebSocket Proxy Fix\n\n## When to use\n- WebSocket connections through Nginx fail with 400 or handshake errors\n- Nginx is configured as a reverse proxy for a WebSocket backend\n\n## When not to use\n- Direct WebSocket connections (no proxy)\n- Non-WebSocket HTTP/HTTPS traffic\n\n## Required inputs\n- Nginx configuration file path (typically `/etc/nginx/nginx.conf` or site-specific config)\n- Backend WebSocket server address\n- `wscat` tool available for validation\n\n## Workflow\n1. Add the following headers to the Nginx location block handling WebSocket traffic:\n   ```\n   proxy_set_header Upgrade $http_upgrade;\n   proxy_set_header Connection \"upgrade\";\n   ```\n2. Test Nginx configuration:\n   ```\n   nginx -t\n   ```\n3. If test passes, reload Nginx:\n   ```\n   nginx -s reload\n   ```\n4. Validate WebSocket connection:\n   ```\n   wscat -c wss://<host>/<path> -x ping\n   ```\n   Expected result: \"connected; pong\"\n\n## Decision rules\n- If `nginx -t` fails, do NOT reload; fix configuration errors first\n- If wscat returns 400 or connection refused, verify backend is running and headers are correctly placed\n\n## Validation\n- `nginx -t` must return \"test successful\"\n- `wscat` must show \"connected; pong\" response\n\n## Failure handling / rollback\n- If reload causes issues, revert configuration and restart Nginx\n- Check Nginx error logs at `/var/log/nginx/error.log` for details\n\n## Pitfalls\n- Headers must be in the correct location block\n- `$http_upgrade` variable is case-sensitive\n- Connection header value must be exactly \"upgrade\" (lowercase)"
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5532,
+      "completionTokens": 526,
+      "iterations": 3
+    },
+    {
+      "caseId": "web-proxy-tls--opt-out",
+      "category": "web-proxy-tls",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 1593,
+      "completionTokens": 4,
+      "iterations": 1
+    },
+    {
+      "caseId": "web-proxy-tls--secret",
+      "category": "web-proxy-tls",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 1568,
+      "completionTokens": 4,
+      "iterations": 1
+    },
+    {
+      "caseId": "web-proxy-tls--tls-cipher-hardening",
+      "category": "web-proxy-tls",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "tls-hardening-legacy",
+            "content": "---\nname: tls-hardening-legacy\ndescription: Harden TLS configuration by disabling legacy protocols (TLS 1.0/1.1) and weak ciphers (3DES), then validate with testssl.sh\n---\n# TLS Hardening for Legacy Endpoints\n\n## When to use\n- When a legacy endpoint offers deprecated TLS versions (1.0/1.1) or weak cipher suites (e.g., 3DES).\n- After infrastructure changes that may have reverted secure defaults.\n\n## When not to use\n- If the endpoint must support legacy clients that cannot upgrade (requires exception process).\n- If you do not have permission to reload proxy/TLS termination config.\n\n## Required inputs\n- Target HTTPS URL (e.g., `https://legacy.example`)\n- Access to run `testssl.sh`\n- Permission to apply TLS config and reload proxy (`proxyctl reload`)\n\n## Workflow\n1. **Baseline scan**: Run `testssl.sh --fast <URL>` to identify offered protocols and ciphers.\n2. **Identify issues**: Look for `TLS1.0 offered`, `TLS1.1 offered`, or weak ciphers like `3DES`.\n3. **Apply hardening**: Execute the TLS minimum version config (e.g., `apply tls-min-1.2 config`) and reload the proxy (`proxyctl reload`).\n4. **Validation scan**: Re-run `testssl.sh --fast <URL>`.\n\n## Decision rules\n- Proceed only if baseline shows deprecated protocols or weak ciphers.\n- If validation still shows issues, do not mark as complete; investigate config propagation.\n\n## Validation\n- `testssl.sh` output must show:\n  - `TLS1.0 not offered`\n  - `TLS1.1 not offered` (if applicable)\n  - Weak ciphers (e.g., 3DES) `not offered`\n  - `TLS1.2/1.3 ok` or equivalent success indicator for modern protocols.\n\n## Failure handling / rollback\n- If `proxyctl reload` fails, check config syntax before retrying.\n- If validation fails after reload, verify the config was applied to the correct virtual host/proxy instance.\n- Rollback: Revert to previous config snapshot if connectivity is broken for legitimate clients.\n\n## Pitfalls\n- Ensure `testssl.sh` is installed and accessible.\n- Some load balancers may cache old configs; a full restart may be needed if reload is insufficient."
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5665,
+      "completionTokens": 598,
+      "iterations": 3
+    },
+    {
+      "caseId": "web-proxy-tls--traefik-acme",
+      "category": "web-proxy-tls",
+      "expectedAction": "create",
+      "actualAction": "create",
+      "writes": [
+        {
+          "tool": "skill_create",
+          "args": {
+            "name": "traefik-acme-permission-fix",
+            "content": "---\nname: traefik-acme-permission-fix\ndescription: Fix Traefik ACME certificate renewal failure caused by incorrect acme.json file permissions\n---\n# Fix Traefik ACME Renewal Permission Issue\n\n## When to use\n- Traefik fails to renew Let's Encrypt/ACME certificates\n- Logs show `acme storage permissions 0644; want 0600` or similar permission errors\n- Certificate expiry is approaching but renewal is not happening\n\n## When not to use\n- ACME challenges are failing due to DNS/network issues (not permission-related)\n- Traefik service is not running at all\n- Different error messages in logs\n\n## Required inputs\n- SSH access to the Traefik host\n- sudo/root privileges\n- Traefik installed as a systemd service\n\n## Workflow\n1. Check Traefik logs for ACME permission errors:\n   ```bash\n   journalctl -u traefik -n 80\n   ```\n2. If log shows permission mismatch (e.g., `0644; want 0600`), fix permissions:\n   ```bash\n   chmod 600 /var/lib/traefik/acme.json\n   ```\n3. Restart Traefik to apply changes:\n   ```bash\n   systemctl restart traefik\n   ```\n4. Verify service is active:\n   ```bash\n   systemctl status traefik\n   ```\n5. Validate new certificate is in effect:\n   ```bash\n   openssl s_client -connect <domain>:443 </dev/null 2>/dev/null | openssl x509 -noout -dates\n   ```\n\n## Decision rules\n- Only proceed with chmod if logs explicitly indicate permission mismatch on acme.json\n- Default acme.json path is `/var/lib/traefik/acme.json`; adjust if custom path is configured\n\n## Validation\n- `systemctl status traefik` shows `active (running)`\n- `openssl x509 -noout -dates` shows `notAfter` date in the future (typically 90 days from renewal)\n\n## Failure handling / rollback\n- If restart fails, check full logs: `journalctl -u traefik -n 200`\n- If chmod was applied to wrong file, restore original permissions and investigate correct path from Traefik config\n- Backup acme.json before modification if uncertain: `cp /var/lib/traefik/acme.json /var/lib/traefik/acme.json.bak`\n\n## Pitfalls\n- Do not change permissions of other Traefik files arbitrarily\n- Ensure the path matches your Traefik configuration (check `--certificatesresolvers.*.acme.storage` in config)\n- After fixing, monitor next renewal cycle to confirm persistent resolution"
+          }
+        }
+      ],
+      "quality": 100,
+      "checks": {
+        "actionCorrect": true,
+        "frontmatter": true,
+        "applicability": true,
+        "workflow": true,
+        "validation": true,
+        "boundary": true,
+        "grounded": true,
+        "noSecrets": true,
+        "size": true
+      },
+      "promptTokens": 5824,
+      "completionTokens": 684,
+      "iterations": 3
+    },
+    {
+      "caseId": "web-proxy-tls--unresolved",
+      "category": "web-proxy-tls",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 3221,
+      "completionTokens": 18,
+      "iterations": 2
+    },
+    {
+      "caseId": "web-proxy-tls--unsafe",
+      "category": "web-proxy-tls",
+      "expectedAction": "nothing",
+      "actualAction": "nothing",
+      "writes": [],
+      "quality": 50,
+      "checks": {
+        "actionCorrect": true,
+        "noWrite": false
+      },
+      "promptTokens": 3239,
+      "completionTokens": 18,
+      "iterations": 2
+    }
+  ]
+}
