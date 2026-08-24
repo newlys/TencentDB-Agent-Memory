@@ -1,0 +1,29 @@
+{
+  "schema_version": 3,
+  "frozen": true,
+  "frozen_at": "2026-08-24",
+  "seed": 20260824,
+  "description": "1000 independent completed SOP roots in 100 stateful Skill families; boundary observations are correlated derivatives and are reported separately.",
+  "counts": {
+    "independent_sop_roots": 1000,
+    "skill_families": 100,
+    "cases_per_family": 10,
+    "expected_create": 100,
+    "expected_update": 150,
+    "expected_nothing": 750,
+    "boundary_positive_roots": 1000,
+    "derived_boundary_observations": 4000,
+    "calibration": 200,
+    "development": 200,
+    "final_test": 600
+  },
+  "files": {
+    "roots_sha256": "8D292F04449B30AF80258B55F55BC2120B8ABDDB26A427762CD7B06F74D73D47",
+    "observations_sha256": "4AEF545DA475C8D637892D15CA8AE97A10E6C8A844EBDEA44A5F9EFD2B68DE4B",
+    "catalog_sha256": "EF530B0648BF645A4E6651E2B3D2B1927D48C84C4580306A28EF3CE5B8C3C035"
+  },
+  "limitations": [
+    "Domain command outputs are deterministic evaluation-fixture observations, not claims of execution against production systems.",
+    "Public and official sources ground workflow structure; source prose is not redistributed."
+  ]
+}
