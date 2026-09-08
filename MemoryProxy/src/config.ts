@@ -131,6 +131,8 @@ export const DEFAULT_CONFIG: ProxyConfig = {
     timeoutMs: 1500,
   },
   skillRuntime: {
+    injectSessionAvailableSkills: true,
+    injectSkillTools: true,
     allowLlmWrite: false,
   },
   auth: {
@@ -461,6 +463,12 @@ export function buildConfig(overrides: CliOverrides = {}): ProxyConfig {
       timeoutMs: yaml.knowledge?.timeoutMs ?? DEFAULT_CONFIG.knowledge.timeoutMs,
     },
     skillRuntime: {
+      injectSessionAvailableSkills:
+        yaml.skillRuntime?.injectSessionAvailableSkills ??
+        DEFAULT_CONFIG.skillRuntime.injectSessionAvailableSkills,
+      injectSkillTools:
+        yaml.skillRuntime?.injectSkillTools ??
+        DEFAULT_CONFIG.skillRuntime.injectSkillTools,
       allowLlmWrite:
         yaml.skillRuntime?.allowLlmWrite ??
         DEFAULT_CONFIG.skillRuntime.allowLlmWrite,

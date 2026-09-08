@@ -71,7 +71,12 @@ export { OpenAIAdapter } from "./adapters/openai.js";
 export { AnthropicAdapter } from "./adapters/anthropic.js";
 
 // Injectors
-export { SkillInjector } from "./injectors/skill-injector.js";
+export {
+  SkillInjector,
+  renderTaskScopedSkillsBlock,
+  type TaskScopedSkillCandidate,
+  type TaskScopedSkillsBlockInput,
+} from "./injectors/skill-injector.js";
 export { SkillToolsInjector } from "./injectors/skill-tools-injector.js";
 export { TdaiL1RecallInjector } from "./injectors/tdai-l1-recall-injector.js";
 export { TdaiProfileMemoryInjector } from "./injectors/tdai-profile-memory-injector.js";
@@ -260,18 +265,22 @@ function buildPipelineBundle(config: ProxyConfig): PipelineBundle {
   }
 
   if (injectors.includes("skill")) {
-    // RAG-driven `<cloud_skills>` block. Calls /v3/skill/search at prewarm time.
-    // When coreSkill is unconfigured (no serviceToken), the searchSkills call
-    // will fail and the injector silently degrades to no <cloud_skills> block.
-    registry.register(
-      new SkillInjector({ coreSkill: config.coreSkill }),
-    );
+    // The catalogue and the tool recipes have intentionally separate
+    // lifecycles. Baseline keeps the legacy session-initial catalogue. A
+    // task-aware caller may suppress it and provide a task-scoped listing in
+    // its own system context without losing skill_search / skill_view access.
+    if (shouldRegisterSessionSkillListing(config)) {
+      registry.register(
+        new SkillInjector({ coreSkill: config.coreSkill }),
+      );
+    }
 
-    // Always inject the curl-recipe `<skill_tools>` block alongside the
-    // dynamic `<cloud_skills>` block. Even when there are no skills to
-    // recommend, the LLM still needs to know how to create / search them.
-    const allowLlmWrite = config.skillRuntime?.allowLlmWrite ?? false;
-    registry.register(new SkillToolsInjector({ proxyBaseUrl: proxyBaseUrl!, allowLlmWrite }));
+    // Baseline keeps the curl-recipe `<skill_tools>` block. A task-scoped
+    // host can replace those recipes while the skill bridge remains available.
+    if (shouldRegisterSkillTools(config)) {
+      const allowLlmWrite = config.skillRuntime?.allowLlmWrite ?? false;
+      registry.register(new SkillToolsInjector({ proxyBaseUrl: proxyBaseUrl!, allowLlmWrite }));
+    }
   }
 
   if (injectors.includes("knowledge")) {
@@ -394,6 +403,7 @@ function getOrBuildBundle(config: ProxyConfig): PipelineBundle {
     injection: config.injection,
     tdai: config.tdai,
     coreSkill: config.coreSkill,
+    skillRuntime: config.skillRuntime,
     knowledge: config.knowledge,
     server: config.server,
   });
@@ -454,6 +464,18 @@ export function shouldRegisterKnowledgeInjector(config: ProxyConfig): boolean {
   return config.injection.injectors.includes("knowledge")
     && config.knowledge.enabled
     && !!config.knowledge.serviceToken;
+}
+
+/** Backward-compatible registration policy for the session skill catalogue. */
+export function shouldRegisterSessionSkillListing(config: ProxyConfig): boolean {
+  return config.injection.injectors.includes("skill")
+    && (config.skillRuntime?.injectSessionAvailableSkills ?? true);
+}
+
+/** Backward-compatible registration policy for the session skill recipes. */
+export function shouldRegisterSkillTools(config: ProxyConfig): boolean {
+  return config.injection.injectors.includes("skill")
+    && (config.skillRuntime?.injectSkillTools ?? true);
 }
 
 /** Test-only: drop the cached pipeline so the next call rebuilds from config. */

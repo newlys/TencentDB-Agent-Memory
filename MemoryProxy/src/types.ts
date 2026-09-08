@@ -327,6 +327,19 @@ export interface KnowledgeConfig {
 /** Skill runtime-side configuration. */
 export interface SkillRuntimeConfig {
   /**
+   * Whether the native SkillInjector publishes the session-initial
+   * `<available_skills>` catalogue. Defaults to true for full backward
+   * compatibility. Task-aware clients can disable only this catalogue while
+   * retaining SkillToolsInjector and every skill bridge operation.
+   */
+  injectSessionAvailableSkills: boolean;
+  /**
+   * Whether the proxy publishes the session-scoped `<skill_tools>` curl
+   * recipes. Defaults to true for backward compatibility. Task-scoped hosts
+   * may disable the recipes while keeping the skill bridge itself enabled.
+   */
+  injectSkillTools: boolean;
+  /**
    * 是否允许主模型创建/修改 skill。默认 false。
    * 主模型的质量不可控，默认关闭写入能力以避免低质量 skill 被创建。
    * 显式设为 true 后：
@@ -826,6 +839,8 @@ export interface RawYamlConfig {
   coreSkill?: Partial<CoreSkillConfig>;
   knowledge?: Partial<KnowledgeConfig>;
   skillRuntime?: {
+    injectSessionAvailableSkills?: boolean;
+    injectSkillTools?: boolean;
     allowLlmWrite?: boolean;
   };
   auth?: {

@@ -340,12 +340,26 @@ export class StandaloneLLMRunner implements LLMRunner {
       const text = (result.text ?? "").trim();
       const totalMs = Date.now() - runStartMs;
 
-      // 暴露 token usage 到 side-channel（供 MetricTrackingRunner 读取）
-      if (result.usage) {
+      // AI SDK v6 reports inputTokens/outputTokens. Use totalUsage so a
+      // tool-calling run includes every iteration rather than only the final step.
+      const usage = result.totalUsage;
+      const stepUsage = result.steps.reduce(
+        (acc, step) => {
+          acc.promptTokens += step.usage?.inputTokens ?? 0;
+          acc.completionTokens += step.usage?.outputTokens ?? 0;
+          acc.totalTokens += step.usage?.totalTokens ?? 0;
+          return acc;
+        },
+        { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+      );
+      if (usage || result.steps.length > 0) {
+        const promptTokens = usage?.inputTokens ?? stepUsage.promptTokens;
+        const completionTokens = usage?.outputTokens ?? stepUsage.completionTokens;
+        const reportedTotal = usage?.totalTokens ?? stepUsage.totalTokens;
         this.lastUsage = {
-          promptTokens: result.usage.promptTokens ?? 0,
-          completionTokens: result.usage.completionTokens ?? 0,
-          totalTokens: (result.usage.promptTokens ?? 0) + (result.usage.completionTokens ?? 0),
+          promptTokens,
+          completionTokens,
+          totalTokens: reportedTotal || promptTokens + completionTokens,
         };
       } else {
         this.lastUsage = undefined;

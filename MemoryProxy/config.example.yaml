@@ -604,6 +604,12 @@ knowledge:
 # 历史配置项 (已删除): extractToolCallThreshold / maxBucketCount /
 # conversationAddEnabled — 属于 proxy 侧老链路 SkillExtractTrigger, 已下线。
 skillRuntime:
+  # Defaults to true to preserve the native session-initial Skill catalogue.
+  # Task-aware clients may disable only the catalogue and inject task-scoped candidates.
+  injectSessionAvailableSkills: true
+  # Defaults to true. Task-scoped clients may replace the long-lived tool recipes
+  # while keeping the Skill bridge and its read operations available.
+  injectSkillTools: true
   allowLlmWrite: false           # 是否允许主模型创建/修改 skill（默认 false）
                                  #   false: <skill_tools> 只注入只读工具（search/list/view/files_read）
                                  #          /skill-bridge 拒绝写操作返回 403
