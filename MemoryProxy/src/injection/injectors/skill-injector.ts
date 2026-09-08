@@ -105,6 +105,94 @@ export function wrapAvailableSkillsBlock(listing: string): string {
   ].join("\n");
 }
 
+export interface TaskScopedSkillCandidate {
+  skillId: string;
+  name: string;
+  description?: string;
+  snippet?: string;
+  score?: number;
+  /** Host-provided, directly executable command that returns the full Skill. */
+  viewCommand: string;
+}
+
+export interface TaskScopedSkillsBlockInput {
+  taskToken: string;
+  taskAnchor: string;
+  candidates: TaskScopedSkillCandidate[];
+  /** Optional host command for recording an explicit reject-all decision. */
+  rejectCommand?: string;
+  maxChars?: number;
+}
+
+function oneLine(value: unknown, maxChars: number): string {
+  return String(value ?? "").replace(/\s+/g, " ").trim().slice(0, maxChars);
+}
+
+/**
+ * Render the task-lifetime Skill listing used by task-aware hosts.
+ *
+ * Boundary detection and Skill search remain host concerns: this pure renderer
+ * accepts only the current task anchor and already-ranked candidates. It never
+ * carries prior-task conversation into the block, never injects full Skill
+ * content, and keeps transport details in host-provided executable commands.
+ */
+export function renderTaskScopedSkillsBlock(input: TaskScopedSkillsBlockInput): string {
+  const maxChars = Math.max(1200, input.maxChars ?? 4800);
+  const candidates = input.candidates.slice(0, 3);
+  const token = oneLine(input.taskToken, 160);
+  const anchor = oneLine(input.taskAnchor, 1800);
+  const prefix = [
+    `<task_scoped_skills token=${JSON.stringify(token)}>`,
+    "NEW TASK. This listing supersedes Skill recommendations from earlier tasks.",
+    "Before repository inspection, decide whether a candidate workflow is reusable.",
+    "If one is plausibly relevant, its view_command must be your FIRST tool call.",
+    "",
+    "Current task:",
+    anchor,
+    "",
+    "Candidates:",
+  ].join("\n");
+
+  if (candidates.length === 0) {
+    return `${prefix}\n(none)\n\nNo Skill action is required. Continue with the task.\n</task_scoped_skills>`;
+  }
+
+  const available = Math.max(300, maxChars - prefix.length - 1050);
+  const perCandidate = Math.max(180, Math.floor(available / candidates.length));
+  const rows = candidates.map((candidate, index) => {
+    const fixed = [
+      `- candidate_index: ${index + 1}`,
+      `  skill_id: ${JSON.stringify(oneLine(candidate.skillId, 160))}`,
+      `  name: ${JSON.stringify(oneLine(candidate.name, 180))}`,
+      `  score: ${JSON.stringify(candidate.score ?? null)}`,
+      `  view_command: ${oneLine(candidate.viewCommand, 500)}`,
+    ].join("\n");
+    const textBudget = Math.max(40, perCandidate - fixed.length - 34);
+    const description = oneLine(candidate.description, Math.floor(textBudget / 2));
+    const snippet = oneLine(candidate.snippet, textBudget - description.length);
+    return `${fixed}\n  description: ${JSON.stringify(description)}\n  snippet: ${JSON.stringify(snippet)}`;
+  });
+
+  const optionalReject = input.rejectCommand
+    ? `\nYou may optionally record a clear reject-all decision with:\n${oneLine(input.rejectCommand, 600)}\n`
+    : "";
+  const suffix = [
+    "",
+    "Choose by intended outcome, applicability, and core workflow.",
+    "A different repository, framework, file, or concrete symptom is not a mismatch.",
+    "When a workflow is plausibly reusable or you are uncertain, VIEW it before deciding.",
+    "When every candidate is clearly unrelated, continue without loading a Skill.",
+    optionalReject,
+    "After VIEW succeeds, use the full workflow when it fits.",
+    "Do not call skill_search again for this task.",
+    "</task_scoped_skills>",
+  ].join("\n");
+  const block = `${prefix}\n${rows.join("\n")}\n${suffix}`;
+  if (block.length <= maxChars) return block;
+  const closing = "\n</task_scoped_skills>";
+  return `${block.slice(0, maxChars - closing.length)}${closing}`;
+}
+
 /**
  * Build a search query for listing from agent/task descriptions.
  * Combines agent prompt + task description + task goal to form a

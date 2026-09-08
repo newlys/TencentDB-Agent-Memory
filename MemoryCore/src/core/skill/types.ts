@@ -61,7 +61,9 @@ export interface SkillConfigInput {
     /** Pre-LLM extraction value gate; defaults to baseline passthrough. */
     valueGate?: { profile?: "legacy" | "precision_v1" };
     /** Reviewer prompt version. V2 is preserved as the baseline. */
-    reviewPromptProfile?: "legacy_v2" | "precision_v3" | "balanced_v4";
+    reviewPromptProfile?: "legacy_v2" | "precision_v3" | "balanced_v4" | "task_sop_v2";
+    /** Successful create/update/patch operations allowed per extraction; 0 = unlimited. */
+    maxPrimaryWrites?: number;
     model?: string;
     maxIterations?: number;
     /**
@@ -166,7 +168,9 @@ export interface ResolvedSkillConfig {
       topicSwitchScoreThreshold: number;
     };
     valueGate: { profile: "legacy" | "precision_v1" };
-    reviewPromptProfile: "legacy_v2" | "precision_v3" | "balanced_v4";
+    reviewPromptProfile: "legacy_v2" | "precision_v3" | "balanced_v4" | "task_sop_v2";
+    /** Successful create/update/patch operations allowed per extraction; 0 = unlimited. */
+    maxPrimaryWrites: number;
     model?: string;
     maxIterations: number;
     /** 归档尺寸旋钮 (字节)。用户可见配置源；下面 7 个字段由它派生。 */

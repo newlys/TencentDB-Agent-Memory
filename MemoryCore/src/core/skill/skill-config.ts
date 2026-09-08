@@ -55,6 +55,21 @@ function validPositiveInteger(
   return fallback;
 }
 
+/** Non-negative integer; zero is used by opt-in limits to mean "unlimited". */
+function validNonNegativeInteger(
+  raw: number | undefined,
+  fallback: number,
+  logger: ResolverLogger,
+  fieldName: string,
+): number {
+  if (raw === undefined) return fallback;
+  if (Number.isInteger(raw) && raw >= 0) return raw;
+  logger.warn(
+    `${TAG} ${fieldName}=${raw} invalid (must be a non-negative integer); falling back to ${fallback}`,
+  );
+  return fallback;
+}
+
 function validUnitInterval(
   raw: number | undefined,
   fallback: number,
@@ -295,6 +310,12 @@ export function resolveSkillConfig(
         profile: input.extraction?.valueGate?.profile ?? "legacy",
       },
       reviewPromptProfile: input.extraction?.reviewPromptProfile ?? "legacy_v2",
+      maxPrimaryWrites: validNonNegativeInteger(
+        input.extraction?.maxPrimaryWrites,
+        0,
+        logger,
+        "extraction.maxPrimaryWrites",
+      ),
       model: input.extraction?.model,
       maxIterations: input.extraction?.maxIterations ?? 16,
       archiveBytes,
