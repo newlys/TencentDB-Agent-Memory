@@ -214,7 +214,7 @@ No-Skill pilot 完成了链路验证，但没有形成与当前换题后18题完
 | 预期复用任务实际物化 | ↑ | 0 | 2/8（25.0%） |
 | 已提取 Skill 后续被物化 | ↑ | 0/3 | 2/4（50.0%） |
 
-Skill 机制链路开销对比
+#### Skill 机制链路开销对比
 Baseline 原生 Reviewer 的15次可恢复调用共消耗1,323,909 Token；而Ours_v3 在 Task-aware 方法链路上的额外开销为 953,965 Token，其中包括 Boundary 判断、Task-scoped Skill 提取和 Skill 检索：
 
 ```text
