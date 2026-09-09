@@ -201,18 +201,18 @@ No-Skill pilot 完成了链路验证，但没有形成与当前换题后18题完
 
 | 指标 | 优化方向 |  | Baseline | Ours |
 |---|---:|---:|---:|---:|
-| 最终任务通过率 | ↑ |  | 18/18（100%） | 18/18（100%） |
-| 首轮 Pass@1 | ↑ |  | **18/18（100%）** | 17/18（94.4%，SK06-T01 多 1 个 User Turn，该题无 Skill 候选，非 Skill 优化直接导致） |
+| 最终任务通过率 | ↑ |  18/18（100%） | 18/18（100%） |
+| 首轮 Pass@1 | ↑ |  **18/18（100%）** | 17/18（94.4%，SK06-T01 多 1 个 User Turn，该题无 Skill 候选，非 Skill 优化直接导致） |
 | 平均 User Turn | ↓ | **1.00** | 1.06 |
-| 平均 Agent Internal Turn | ↓ |  | **26.56** | 38.67 |
+| 平均 Agent Internal Turn | ↓ |  **26.56** | 38.67 |
 | 平均 Agent non-cache Token | ↓ |  | **93,822** | 127,879 |
-| 平均含蒸馏总 Token | ↓ |  | **167,373** | 180,877 |
-| 平均 Tool Calls | ↓ |  | **25.28** | 38.00 |
-| 最终独立 Skill | 适中 |  | 3 个 Repo级聚合 Skill | 4 个机制级 SOP Skill |
-| 有效 Task提取事件 | 适中 |  | 非 Task口径 | 6/15 SOP Task（4 CREATE、2 UPDATE） |
-| 预期复用任务 Top-3 Recall | ↑ |  | 0 | 5/8（62.5%） |
-| 预期复用任务实际物化 | ↑ |  | 0 | 2/8（25.0%） |
-| 已提取 Skill 后续被物化 | ↑ |  | 0/3 | 2/4（50.0%） |
+| 平均含蒸馏总 Token | ↓ |  **167,373** | 180,877 |
+| 平均 Tool Calls | ↓ |  **25.28** | 38.00 |
+| 最终独立 Skill | 适中 |  3 个 Repo级聚合 Skill | 4 个机制级 SOP Skill |
+| 有效 Task提取事件 | 适中 |  非 Task口径 | 6/15 SOP Task（4 CREATE、2 UPDATE） |
+| 预期复用任务 Top-3 Recall | ↑ | 0 | 5/8（62.5%） |
+| 预期复用任务实际物化 | ↑ | 0 | 2/8（25.0%） |
+| 已提取 Skill 后续被利用 | ↑ | 0/3 | 2/4（50.0%） |
 
 Skill 机制链路开销对比
 Baseline 原生 Reviewer 的15次可恢复调用共消耗1,323,909 Token；而Ours_v3 在 Task-aware 方法链路上的额外开销为 953,965 Token，其中包括 Boundary 判断、Task-scoped Skill 提取和 Skill 检索：
