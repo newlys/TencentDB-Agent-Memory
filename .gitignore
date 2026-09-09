@@ -144,6 +144,8 @@ benchmark-import/
 experiments/**/runs/
 experiments/**/runtime/
 experiments/**/reports/
+.benchmark-tools/
+repo/
 
 # Local project docs (generated, not for VCS)
 .local-docs/

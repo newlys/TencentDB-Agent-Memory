@@ -1,0 +1,20 @@
+--- a/src/click/core.py
++++ b/src/click/core.py
+@@ -1938,7 +1938,7 @@
+         """Given a context and a command name, this returns a :class:`Command`
+         object if it exists or returns ``None``.
+         """
+-        return self.commands.get(cmd_name)
++        return self.commands.get(cmd_name.replace("-", "_"))
+ 
+     def list_commands(self, ctx: Context) -> list[str]:
+         """Returns a list of subcommand names in the order they should appear."""
+@@ -2073,7 +2073,7 @@
+ 
+         # If we can't find the command but there is a normalization
+         # function available, we try with that one.
+-        if cmd is None and ctx.token_normalize_func is not None:
++        if ctx.token_normalize_func is not None:
+             cmd_name = ctx.token_normalize_func(cmd_name)
+             cmd = self.get_command(ctx, cmd_name)
+ 

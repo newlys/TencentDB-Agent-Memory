@@ -10,8 +10,8 @@ import json
 import os
 from pathlib import Path
 import re
-import secrets
 import shutil
+import secrets
 import sqlite3
 import subprocess
 import time
@@ -1542,9 +1542,10 @@ def start_baseline(run, directory, lf_file, resume=False, ours=False, ours_v2=Fa
     if not os.environ.get('DEEPSEEK_API_KEY'):
         raise RuntimeError('DEEPSEEK_API_KEY is required')
     root = Path(__file__).resolve().parents[2]
-    node = Path('C:/Users/cheng/.workbuddy/binaries/node/versions/22.22.2/node.exe')
-    if not node.is_file():
-        raise RuntimeError('Pinned Node 22 runtime is unavailable')
+    node_command = os.environ.get('BENCHMARK_NODE') or shutil.which('node')
+    if not node_command:
+        raise RuntimeError('Node.js >= 22.16 is required and was not found on PATH')
+    node = Path(node_command)
     core_port = int(os.environ.get('BENCHMARK_CORE_PORT', '28420'))
     proxy_port = int(os.environ.get('BENCHMARK_PROXY_PORT', '28096'))
     for port in (core_port, proxy_port):

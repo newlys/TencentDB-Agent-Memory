@@ -1,0 +1,11 @@
+diff --git a/src/flask/app.py b/src/flask/app.py
+--- a/src/flask/app.py
++++ b/src/flask/app.py
+@@ -615,5 +615,7 @@
+             if name in self.template_context_processors:
+                 for func in self.template_context_processors[name]:
+                     context.update(self.ensure_sync(func)())
+ 
++        context.update(orig_ctx)
++
+     def make_shell_context(self) -> dict[str, t.Any]:

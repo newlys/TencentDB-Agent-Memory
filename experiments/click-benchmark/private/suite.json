@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "benchmark_id": "click-v1",
+  "workspace_owner": "benchmark-platform-v1:click-v1",
+  "repository": {
+    "url": "https://github.com/pallets/click.git",
+    "source_path": "../../repo/click",
+    "base_commit": "36baa15ff831b939a22bc527cd76ce653ef6f66d"
+  },
+  "images": {
+    "grader": "click-benchmark:local",
+    "agent": "click-benchmark-agent:local",
+    "no_skill_proxy": "click-pilot-proxy:local",
+    "claude_cli": "click-pilot-claude:local"
+  },
+  "validation": {
+    "agent_visible_probe_file": "src/click/core.py",
+    "pythonpath": "/workspace/src",
+    "upstream_command": ["python", "-m", "pytest", "-q", "-p", "no:cacheprovider"]
+  },
+  "agent": {
+    "model": "deepseek-v4-flash",
+    "language": "en"
+  },
+  "extensions": {
+    "ours": {
+      "status": "connected",
+      "boundary_profile": "query_only_l15",
+      "extraction_profile": "task_scoped_v1",
+      "retrieval_profile": "task_search_view_v1"
+    },
+    "ours_v2": {
+      "status": "connected",
+      "boundary_profile": "query_only_l15",
+      "extraction_profile": "task_scoped_sop_v2",
+      "retrieval_profile": "task_scoped_skill_injection_v2"
+    },
+    "ours_v3": {
+      "status": "connected",
+      "boundary_profile": "query_only_l15",
+      "extraction_profile": "task_scoped_sop_v2",
+      "retrieval_profile": "task_scoped_skill_consumption_v3"
+    }
+  }
+}

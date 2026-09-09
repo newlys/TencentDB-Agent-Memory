@@ -1,0 +1,11 @@
+ARG EVALUATOR_IMAGE=fastapi-benchmark:local
+FROM ${EVALUATOR_IMAGE}
+
+USER root
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git ripgrep less \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV PYTHONPATH=/workspace
+WORKDIR /workspace
+ENTRYPOINT ["python", "/container_entrypoint.py"]

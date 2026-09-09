@@ -1,0 +1,14 @@
+diff --git a/src/flask/ctx.py b/src/flask/ctx.py
+--- a/src/flask/ctx.py
++++ b/src/flask/ctx.py
+@@ -486,8 +486,9 @@
+         collect_errors = _CollectErrors()
+ 
+         if self._request is not None:
+-            self.app.do_teardown_request(self, exc)
++            with collect_errors:
++                self.app.do_teardown_request(self, exc)
+ 
+             with collect_errors:
+                 self._request.close()
+ 

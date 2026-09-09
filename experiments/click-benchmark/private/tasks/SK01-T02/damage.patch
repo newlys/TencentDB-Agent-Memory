@@ -1,0 +1,18 @@
+--- a/src/click/core.py
++++ b/src/click/core.py
+@@ -3600,6 +3600,15 @@
+         """
+         value, source = super().consume_value(ctx, opts)
+ 
++        if (
++            self.is_bool_flag
++            and not self.secondary_opts
++            and self._default_explicit
++            and source == ParameterSource.COMMANDLINE
++            and value is False
++        ):
++            value = self.get_default(ctx)
++
+         # The parser emits a sentinel when a flag is allowed to be used without a value.
+         # Resolve it to a prompt or to the activation value depending on the option's
+         # configuration.

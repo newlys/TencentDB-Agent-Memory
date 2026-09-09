@@ -1,0 +1,19 @@
+{
+  "task_id": "FL-SK09-T01",
+  "base_commit": "d318b683471101618febed18996405ad26462110",
+  "initial_query": "When an application-wide error handler and a blueprint-local handler can both handle the same error, requests inside the blueprint are using the app handler. Restore the documented precedence so the blueprint or more specific handler wins without breaking code-vs-class matching or app-level fallback outside the blueprint.",
+  "max_user_turns": 2,
+  "grader_priority": [
+    "primary",
+    "edge",
+    "exception",
+    "regression"
+  ],
+  "feedback_by_state": {
+    "primary": "A blueprint 404 handler is still losing to the application-wide 404 handler for a request inside that blueprint.",
+    "edge": "A blueprint exception-class handler is still losing to the matching application-wide handler.",
+    "exception": "A blueprint-specific KeyError handler is still losing to the application generic Exception fallback.",
+    "regression": "The application-wide handler no longer works correctly for requests outside any blueprint."
+  },
+  "success_condition": "All hidden grader states pass: primary, edge, exception, regression."
+}

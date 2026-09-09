@@ -1,0 +1,14 @@
+{
+  "task_id": "FA-NS-01",
+  "base_commit": "50113da16fec53b66b80d75e80a89296de4fa5a5",
+  "initial_query": "Using the deprecated regex argument on Query emits a warning that says to use example instead, but the documented replacement is pattern. Correct that warning text and add a focused regression check; do not change regex/pattern validation behavior.",
+  "max_user_turns": 1,
+  "grader_priority": ["primary", "edge", "exception", "regression"],
+  "feedback_by_state": {
+    "primary": "The deprecation warning still points users to example instead of pattern.",
+    "edge": "Using regex no longer emits FastAPI's deprecation warning category as before.",
+    "exception": "The deprecated regex argument no longer preserves its existing validation behavior.",
+    "regression": "Using the supported pattern argument now emits an unexpected regex deprecation warning."
+  },
+  "success_condition": "All hidden grader states pass: primary, edge, exception, regression."
+}

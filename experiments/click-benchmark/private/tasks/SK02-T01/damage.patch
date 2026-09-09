@@ -1,0 +1,12 @@
+--- a/src/click/core.py
++++ b/src/click/core.py
+@@ -3578,7 +3578,7 @@
+         # Split the envvar value if it is allowed to be repeated.
+         value_depth = (self.nargs != 1) + bool(self.multiple)
+         if value_depth > 0:
+-            multi_rv = self.type.split_envvar_value(rv)
++            multi_rv = [rv]
+-            if self.multiple and self.nargs != 1:
++            if self.multiple and self.nargs != 1 and not self.type.is_composite:
+                 multi_rv = batch(multi_rv, self.nargs)  # type: ignore[assignment]
+ 

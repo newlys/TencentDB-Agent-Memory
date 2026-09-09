@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "experiment_id": "custom-a-click-flask-fastapi-v1",
+  "variant": "ours_v3",
+  "method_revision": "task-skill-consumption-controller-r5",
+  "profiles": {
+    "boundary_profile": "query_only_l15",
+    "extraction_profile": "task_scoped_sop_v2",
+    "retrieval_profile": "task_scoped_skill_consumption_v3"
+  },
+  "session_policy": {
+    "fresh_claude_session_per_repo": true,
+    "resume_only_inside_repo_session": true,
+    "shared_native_memory_service_across_repos": true,
+    "gold_task_boundaries_not_sent_to_agent_or_memory": true,
+    "asynchronous_extraction_without_inter_task_wait": true,
+    "session_available_skills_disabled": true,
+    "session_skill_tools_disabled": true,
+    "task_skill_search_top_k": 3,
+    "task_skill_block_char_budget": 4800,
+    "task_skill_gate": "view_relevant_or_skip",
+    "view_transient_retry_limit": 1,
+    "final_local_extraction_reconcile_after_global_drain": true,
+    "langfuse_enabled": false,
+    "language": "en"
+  },
+  "sessions": [
+    {"session_ordinal": 1, "repo": "click", "suite_root": "../../experiments/click-benchmark"},
+    {"session_ordinal": 2, "repo": "flask", "suite_root": "../../experiments/flask-benchmark"},
+    {"session_ordinal": 3, "repo": "fastapi", "suite_root": "../../experiments/fastapi-benchmark"}
+  ]
+}

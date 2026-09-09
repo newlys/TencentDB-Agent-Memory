@@ -1,0 +1,12 @@
+diff --git a/src/flask/sansio/app.py b/src/flask/sansio/app.py
+--- a/src/flask/sansio/app.py
++++ b/src/flask/sansio/app.py
+@@ -875,7 +875,7 @@
+         """
+         exc_class, code = self._get_exc_class_and_code(type(e))
+-        names = (*blueprints, None)
++        names = (None, *blueprints)
+ 
+         for c in (code, None) if code is not None else (None,):
+             for name in names:
+                 handler_map = self.error_handler_spec[name][c]

@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "benchmark_id": "flask-crossrepo-v1",
+  "dataset": "flask-crossrepo-v1",
+  "base_commit": "d318b683471101618febed18996405ad26462110",
+  "protocol": "protocol.json",
+  "frozen": true,
+  "tasks": [
+    "FL-SK01-T01",
+    "FL-SK01-T02",
+    "FL-SK05-T01",
+    "FL-SK07-T01",
+    "FL-SK09-T01",
+    "FL-NS-01"
+  ],
+  "events": [
+    {
+      "event_id": "FL-SK01-T01",
+      "order": 1,
+      "event_type": "sop"
+    },
+    {
+      "event_id": "N-FL-01",
+      "session": "FLASK-S01",
+      "order": 2,
+      "event_type": "contextual_follow_up",
+      "after_task": "FL-SK01-T01",
+      "user_message": "Just to confirm, a value passed directly to the template should still win even if a context processor provides the same key.",
+      "expected_boundary": "continuation / no new task",
+      "may_trigger_tools": false
+    },
+    {
+      "event_id": "FL-SK01-T02",
+      "order": 3,
+      "event_type": "sop"
+    },
+    {
+      "event_id": "FL-SK05-T01",
+      "order": 4,
+      "event_type": "sop"
+    },
+    {
+      "event_id": "N-FL-02",
+      "session": "FLASK-S01",
+      "order": 5,
+      "event_type": "pure_noise",
+      "after_task": "FL-SK05-T01",
+      "user_message": "Thanks, that works.",
+      "expected_boundary": "continuation / no new task",
+      "may_trigger_tools": false
+    },
+    {
+      "event_id": "FL-SK07-T01",
+      "order": 6,
+      "event_type": "sop"
+    },
+    {
+      "event_id": "N-FL-03",
+      "session": "FLASK-S01",
+      "order": 7,
+      "event_type": "contextual_follow_up",
+      "after_task": "FL-SK07-T01",
+      "user_message": "Keep nested uses working too; single-push cleanup behavior should stay unchanged.",
+      "expected_boundary": "continuation / no new task",
+      "may_trigger_tools": true
+    },
+    {
+      "event_id": "FL-SK09-T01",
+      "order": 8,
+      "event_type": "sop"
+    },
+    {
+      "event_id": "FL-NS-01",
+      "order": 9,
+      "event_type": "non-sop"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "FL-SK07-T01",
+  "base_commit": "d318b683471101618febed18996405ad26462110",
+  "initial_query": "Pushing the same application context more than once causes the first pop to tear it down immediately, leaving an outer owner with an inactive context. Preserve nested pushes so cleanup runs exactly once at the final matching pop, while keeping single-push behavior unchanged.",
+  "max_user_turns": 2,
+  "grader_priority": [
+    "primary",
+    "edge",
+    "exception",
+    "regression"
+  ],
+  "feedback_by_state": {
+    "primary": "After two pushes, the first pop still tears the context down instead of leaving the outer owner active.",
+    "edge": "With deeper nesting, cleanup still happens before the final matching pop.",
+    "exception": "The final pop no longer forwards the active exception to teardown correctly.",
+    "regression": "A single push and pop no longer tears down exactly once as before."
+  },
+  "success_condition": "All hidden grader states pass: primary, edge, exception, regression."
+}

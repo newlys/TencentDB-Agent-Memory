@@ -1,0 +1,20 @@
+diff --git a/fastapi/routing.py b/fastapi/routing.py
+--- a/fastapi/routing.py
++++ b/fastapi/routing.py
+@@ -412,7 +412,6 @@ def get_request_handler(
+             if body_field:
+                 if is_body_form:
+                     body = await request.form()
+-                    file_stack.push_async_callback(body.close)
+                 else:
+                     body_bytes = await request.body()
+                     if body_bytes:
+@@ -758,6 +757,8 @@ def get_request_handler(
+ 
+         # Return response
+         assert response
++        if is_body_form and body is not None:
++            await body.close()
+         return response
+ 
+     return app

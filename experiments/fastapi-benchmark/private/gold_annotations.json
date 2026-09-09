@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "benchmark_id": "fastapi-crossrepo-v1",
+  "visibility": "private-evaluator-only",
+  "warning": "Never expose this file, family labels, or expected actions to the Agent, MemoryProxy, SkillExtractor, or Ours.",
+  "skill_families": {
+    "B": {
+      "name": "preserve-structured-multivalue-input",
+      "invariant": "Repeated serialized inputs must be collected with their multiplicity intact, then validated into the declared sequence/tuple shape without changing scalar semantics."
+    },
+    "C": {
+      "name": "ensure-cleanup-on-all-exit-paths",
+      "invariant": "Owned multipart/file resources must be closed on normal completion, validation failure, endpoint failure, and other request exit paths."
+    },
+    "D": {
+      "name": "exact-match-before-normalization",
+      "invariant": "An explicit identifier or alias is already canonical user intent; normalization applies only to implicit/default names and must not expand the accepted identifier set."
+    },
+    "E": {
+      "name": "align-reuse-with-lifetime-scope",
+      "invariant": "Dependency cache identity must include lifetime scope so values with different cleanup boundaries are never incorrectly shared."
+    },
+    "H": {
+      "name": "keep-payload-and-metadata-consistent",
+      "invariant": "Intermediate response metadata must not describe an empty/stale payload when it is later merged into the final response; dependent metadata must be removed or recomputed."
+    }
+  },
+  "tasks": {
+    "FA-SK02-T01": {
+      "skill_family": "B",
+      "expected_when_preceded_by_click_flask": "reuse_existing_family",
+      "sop": true
+    },
+    "FA-SK05-T01": {
+      "skill_family": "C",
+      "expected_when_preceded_by_click_flask": "reuse_existing_family",
+      "sop": true
+    },
+    "FA-SK06-T01": {
+      "skill_family": "D",
+      "expected_when_preceded_by_click_flask": "reuse_existing_family",
+      "sop": true
+    },
+    "FA-SK02-T02": {
+      "skill_family": "B",
+      "expected_when_preceded_by_click_flask": "reuse_existing_family",
+      "expected_skill_name": "sequence-param-multivalue-collection",
+      "sop": true
+    },
+    "FA-SK10-T01": {
+      "skill_family": "H",
+      "expected_when_preceded_by_click_flask": "create_new_family",
+      "sop": true
+    },
+    "FA-NS-01": {
+      "skill_family": null,
+      "expected_when_preceded_by_click_flask": "skip_nothing_to_save",
+      "sop": false
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "FA-SK02-T02",
+  "base_commit": "50113da16fec53b66b80d75e80a89296de4fa5a5",
+  "initial_query": "A Header parameter declared as a sequence only keeps one occurrence. For example, two X-Tag headers with values red and blue should produce [\"red\", \"blue\"] in that order. Restore repeated Header collection without changing tuple/list validation, explicit aliases, scalar Headers, missing values, defaults, or ordinary single-value Headers.",
+  "max_user_turns": 2,
+  "grader_priority": [
+    "primary",
+    "edge",
+    "exception",
+    "regression"
+  ],
+  "feedback_by_state": {
+    "primary": "Repeated Header values are still being collapsed instead of preserving every occurrence in order.",
+    "edge": "Tuple/list Header declarations or an explicit Header alias no longer preserve their declared shape.",
+    "exception": "Scalar Headers are being expanded into sequence behavior while fixing repeated Header values.",
+    "regression": "Missing, defaulted, or ordinary single-value Header behavior changed unexpectedly."
+  },
+  "success_condition": "All hidden grader states pass: primary, edge, exception, regression."
+}

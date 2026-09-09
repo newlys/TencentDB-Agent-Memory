@@ -1,0 +1,13 @@
+diff --git a/src/flask/ctx.py b/src/flask/ctx.py
+--- a/src/flask/ctx.py
++++ b/src/flask/ctx.py
+@@ -531,8 +531,8 @@
+     if name == "RequestContext":
+         warnings.warn(
+             "'RequestContext' has merged with 'AppContext', and will be removed"
+-            " in Flask 4.0. Use 'AppContext' instead.",
++            " in Flask 4.0. Use 'Request' instead.",
+             DeprecationWarning,
+             stacklevel=2,
+         )
+         return AppContext

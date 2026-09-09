@@ -1,0 +1,8 @@
+ARG AGENT_IMAGE=click-benchmark-agent:local
+FROM node:22-bookworm-slim@sha256:83f487e0a63425e5b4d146fb5e5be574bcbe1b7b843d3ebafdd95eaf7767a7e5 AS cli
+RUN npm install -g @anthropic-ai/claude-code@2.1.260
+FROM ${AGENT_IMAGE}
+COPY --from=cli /usr/local/bin/node /usr/local/bin/node
+COPY --from=cli /usr/local/lib/node_modules /usr/local/lib/node_modules
+RUN ln -s /usr/local/lib/node_modules/@anthropic-ai/claude-code/bin/claude.exe /usr/local/bin/claude
+ENV CLAUDE_CONFIG_DIR=/session CLAUDE_CODE_DISABLE_AUTO_MEMORY=1 CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1

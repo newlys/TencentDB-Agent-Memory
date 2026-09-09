@@ -1,0 +1,14 @@
+{
+  "task_id": "FA-SK05-T01",
+  "base_commit": "50113da16fec53b66b80d75e80a89296de4fa5a5",
+  "initial_query": "Multipart upload files are cleaned up after successful requests, but remain open when request validation fails or the endpoint raises after the form has been parsed. Make form-owned files close reliably on all request exit paths without changing the endpoint's status codes, validation behavior, or normal file handling.",
+  "max_user_turns": 2,
+  "grader_priority": ["primary", "edge", "exception", "regression"],
+  "feedback_by_state": {
+    "primary": "An uploaded file is still left open when the endpoint raises after form parsing.",
+    "edge": "Uploaded files are still not closed when validation fails after the multipart form has already been parsed.",
+    "exception": "The cleanup change altered the original HTTP error or validation response semantics.",
+    "regression": "Normal successful multipart requests no longer close their uploaded files exactly as before."
+  },
+  "success_condition": "All hidden grader states pass: primary, edge, exception, regression."
+}

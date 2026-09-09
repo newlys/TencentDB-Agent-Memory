@@ -1,0 +1,14 @@
+{
+  "task_id": "FA-SK06-T01",
+  "base_commit": "50113da16fec53b66b80d75e80a89296de4fa5a5",
+  "initial_query": "A field in a Pydantic header parameter model has an explicit alias containing an underscore, such as Field(alias=\"X_Custom\"), but requests using X_Custom are rejected while X-Custom is accepted. Explicit aliases should be matched exactly; underscore-to-hyphen conversion should remain available for implicit model field names. Fix this without accepting previously unknown header spellings or breaking Header(convert_underscores=False).",
+  "max_user_turns": 2,
+  "grader_priority": ["primary", "edge", "exception", "regression"],
+  "feedback_by_state": {
+    "primary": "The explicitly declared header alias is still being normalized instead of matched exactly.",
+    "edge": "Implicit header field names no longer get the normal underscore-to-hyphen conversion fallback.",
+    "exception": "The fix now accepts a hyphenated spelling that was never explicitly registered as the alias.",
+    "regression": "Headers declared with convert_underscores=False no longer preserve their original underscore spelling."
+  },
+  "success_condition": "All hidden grader states pass: primary, edge, exception, regression."
+}

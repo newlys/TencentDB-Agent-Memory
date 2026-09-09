@@ -1,0 +1,19 @@
+{
+  "task_id": "FL-NS-01",
+  "base_commit": "d318b683471101618febed18996405ad26462110",
+  "initial_query": "Accessing flask.ctx.RequestContext emits a deprecation warning that tells users to use Request, but the documented replacement is AppContext. Correct the warning text and add a focused regression check; do not change the alias behavior.",
+  "max_user_turns": 1,
+  "grader_priority": [
+    "primary",
+    "edge",
+    "exception",
+    "regression"
+  ],
+  "feedback_by_state": {
+    "primary": "The deprecation warning still points to Request instead of AppContext.",
+    "edge": "The deprecated RequestContext alias no longer resolves to AppContext.",
+    "exception": "Accessing the deprecated alias no longer emits a DeprecationWarning.",
+    "regression": "Unknown names on flask.ctx no longer raise AttributeError as before."
+  },
+  "success_condition": "All hidden grader states pass: primary, edge, exception, regression."
+}

@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "benchmark_id": "flask-crossrepo-v1",
+  "workspace_owner": "benchmark-platform-v1:flask-crossrepo-v1",
+  "repository": {
+    "url": "https://github.com/pallets/flask.git",
+    "source_path": "../../repo/flask",
+    "base_commit": "d318b683471101618febed18996405ad26462110"
+  },
+  "images": {
+    "grader": "flask-benchmark:local",
+    "agent": "flask-benchmark-agent:local",
+    "no_skill_proxy": "click-pilot-proxy:local",
+    "claude_cli": "flask-pilot-claude:local"
+  },
+  "validation": {
+    "agent_visible_probe_file": "pyproject.toml",
+    "pythonpath": "/workspace/src",
+    "upstream_command": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+    ]
+  },
+  "agent": {
+    "model": "deepseek-v4-flash",
+    "language": "en"
+  },
+  "extensions": {
+    "ours": {
+      "status": "connected",
+      "boundary_profile": "query_only_l15",
+      "extraction_profile": "task_scoped_v1",
+      "retrieval_profile": "task_search_view_v1"
+    },
+    "ours_v2": {
+      "status": "connected",
+      "boundary_profile": "query_only_l15",
+      "extraction_profile": "task_scoped_sop_v2",
+      "retrieval_profile": "task_scoped_skill_injection_v2"
+    },
+    "ours_v3": {
+      "status": "connected",
+      "boundary_profile": "query_only_l15",
+      "extraction_profile": "task_scoped_sop_v2",
+      "retrieval_profile": "task_scoped_skill_consumption_v3"
+    }
+  }
+}

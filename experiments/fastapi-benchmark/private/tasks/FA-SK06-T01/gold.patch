@@ -1,0 +1,13 @@
+diff --git a/fastapi/dependencies/utils.py b/fastapi/dependencies/utils.py
+--- a/fastapi/dependencies/utils.py
++++ b/fastapi/dependencies/utils.py
+@@ -805,7 +805,8 @@ def request_params_to_args(
+             )
+             if convert_underscores:
+                 alias = get_validation_alias(field)
+-                alias = alias.replace("_", "-")
++                if alias == field.name:
++                    alias = alias.replace("_", "-")
+         value = _get_multidict_value(field, received_params, alias=alias)
+         if value is not None:
+             params_to_process[get_validation_alias(field)] = value

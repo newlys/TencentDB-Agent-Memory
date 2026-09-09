@@ -1,0 +1,14 @@
+{
+  "task_id": "FA-SK07-T01",
+  "base_commit": "50113da16fec53b66b80d75e80a89296de4fa5a5",
+  "initial_query": "The same yield dependency declared once with scope=\"function\" and once with scope=\"request\" is being collapsed into one cached instance. Keep cache reuse within the same lifetime, but do not share a dependency result across different cleanup scopes; function- and request-scoped teardown timing must remain distinct.",
+  "max_user_turns": 2,
+  "grader_priority": ["primary", "edge", "exception", "regression"],
+  "feedback_by_state": {
+    "primary": "Function- and request-scoped declarations of the same dependency are still reusing one cached value.",
+    "edge": "The dependency cache key still does not distinguish the computed lifetime scope.",
+    "exception": "Same-scope dependency declarations no longer reuse the cache as before.",
+    "regression": "Generator dependencies without an explicit scope no longer retain their normal request-scoped lifetime."
+  },
+  "success_condition": "All hidden grader states pass: primary, edge, exception, regression."
+}

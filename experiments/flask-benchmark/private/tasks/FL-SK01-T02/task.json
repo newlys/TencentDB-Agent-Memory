@@ -1,0 +1,19 @@
+{
+  "task_id": "FL-SK01-T02",
+  "base_commit": "d318b683471101618febed18996405ad26462110",
+  "initial_query": "A request-specific max_form_parts limit is ignored whenever the application also defines MAX_FORM_PARTS; the app-wide value wins. Please make the per-request override take effect again, while preserving config fallback when no request override is set and leaving the other request limits unchanged.",
+  "max_user_turns": 2,
+  "grader_priority": [
+    "primary",
+    "edge",
+    "exception",
+    "regression"
+  ],
+  "feedback_by_state": {
+    "primary": "The request-specific max_form_parts value is still being replaced by the application-wide MAX_FORM_PARTS value.",
+    "edge": "An explicit zero-valued request override is still treated as if it were missing.",
+    "exception": "Removing the request override no longer falls back to the application configuration correctly.",
+    "regression": "The change also altered another request limit that should have remained independent."
+  },
+  "success_condition": "All hidden grader states pass: primary, edge, exception, regression."
+}

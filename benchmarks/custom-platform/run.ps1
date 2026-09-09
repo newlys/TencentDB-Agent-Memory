@@ -1,7 +1,8 @@
 param(
   [Parameter(Mandatory = $true)][string]$Plan,
   [Parameter(Mandatory = $true)][string]$Run,
-  [ValidateSet('no-skill', 'baseline', 'ours_v3')][string]$Variant = 'ours_v3'
+  [ValidateSet('no-skill', 'baseline', 'ours_v3')][string]$Variant = 'ours_v3',
+  [switch]$SkipBootstrap
 )
 
 $ErrorActionPreference = 'Stop'
@@ -12,12 +13,19 @@ if (-not $env:DEEPSEEK_API_KEY) {
   throw 'DEEPSEEK_API_KEY is required.'
 }
 
-$plan = Get-Content -LiteralPath $planPath -Raw | ConvertFrom-Json
-$plan.variant = $Variant
+$planConfig = Get-Content -LiteralPath $planPath -Raw | ConvertFrom-Json
+$planConfig.variant = $Variant
 $frozenDir = Join-Path $repoRoot 'benchmarks\generated-plans'
 New-Item -ItemType Directory -Force -Path $frozenDir | Out-Null
 $frozen = Join-Path $frozenDir "$Run.json"
-$plan | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath $frozen -Encoding utf8
+$planConfig | ConvertTo-Json -Depth 20 | Set-Content -LiteralPath $frozen -Encoding utf8
+
+if (-not $SkipBootstrap) {
+  & (Join-Path $PSScriptRoot 'bootstrap.ps1') -Plan $frozen
+  if ($LASTEXITCODE -ne 0) { throw 'Bootstrap failed.' }
+}
+$portableNode = Join-Path $repoRoot '.benchmark-tools\node-v22.22.2-win-x64\node.exe'
+if (Test-Path -LiteralPath $portableNode) { $env:BENCHMARK_NODE = $portableNode }
 
 & $python (Join-Path $repoRoot 'experiments\longitudinal-benchmark\validate_plan.py') --plan $frozen
 if ($LASTEXITCODE -ne 0) { throw 'Plan validation failed.' }

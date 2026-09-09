@@ -1,0 +1,10 @@
+diff --git a/fastapi/dependencies/models.py b/fastapi/dependencies/models.py
+--- a/fastapi/dependencies/models.py
++++ b/fastapi/dependencies/models.py
+@@ -91,5 +91,5 @@ def _get_cache_key(
+     return (
+         dependant.call,
+         scopes_for_cache,
+-        _get_computed_scope(dependant=dependant) or "",
++        "",
+     )

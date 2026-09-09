@@ -1,0 +1,81 @@
+{
+  "schema_version": 2,
+  "dataset": "click-v1-pilot-ready",
+  "base_commit": "36baa15ff831b939a22bc527cd76ce653ef6f66d",
+  "tasks": [
+    "SK01-T01",
+    "SK01-T02",
+    "SK02-T01",
+    "SK05-T01",
+    "SK06-T01",
+    "NS-01"
+  ],
+  "events": [
+    {
+      "event_id": "SK01-T01",
+      "order": 1,
+      "event_type": "sop"
+    },
+    {
+      "event_id": "N-S01-01",
+      "session": "S01",
+      "order": 2,
+      "event_type": "contextual_follow_up",
+      "after_task": "SK01-T01",
+      "user_message": "Before changing anything else: did that problem only occur when an environment variable was set at the same time?",
+      "expected_boundary": "continuation / no new task",
+      "may_trigger_tools": false
+    },
+    {
+      "event_id": "SK01-T02",
+      "order": 4,
+      "event_type": "sop"
+    },
+    {
+      "event_id": "N-S01-02",
+      "session": "S01",
+      "order": 5,
+      "event_type": "contextual_follow_up",
+      "after_task": "SK01-T02",
+      "user_message": "Okay, keep using the command-line test approach.",
+      "expected_boundary": "continuation / no new task",
+      "may_trigger_tools": true
+    },
+    {
+      "event_id": "SK02-T01",
+      "order": 6,
+      "event_type": "sop"
+    },
+    {
+      "event_id": "SK05-T01",
+      "order": 8,
+      "event_type": "sop"
+    },
+    {
+      "event_id": "N-S01-03",
+      "session": "S01",
+      "order": 9,
+      "event_type": "pure_noise",
+      "after_task": "SK05-T01",
+      "user_message": "Okay, thank you.",
+      "expected_boundary": "continuation / no new task",
+      "may_trigger_tools": false
+    },
+    {
+      "event_id": "SK06-T01",
+      "order": 10,
+      "event_type": "sop"
+    },
+    {
+      "event_id": "NS-01",
+      "order": 12,
+      "event_type": "non-sop"
+    }
+  ],
+  "blueprint_sha256": "bc1078fd20c2b42e3f2ce21bbf18b76ee389e9694afff46bd73691078021ae71",
+  "protocol": "protocol.json",
+  "frozen": true,
+  "limitations": [
+    "Difficulty and cross-repo reuse require later pilot and other repositories."
+  ]
+}

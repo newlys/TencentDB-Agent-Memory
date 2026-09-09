@@ -1,0 +1,11 @@
+diff --git a/fastapi/params.py b/fastapi/params.py
+--- a/fastapi/params.py
++++ b/fastapi/params.py
+@@ -101,6 +101,6 @@ class Param(FieldInfo):
+         if regex is not None:
+             warnings.warn(
+-                "`regex` has been deprecated, please use `example` instead",
++                "`regex` has been deprecated, please use `pattern` instead",
+                 category=FastAPIDeprecationWarning,
+                 stacklevel=4,
+             )

@@ -1,0 +1,11 @@
+--- a/src/click/core.py
++++ b/src/click/core.py
+@@ -2501,7 +2501,7 @@
+             else ParameterSource.DEFAULT
+         )
+ 
+-        if value is UNSET:
++        if value is UNSET or self.nargs == -1:
+             envvar_value = self.value_from_envvar(ctx)
+             if envvar_value is not None:
+                 value = envvar_value

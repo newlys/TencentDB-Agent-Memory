@@ -1,0 +1,54 @@
+{
+  "schema_version": 3,
+  "name": "cross-repo-formal-comparison-v3-native-async",
+  "currently_runnable_variants": [
+    "No-Skill",
+    "Baseline",
+    "Ours"
+  ],
+  "ours_inherits_common_budget_and_turn_rules": true,
+  "future_ours_must_inherit_common_budget_and_turn_rules": true,
+  "agent_internal_iteration_limit": 40,
+  "max_user_turns_source": "task.json:max_user_turns",
+  "on_agent_internal_limit": {
+    "grade_current_workspace": true,
+    "missing_final_assistant_text_is_infrastructure_failure": false,
+    "pass_if_hidden_grader_passes": true,
+    "continue_with_oracle_if_hidden_grader_fails_and_user_turns_remain": true
+  },
+  "turn_counting": {
+    "count_initial_query": true,
+    "count_oracle_feedback": true,
+    "count_claude_cli_auxiliary_user_messages": false,
+    "count_conversation_probes_as_task_turns": false
+  },
+  "task_boundary": {
+    "keep_terminal_submission_until_following_probes_finish": true,
+    "append_tool_disabled_completion_summary": false,
+    "benchmark_driver_supplies_gold_boundary_to_agent_or_memory": false,
+    "baseline_force_archive_skill_buffer": false,
+    "wait_for_extraction_before_reset_and_next_task": false,
+    "allow_natural_async_extraction_to_overlap_next_query": true,
+    "graceful_drain_only_after_final_user_event": true,
+    "reset_after_boundary": true
+  },
+  "language": {
+    "user_visible_messages": "en",
+    "reason": "Keep Agent, Proxy, Core extraction and artifact encoding comparable across repositories and variants."
+  },
+  "primary_efficiency_metrics": [
+    "agent_internal_turns",
+    "model_calls",
+    "tool_calls",
+    "input_tokens",
+    "output_tokens",
+    "cache_read_tokens"
+  ],
+  "auxiliary_efficiency_metrics": [
+    "user_turns_to_pass"
+  ],
+  "conversation_probes": {
+    "pure_noise": "Zero task information; expected no new boundary and no tools or workspace changes.",
+    "contextual_follow_up": "Carries task context or an operating preference; expected no new boundary, but tools or continued work are allowed and must not be scored as pure noise."
+  }
+}

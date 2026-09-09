@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "benchmark_id": "fastapi-crossrepo-v1",
+  "dataset": "fastapi-crossrepo-v1",
+  "base_commit": "50113da16fec53b66b80d75e80a89296de4fa5a5",
+  "protocol": "protocol.json",
+  "frozen": true,
+  "tasks": [
+    "FA-SK02-T01",
+    "FA-SK05-T01",
+    "FA-SK06-T01",
+    "FA-SK10-T01",
+    "FA-SK02-T02",
+    "FA-NS-01"
+  ],
+  "events": [
+    {
+      "event_id": "FA-SK02-T01",
+      "order": 1,
+      "event_type": "sop"
+    },
+    {
+      "event_id": "N-FA-01",
+      "session": "FASTAPI-S01",
+      "order": 2,
+      "event_type": "contextual_follow_up",
+      "after_task": "FA-SK02-T01",
+      "user_message": "Keep scalar query parameters behaving as before; this fix is only about preserving repeated values and their declared shape.",
+      "expected_boundary": "continuation / no new task",
+      "may_trigger_tools": false
+    },
+    {
+      "event_id": "FA-SK05-T01",
+      "order": 3,
+      "event_type": "sop"
+    },
+    {
+      "event_id": "N-FA-02",
+      "session": "FASTAPI-S01",
+      "order": 4,
+      "event_type": "pure_noise",
+      "after_task": "FA-SK05-T01",
+      "user_message": "Thanks, that works.",
+      "expected_boundary": "continuation / no new task",
+      "may_trigger_tools": false
+    },
+    {
+      "event_id": "FA-SK06-T01",
+      "order": 5,
+      "event_type": "sop"
+    },
+    {
+      "event_id": "FA-SK10-T01",
+      "order": 6,
+      "event_type": "sop"
+    },
+    {
+      "event_id": "FA-SK02-T02",
+      "order": 7,
+      "event_type": "sop"
+    },
+    {
+      "event_id": "FA-NS-01",
+      "order": 8,
+      "event_type": "non-sop"
+    }
+  ]
+}

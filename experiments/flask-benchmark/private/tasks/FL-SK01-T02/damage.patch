@@ -1,0 +1,14 @@
+diff --git a/src/flask/wrappers.py b/src/flask/wrappers.py
+--- a/src/flask/wrappers.py
++++ b/src/flask/wrappers.py
+@@ -131,10 +131,7 @@
+         .. versionchanged:: 3.1
+             This is configurable through Flask config.
+         """
+-        if self._max_form_parts is not None:
+-            return self._max_form_parts
+-
+         if not current_app:
+             return super().max_form_parts
+ 
+         return current_app.config["MAX_FORM_PARTS"]  # type: ignore[no-any-return]

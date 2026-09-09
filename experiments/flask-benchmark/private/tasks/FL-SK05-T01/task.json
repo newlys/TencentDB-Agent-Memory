@@ -1,0 +1,19 @@
+{
+  "task_id": "FL-SK05-T01",
+  "base_commit": "d318b683471101618febed18996405ad26462110",
+  "initial_query": "If a teardown_request callback raises, later request cleanup and application-context teardown no longer run. Please make teardown continue through the remaining cleanup phases and report teardown errors only after cleanup, without changing normal teardown behavior.",
+  "max_user_turns": 2,
+  "grader_priority": [
+    "primary",
+    "edge",
+    "exception",
+    "regression"
+  ],
+  "feedback_by_state": {
+    "primary": "A teardown_request failure is still preventing the request object from being closed.",
+    "edge": "The application-context teardown still does not run after a request-teardown failure.",
+    "exception": "Cleanup now runs, but the original teardown failure is being swallowed or replaced.",
+    "regression": "Normal teardown order or cleanup behavior changed even when no teardown callback fails."
+  },
+  "success_condition": "All hidden grader states pass: primary, edge, exception, regression."
+}

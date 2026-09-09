@@ -1,0 +1,11 @@
+--- a/src/click/core.py
++++ b/src/click/core.py
+@@ -559,7 +559,7 @@
+     ) -> bool | None:
+         self._depth -= 1
+         exit_result: bool | None = None
+-        if self._depth == 0 and exc_type is None:
++        if self._depth == 0:
+             exit_result = self._close_with_exception_info(exc_type, exc_value, tb)
+         pop_context()
+ 

@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "benchmark_id": "fastapi-crossrepo-v1",
+  "workspace_owner": "benchmark-platform-v1:fastapi-crossrepo-v1",
+  "repository": {
+    "url": "https://github.com/fastapi/fastapi.git",
+    "source_path": "../../repo/fastapi",
+    "base_commit": "50113da16fec53b66b80d75e80a89296de4fa5a5"
+  },
+  "images": {
+    "grader": "fastapi-benchmark:local",
+    "agent": "fastapi-benchmark-agent:local",
+    "no_skill_proxy": "click-pilot-proxy:local",
+    "claude_cli": "fastapi-pilot-claude:local"
+  },
+  "validation": {
+    "agent_visible_probe_file": "pyproject.toml",
+    "pythonpath": "/workspace",
+    "upstream_command": [
+      "python",
+      "-m",
+      "pytest",
+      "-q"
+    ]
+  },
+  "agent": {
+    "model": "deepseek-v4-flash",
+    "language": "en"
+  },
+  "extensions": {
+    "ours": {
+      "status": "connected",
+      "boundary_profile": "query_only_l15",
+      "extraction_profile": "task_scoped_v1",
+      "retrieval_profile": "task_search_view_v1"
+    },
+    "ours_v2": {
+      "status": "connected",
+      "boundary_profile": "query_only_l15",
+      "extraction_profile": "task_scoped_sop_v2",
+      "retrieval_profile": "task_scoped_skill_injection_v2"
+    },
+    "ours_v3": {
+      "status": "connected",
+      "boundary_profile": "query_only_l15",
+      "extraction_profile": "task_scoped_sop_v2",
+      "retrieval_profile": "task_scoped_skill_consumption_v3"
+    }
+  }
+}

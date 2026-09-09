@@ -1,0 +1,11 @@
+diff --git a/fastapi/dependencies/utils.py b/fastapi/dependencies/utils.py
+--- a/fastapi/dependencies/utils.py
++++ b/fastapi/dependencies/utils.py
+@@ -610,7 +610,6 @@ async def solve_dependencies(
+     errors: list[Any] = []
+     if response is None:
+         response = Response()
+-        del response.headers["content-length"]
+         response.status_code = None  # type: ignore
+     if dependency_cache is None:
+         dependency_cache = {}

@@ -1,0 +1,14 @@
+{
+  "task_id": "FA-SK10-T01",
+  "base_commit": "50113da16fec53b66b80d75e80a89296de4fa5a5",
+  "initial_query": "Headers written through the dependency Response object are merged into the final JSON response, but a stale Content-Length: 0 from that intermediate empty response is also being carried over. Preserve dependency-provided headers/status while ensuring the final Content-Length describes the actual payload.",
+  "max_user_turns": 2,
+  "grader_priority": ["primary", "edge", "exception", "regression"],
+  "feedback_by_state": {
+    "primary": "The final JSON response still contains a stale zero Content-Length from the intermediate dependency Response.",
+    "edge": "A dependency-provided response status or custom header was lost while removing the stale payload metadata.",
+    "exception": "Responses with an empty/no-body status now expose inconsistent body metadata.",
+    "regression": "Ordinary responses without dependency Response mutations no longer report their normal Content-Length."
+  },
+  "success_condition": "All hidden grader states pass: primary, edge, exception, regression."
+}

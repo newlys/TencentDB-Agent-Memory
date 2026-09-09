@@ -1,0 +1,27 @@
+{
+  "image_id": "sha256:3bd0112b8b7fbf7f6569777ccc3820fa6362a93e2fe02a6bbfa0024465491289",
+  "python": "Python 3.12.14",
+  "packages": [
+    "asgiref==3.12.1",
+    "blinker==1.9.0",
+    "click==8.5.0",
+    "iniconfig==2.3.0",
+    "itsdangerous==2.2.0",
+    "Jinja2==3.1.6",
+    "MarkupSafe==3.0.3",
+    "packaging==26.3",
+    "pluggy==1.6.0",
+    "Pygments==2.21.0",
+    "pytest==9.1.1",
+    "python-dotenv==1.2.3",
+    "Werkzeug==3.1.8"
+  ],
+  "agent_image_id": "sha256:67688d6a00925f007a063745109fd7e9a43e8f72eb60a80f23eb6f5eb15551eb",
+  "agent_os_packages": [
+    "git\t1:2.47.3-0+deb13u1",
+    "less\t668-1",
+    "ripgrep\t14.1.1-1+b4"
+  ],
+  "claude_cli_image_id": "sha256:7b8c56aa8f85661097d01fc78deb6a9de51529a60b44cbeb0c0b3b748ce8004d",
+  "claude_cli_version": "2.1.260 (Claude Code)"
+}

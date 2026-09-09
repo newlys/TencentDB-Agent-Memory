@@ -1,0 +1,11 @@
+diff --git a/fastapi/dependencies/utils.py b/fastapi/dependencies/utils.py
+--- a/fastapi/dependencies/utils.py
++++ b/fastapi/dependencies/utils.py
+@@ -753,6 +753,6 @@ def _get_multidict_value(
+         and field_annotation_is_sequence(field.field_info.annotation)
+         and isinstance(values, (ImmutableMultiDict, Headers))
+     ):
+-        value = values.getlist(alias)
++        value = values.get(alias, None)
+     else:
+         value = values.get(alias, None)

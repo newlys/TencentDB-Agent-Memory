@@ -1,0 +1,19 @@
+{
+  "task_id": "FA-SK02-T01",
+  "base_commit": "50113da16fec53b66b80d75e80a89296de4fa5a5",
+  "initial_query": "A query parameter declared as a sequence only keeps one occurrence. For example, ?tags=red&tags=blue should produce [\"red\", \"blue\"], but one value is lost. Restore repeated-value collection and declared tuple/list shape without changing scalar query behavior, missing-value validation.",
+  "max_user_turns": 2,
+  "grader_priority": [
+    "primary",
+    "edge",
+    "exception",
+    "regression"
+  ],
+  "feedback_by_state": {
+    "primary": "Repeated query values are still being collapsed instead of preserving all occurrences in order.",
+    "edge": "Fixed-shape sequence input still does not preserve the declared tuple structure.",
+    "exception": "Missing required sequence parameters no longer report validation failure as before.",
+    "regression": "Scalar query parameters changed behavior while fixing repeated values."
+  },
+  "success_condition": "All hidden grader states pass: primary, edge, exception, regression."
+}

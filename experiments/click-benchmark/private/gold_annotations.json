@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "benchmark_id": "click-v1",
+  "visibility": "private-evaluator-only",
+  "warning": "Never expose this file, family labels, or expected actions to the Agent, MemoryProxy, SkillExtractor, or Ours.",
+  "skill_families": {
+    "A": {"name": "preserve-explicit-input-precedence"},
+    "B": {"name": "preserve-structured-multivalue-input"},
+    "C": {"name": "ensure-cleanup-on-all-exit-paths"},
+    "D": {"name": "exact-match-before-normalization"}
+  },
+  "tasks": {
+    "SK01-T01": {"skill_family": "A", "expected_action": "create_new_family", "sop": true},
+    "SK01-T02": {"skill_family": "A", "expected_action": "reuse_existing_family", "sop": true},
+    "SK02-T01": {"skill_family": "B", "expected_action": "create_new_family", "sop": true},
+    "SK05-T01": {"skill_family": "C", "expected_action": "create_new_family", "sop": true},
+    "SK06-T01": {"skill_family": "D", "expected_action": "create_new_family", "sop": true},
+    "NS-01": {"skill_family": null, "expected_action": "skip_nothing_to_save", "sop": false}
+  }
+}

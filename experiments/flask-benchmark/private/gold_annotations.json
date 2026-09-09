@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "benchmark_id": "flask-crossrepo-v1",
+  "visibility": "private-evaluator-only",
+  "warning": "Never expose this file, family labels, or expected actions to the Agent, MemoryProxy, SkillExtractor, or Ours.",
+  "skill_families": {
+    "A": {
+      "name": "preserve-explicit-input-precedence",
+      "invariant": "Explicit/local user input wins; fallback or defaults apply only when the explicit value is absent."
+    },
+    "C": {
+      "name": "ensure-cleanup-on-all-exit-paths",
+      "invariant": "Cleanup must complete across failure/early-exit paths before teardown errors are reported."
+    },
+    "E": {
+      "name": "align-reuse-with-lifetime-scope",
+      "invariant": "Reuse and cleanup must honor ownership/lifetime scope; nested ownership cannot tear down early."
+    },
+    "G": {
+      "name": "prefer-specific-match-before-fallback",
+      "invariant": "When multiple candidates can match, specific/local candidates must be considered before generic/global fallback."
+    }
+  },
+  "tasks": {
+    "FL-SK01-T01": {
+      "skill_family": "A",
+      "expected_when_preceded_by_click": "reuse_existing_family",
+      "sop": true
+    },
+    "FL-SK01-T02": {
+      "skill_family": "A",
+      "expected_when_preceded_by_click": "reuse_existing_family",
+      "sop": true
+    },
+    "FL-SK05-T01": {
+      "skill_family": "C",
+      "expected_when_preceded_by_click": "reuse_existing_family",
+      "sop": true
+    },
+    "FL-SK07-T01": {
+      "skill_family": "E",
+      "expected_when_preceded_by_click": "create_new_family",
+      "sop": true
+    },
+    "FL-SK09-T01": {
+      "skill_family": "G",
+      "expected_when_preceded_by_click": "create_new_family",
+      "sop": true
+    },
+    "FL-NS-01": {
+      "skill_family": null,
+      "expected_when_preceded_by_click": "skip_nothing_to_save",
+      "sop": false
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "FL-SK01-T01",
+  "base_commit": "d318b683471101618febed18996405ad26462110",
+  "initial_query": "Values passed directly to render_template are being replaced when a context processor provides the same key. For example, passing name=\"user\" renders the processor's name instead. Please restore explicit template values as the winner while keeping non-conflicting processor values and blueprint processors working.",
+  "max_user_turns": 2,
+  "grader_priority": [
+    "primary",
+    "edge",
+    "exception",
+    "regression"
+  ],
+  "feedback_by_state": {
+    "primary": "A value passed directly to the template is still being replaced when the application context processor provides the same key.",
+    "edge": "A blueprint context processor can still override a value passed directly to the template.",
+    "exception": "The fix stopped non-conflicting context-processor values from being injected as before.",
+    "regression": "Rendering without a conflicting context processor no longer preserves the supplied value."
+  },
+  "success_condition": "All hidden grader states pass: primary, edge, exception, regression."
+}

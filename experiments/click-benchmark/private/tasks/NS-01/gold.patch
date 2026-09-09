@@ -1,0 +1,35 @@
+--- a/src/click/core.py
++++ b/src/click/core.py
+@@ -519,7 +519,7 @@
+ 
+         warnings.warn(
+             "'protected_args' is deprecated and will be removed in Click 9.0."
+-            " 'params' will contain remaining unparsed tokens.",
++            " 'args' will contain remaining unparsed tokens.",
+             DeprecationWarning,
+             stacklevel=2,
+         )
+--- /dev/null
++++ b/tests/test_protected_args_warning_contract.py
+@@ -0,0 +1,21 @@
++import inspect
++import warnings
++
++import click
++
++
++def test_protected_args_warning_contract():
++    ctx = click.Context(click.Command("cli"))
++    with warnings.catch_warnings(record=True) as captured:
++        warnings.simplefilter("always")
++        line = inspect.currentframe().f_lineno + 1
++        assert ctx.protected_args == []
++    assert len(captured) == 1
++    warning = captured[0]
++    assert warning.category is DeprecationWarning
++    assert str(warning.message) == (
++        "'protected_args' is deprecated and will be removed in Click 9.0."
++        " 'args' will contain remaining unparsed tokens."
++    )
++    assert warning.filename == __file__
++    assert warning.lineno == line

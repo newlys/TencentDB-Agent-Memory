@@ -1,0 +1,11 @@
+diff --git a/src/flask/ctx.py b/src/flask/ctx.py
+--- a/src/flask/ctx.py
++++ b/src/flask/ctx.py
+@@ -481,6 +481,6 @@
+         self._push_count -= 1
+ 
+-        if self._push_count > 0:
++        if self._push_count > 1:
+             return
+ 
+         collect_errors = _CollectErrors()
