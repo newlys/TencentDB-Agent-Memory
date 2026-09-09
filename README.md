@@ -99,9 +99,9 @@ Current Task Anchor
 
 | 报告版本 | 核心变化 |
 |---|---|
-| Ours_v0 |  | Boundary 切分 Task；在边界异步归档；仍依赖 Agent 主动 search/view。 |
+| Ours_v0 | Boundary 切分 Task；在边界异步归档；仍依赖 Agent 主动 search/view。 |
 | Ours_v1 | 增加 SOP-only Reviewer、机制级命名、单 Task 主要写入限制和 Task-scoped listing。 |
-| Ours_v2 |  | 增加消费控制器：Driver 检索、轻量选择、物化并在 Agent 工作前注入，不再依赖 Agent 主动 view。 |
+| Ours_v2 | 增加消费控制器：Driver 检索、轻量选择、物化并在 Agent 工作前注入，不再依赖 Agent 主动 view。 |
 
 更完整的实现和复现说明：
 
