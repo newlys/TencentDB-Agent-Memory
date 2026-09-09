@@ -25,6 +25,14 @@ jobs:
         with:
           node-version: "22"
 
+      # npm 10.9.8 (bundled with the current Node 22 runner image) crashes in
+      # Arborist while resolving this package's peer/optional dependency graph:
+      # `Cannot read properties of null (reading 'edgesOut')`.  npm 11 resolves
+      # the same graph correctly; pin it so CI is deterministic across runner
+      # image updates.
+      - name: Pin npm
+        run: npm install --global npm@11.11.0
+
       - name: Cache node_modules
         uses: actions/cache@v4
         id: cache-deps
