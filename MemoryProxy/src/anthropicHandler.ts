@@ -820,6 +820,11 @@ export async function handleAnthropicMessages(
             keyId: sessionKey,
             userId: userId || "anonymous",
             agentSource,
+            // 与 pipeline 里 hook-cache 的隔离键保持一致：prewarm 和 execute 都必须用
+            // 同一个 spaceId（handler 从 URL 路径提取的 spaceId），否则 prewarm 写入
+            // ttl/_default/... 而 execute 读 ttl/default/...（或相反），每次 cache-miss
+            // 重新 fetch listing → available_skills 反复变化 → KV-cache 永久失效。
+            spaceId,
             sessionInfo: initResult.sessionInfo as import("./session/types.js").SessionInfo,
             agentDetail: initResult.agentDetail ?? null,
             taskDetail: initResult.taskDetail ?? null,

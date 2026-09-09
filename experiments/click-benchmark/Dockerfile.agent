@@ -1,0 +1,6 @@
+ARG EVALUATOR_IMAGE=click-benchmark:local
+FROM ${EVALUATOR_IMAGE}
+RUN apt-get update && apt-get install -y --no-install-recommends git ripgrep && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends less && rm -rf /var/lib/apt/lists/*
+COPY container_entrypoint.py /opt/click-benchmark/entrypoint.py
+ENTRYPOINT ["python", "/opt/click-benchmark/entrypoint.py"]

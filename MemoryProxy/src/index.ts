@@ -123,7 +123,7 @@ log.info("server.starting", {
   injection: config.injection.enabled ? config.injection.injectors.join(",") : "disabled",
   tdai: config.tdai.enabled ? config.tdai.endpoint : "disabled",
   coreSkill: config.coreSkill.serviceToken ? config.coreSkill.endpoint : "disabled",
-  skillRuntime: `allowLlmWrite=${config.skillRuntime.allowLlmWrite}`,
+  skillRuntime: `injectSessionAvailableSkills=${config.skillRuntime.injectSessionAvailableSkills},injectSkillTools=${config.skillRuntime.injectSkillTools},allowLlmWrite=${config.skillRuntime.allowLlmWrite}`,
   auth: config.auth.enabled ? config.auth.url : "disabled",
   systemUsers: config.systemUsers.length > 0
     ? config.systemUsers.map((u) => u.name || "unnamed").join(",")

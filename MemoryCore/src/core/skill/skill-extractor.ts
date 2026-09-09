@@ -26,6 +26,8 @@ import { evaluateSkillValue, type SkillValueGateProfile } from "./skill-value-ga
 const TAG = "[skill-extractor]";
 
 export interface ExtractorRunner {
+  /** Optional local accounting side-channel exposed by StandaloneLLMRunner. */
+  lastUsage?: { promptTokens: number; completionTokens: number; totalTokens: number };
   run(params: {
     prompt: string;
     systemPrompt?: string;
@@ -72,6 +74,8 @@ export interface ExtractorOptions {
    * 时不触发额外的 query-gen LLM 调用。
    */
   prefixSkillsLimit?: number;
+  /** Successful create/update/patch operations allowed per extraction; 0 = unlimited. */
+  maxPrimaryWrites?: number;
   /** Zero-token high-confidence negative filter. Defaults to legacy passthrough. */
   valueGateProfile?: SkillValueGateProfile;
   logger?: { info(msg: string): void; warn(msg: string): void; error(msg: string): void };
@@ -107,6 +111,7 @@ export class SkillExtractor {
   private readonly tailChars: number;
   private readonly maxTokens?: number;
   private readonly prefixSkillsLimit: number;
+  private readonly maxPrimaryWrites: number;
   private readonly valueGateProfile: SkillValueGateProfile;
   private readonly logger?: ExtractorOptions["logger"];
 
@@ -126,6 +131,9 @@ export class SkillExtractor {
     this.prefixSkillsLimit = rawLimit === undefined
       ? 0
       : (Number.isFinite(rawLimit) && rawLimit >= 0 ? Math.floor(rawLimit) : 0);
+    this.maxPrimaryWrites = Number.isInteger(opts.maxPrimaryWrites) && (opts.maxPrimaryWrites ?? 0) >= 0
+      ? opts.maxPrimaryWrites ?? 0
+      : 0;
     this.valueGateProfile = opts.valueGateProfile ?? "legacy";
     this.logger = opts.logger;
   }
@@ -244,6 +252,7 @@ export class SkillExtractor {
       agent_id: input.agent_id,
       task_id: input.task_id,
       auditSink,
+      maxPrimaryWrites: this.maxPrimaryWrites,
       logger: this.logger,
     });
 
@@ -300,6 +309,7 @@ export class SkillExtractor {
     try { metricProducer.send({ metric: "skill.extract.candidates", instanceId: input.team_id, value: auditSink.length }); } catch { /* noop */ }
 
     const dur = Date.now() - t0;
+    const localUsage = this.runner.lastUsage;
     obsLogger.info("skill.extractor.extract", {
       task_id: input.task_id,
       dur_ms: dur,
@@ -309,6 +319,11 @@ export class SkillExtractor {
       prefix_mode: prefixMode,
       // 只截前 60 字符 (够识别关键词; 长了对 obs 无用)。
       prefix_query: prefixQuery ? prefixQuery.slice(0, 60) : undefined,
+      ...(localUsage ? {
+        input_tokens: localUsage.promptTokens,
+        output_tokens: localUsage.completionTokens,
+        total_tokens: localUsage.totalTokens,
+      } : {}),
     });
     try {
       trace.report("skill.extractor.extract", {
@@ -413,6 +428,15 @@ export class SkillExtractor {
       userId: input.user_id,
       instanceId: input.space_id,
     });
+    const usage = this.runner.lastUsage;
+    if (usage) {
+      obsLogger.info("skill.extractor.query_generation", {
+        task_id: input.task_id ?? "unknown",
+        input_tokens: usage.promptTokens,
+        output_tokens: usage.completionTokens,
+        total_tokens: usage.totalTokens,
+      });
+    }
     return sanitizeGeneratedQuery(raw);
   }
 }

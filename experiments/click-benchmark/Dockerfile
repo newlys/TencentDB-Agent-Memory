@@ -1,0 +1,5 @@
+FROM python:3.12-slim@sha256:78387bc3881b8273120a12ebe6c1ab22b018ccc2c9adf565ae1ac9b536e184ea
+RUN pip install --no-cache-dir pytest==8.4.2 iniconfig==2.3.0 packaging==26.3 pluggy==1.6.0 pygments==2.21.0
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONHASHSEED=0 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 LC_ALL=C.UTF-8
+WORKDIR /workspace
+CMD ["bash"]

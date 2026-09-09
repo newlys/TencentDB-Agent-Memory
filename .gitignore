@@ -137,5 +137,13 @@ experiments/trigger-real-v1/replays/logs/
 coverage/
 **/coverage/
 
+# Reproducible benchmark runtime outputs and local imported data
+benchmarks/generated-plans/
+benchmarks/**/runs/
+benchmark-import/
+experiments/**/runs/
+experiments/**/runtime/
+experiments/**/reports/
+
 # Local project docs (generated, not for VCS)
 .local-docs/

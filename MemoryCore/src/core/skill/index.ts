@@ -151,6 +151,7 @@ export {
 export { SKILL_REVIEW_PROMPT } from "./prompts/skill-review-prompt.js";
 export { SKILL_REVIEW_PROMPT_V3 } from "./prompts/skill-review-prompt-v3.js";
 export { SKILL_REVIEW_PROMPT_V4 } from "./prompts/skill-review-prompt-v4.js";
+export { SKILL_REVIEW_PROMPT_TASK_SOP_V2 } from "./prompts/skill-review-prompt-task-sop-v2.js";
 
 // 抽取链路里 worker / dedupe 共用的 ExtractorLLMRunner（与 v2 ExtractorRunner 形状兼容）。
 export type { ExtractorLLMRunner } from "./types.js";

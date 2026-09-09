@@ -604,6 +604,11 @@ knowledge:
 # 历史配置项 (已删除): extractToolCallThreshold / maxBucketCount /
 # conversationAddEnabled — 属于 proxy 侧老链路 SkillExtractTrigger, 已下线。
 skillRuntime:
+  # 默认 true，保持原生 Baseline 的 session-init <available_skills>。
+  # Task-aware 客户端可设为 false，仅关闭该列表；<skill_tools> 和 bridge 保留。
+  injectSessionAvailableSkills: true
+  # 默认 true；Task-scoped host 可关闭长期 curl recipes，bridge 本身仍可用。
+  injectSkillTools: true
   allowLlmWrite: false           # 是否允许主模型创建/修改 skill（默认 false）
                                  #   false: <skill_tools> 只注入只读工具（search/list/view/files_read）
                                  #          /skill-bridge 拒绝写操作返回 403

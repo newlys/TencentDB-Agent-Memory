@@ -183,7 +183,17 @@ export class InjectionPipeline {
       ? ctx.metadata.userId
       : "anonymous";
     const agentSource = ctx.metadata.agentSource || "claude-code";
-    const spaceId = ctx.metadata.spaceId ?? "";
+    // spaceId 隔离键必须与 prewarm 路径一致：prewarm 用 sessionInfo.space_id
+    // （handler 层透传到 custom.session），而这里以前只读 metadata.spaceId（可能为空
+    // → fallback "_default"），导致 get 的 key 与 prewarm 写入的 key 不一致，
+    // 每次 cache-miss 都重新 fetch listing → available_skills 随 skill 更新反复变化
+    // → system prompt 反复变化 → Anthropic KV-cache 永久 miss。统一取 session.space_id。
+    const _custom = ctx.metadata.custom as Record<string, unknown> | undefined;
+    const _session = _custom?.session as Record<string, unknown> | undefined;
+    const _sessionSpaceId = typeof _session?.space_id === "string" ? _session.space_id : "";
+    const spaceId = _sessionSpaceId.length > 0
+      ? _sessionSpaceId
+      : (ctx.metadata.spaceId ?? "");
     const results: HookResult[] = [];
 
     for (const point of executionOrder) {

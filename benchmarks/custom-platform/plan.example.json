@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "experiment_id": "replace-me",
+  "variant": "ours_v3",
+  "method_revision": "task-skill-consumption-controller-r5",
+  "profiles": {
+    "boundary_profile": "query_only_l15",
+    "extraction_profile": "task_scoped_sop_v2",
+    "retrieval_profile": "task_scoped_skill_consumption_v3"
+  },
+  "session_policy": {
+    "fresh_claude_session_per_repo": true,
+    "shared_native_memory_service_across_repos": true,
+    "gold_task_boundaries_not_sent_to_agent_or_memory": true,
+    "asynchronous_extraction_without_inter_task_wait": true,
+    "language": "en"
+  },
+  "sessions": [
+    {
+      "session_ordinal": 1,
+      "repo": "owner/repository",
+      "suite_root": "../../benchmark-import/replace-with-suite"
+    }
+  ]
+}

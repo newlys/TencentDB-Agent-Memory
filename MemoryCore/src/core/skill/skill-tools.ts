@@ -41,6 +41,8 @@ export interface CreateSkillToolsOptions {
   agent_id: string;
   task_id?: string;
   auditSink: ExtractedSkillCandidate[];
+  /** Successful create/update/patch operations allowed; 0 or omitted = unlimited. */
+  maxPrimaryWrites?: number;
   logger?: { info(msg: string): void; warn(msg: string): void; error(msg: string): void };
 }
 
@@ -53,6 +55,15 @@ function jsonError(e: unknown): string {
 
 export function createSkillTools(opts: CreateSkillToolsOptions) {
   const { core, user_id, team_id, agent_id, task_id, auditSink, logger } = opts;
+  const maxPrimaryWrites = opts.maxPrimaryWrites ?? 0;
+  let primaryWrites = 0;
+  const primaryWriteLimitError = (): string | null => {
+    if (maxPrimaryWrites <= 0 || primaryWrites < maxPrimaryWrites) return null;
+    return JSON.stringify({
+      error: "PRIMARY_WRITE_LIMIT_REACHED",
+      message: `This extraction permits at most ${maxPrimaryWrites} successful primary skill mutation(s). Stop writing and return the change summary.`,
+    });
+  };
   // Read 路径：不带 task_id — audit 字段不参与检索。skill-core.ts:list/search
   // 内部已经再兜底 undefine 掉 task_id, 但工具层依然显式区分以让意图清晰、
   // 并防止未来 core 侧回退时又把 bug 引回来。
@@ -130,8 +141,11 @@ export function createSkillTools(opts: CreateSkillToolsOptions) {
         required: ["name", "content"],
       }),
       execute: async ({ name, content }) => {
+        const limited = primaryWriteLimitError();
+        if (limited) return limited;
         try {
           const r = await core.create({ ...writeIds, name, content });
+          primaryWrites += 1;
           auditSink.push({ action: "create", name, skill_id: r.skill_id, version: r.version, description: r.description });
           logger?.info(`[skill-tools] created ${r.skill_id}`);
           return JSON.stringify({ ok: true, skill_id: r.skill_id, version: r.version });
@@ -151,8 +165,11 @@ export function createSkillTools(opts: CreateSkillToolsOptions) {
         required: ["skill_id", "content", "expected_version"],
       }),
       execute: async ({ skill_id, content, expected_version }) => {
+        const limited = primaryWriteLimitError();
+        if (limited) return limited;
         try {
           const r = await core.update({ ...writeIds, skill_id, content, expected_version });
+          primaryWrites += 1;
           auditSink.push({ action: "update", name: r.name, skill_id, version: r.version });
           return JSON.stringify({ ok: true, version: r.version });
         } catch (e) { return jsonError(e); }
@@ -176,8 +193,11 @@ export function createSkillTools(opts: CreateSkillToolsOptions) {
         required: ["skill_id", "old_string", "new_string", "expected_version"],
       }),
       execute: async ({ skill_id, old_string, new_string, replace_all, expected_version }) => {
+        const limited = primaryWriteLimitError();
+        if (limited) return limited;
         try {
           const r = await core.patch({ ...writeIds, skill_id, old_string, new_string, replace_all, expected_version });
+          primaryWrites += 1;
           auditSink.push({ action: "patch", name: r.name, skill_id, version: r.version });
           return JSON.stringify({ ok: true, version: r.version });
         } catch (e) { return jsonError(e); }

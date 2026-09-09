@@ -1968,7 +1968,12 @@ export class TdaiGateway {
     skillCore: SkillCoreType,
     instanceId: string,
   ): Promise<SkillExtractorClass> {
-    const { SKILL_REVIEW_PROMPT, SKILL_REVIEW_PROMPT_V3, SKILL_REVIEW_PROMPT_V4 } = await import("../core/skill/index.js");
+    const {
+      SKILL_REVIEW_PROMPT,
+      SKILL_REVIEW_PROMPT_V3,
+      SKILL_REVIEW_PROMPT_V4,
+      SKILL_REVIEW_PROMPT_TASK_SOP_V2,
+    } = await import("../core/skill/index.js");
     const { StandaloneLLMRunner } = await import("../adapters/standalone/llm-runner.js");
     const { resolveStandaloneLlmForRuntime, LlmProviderResolveError } = await import("../adapters/standalone/llm-provider-resolver.js");
 
@@ -2003,7 +2008,9 @@ export class TdaiGateway {
     return new SkillExtractorClass({
       core: skillCore,
       runner: llmRunner,
-      systemPrompt: cfg?.extraction.reviewPromptProfile === "balanced_v4"
+      systemPrompt: cfg?.extraction.reviewPromptProfile === "task_sop_v2"
+        ? SKILL_REVIEW_PROMPT_TASK_SOP_V2
+        : cfg?.extraction.reviewPromptProfile === "balanced_v4"
         ? SKILL_REVIEW_PROMPT_V4
         : cfg?.extraction.reviewPromptProfile === "precision_v3"
           ? SKILL_REVIEW_PROMPT_V3
@@ -2016,6 +2023,7 @@ export class TdaiGateway {
       tailChars: cfg?.extraction.tailChars,
       maxTokens: cfg?.extraction.maxTokens,
       prefixSkillsLimit: cfg?.extraction.prefixSkillsLimit,
+      maxPrimaryWrites: cfg?.extraction.maxPrimaryWrites,
       valueGateProfile: cfg?.extraction.valueGate.profile,
       logger: this.logger,
     } as import("../core/skill/skill-extractor.js").ExtractorOptions);
