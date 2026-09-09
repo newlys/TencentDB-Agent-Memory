@@ -1,0 +1,96 @@
+{
+  "schema_version": "swe-together-native-baseline/1.0",
+  "run_id": "swe-together-baseline-v6",
+  "variant": "native-baseline",
+  "workers": 1,
+  "model": "deepseek-v4-flash",
+  "user_simulator_model": "deepseek-v4-flash",
+  "task_boundary_visible_to_proxy": false,
+  "task_environment_policy": "official-independent-harbor-trial",
+  "task_order_source": "frozen-explicit-list",
+  "hard_excluded": [
+    "pi-mono-tool-execution-write-error",
+    "pi-mono-foreign-toolcall-fix",
+    "pi-mono-parallel-tool-stall",
+    "pi-mono-extensions-event-refactor",
+    "rudel-task-468289",
+    "cli-task-577e8c",
+    "cli-task-70c88c",
+    "cli-task-408b8c",
+    "cli-task-33e050",
+    "gemini-voyager-task-16a5c7",
+    "gemini-voyager-task-4bddaf",
+    "gemini-voyager-task-aa88f5",
+    "reigh-preset-data-flow",
+    "reigh-taskspane-lightbox-bug",
+    "reigh-timeline-multiselect",
+    "reigh-radix-props-cleanup",
+    "reigh-timeline-mode-cleanup",
+    "rudel-task-491983",
+    "rudel-task-d1ddb8"
+  ],
+  "ports": {
+    "core": 49420,
+    "proxy": 49096,
+    "session_adapter": 49097
+  },
+  "tasks": [
+    {
+      "task_id": "cli-task-0ec2e9",
+      "repo": "entireio/cli",
+      "session_id": "swe-together__entireio__cli",
+      "task_order": 1,
+      "repo_order": 1,
+      "repo_task_order": 1
+    },
+    {
+      "task_id": "cli-task-2f5833",
+      "repo": "entireio/cli",
+      "session_id": "swe-together__entireio__cli",
+      "task_order": 2,
+      "repo_order": 1,
+      "repo_task_order": 2
+    },
+    {
+      "task_id": "cli-task-cd4662",
+      "repo": "entireio/cli",
+      "session_id": "swe-together__entireio__cli",
+      "task_order": 3,
+      "repo_order": 1,
+      "repo_task_order": 3
+    },
+    {
+      "task_id": "dataclaw-windows-path-fix",
+      "repo": "peteromallet/dataclaw",
+      "session_id": "swe-together__peteromallet__dataclaw",
+      "task_order": 4,
+      "repo_order": 2,
+      "repo_task_order": 1
+    },
+    {
+      "task_id": "dataclaw-anonymizer-tests",
+      "repo": "peteromallet/dataclaw",
+      "session_id": "swe-together__peteromallet__dataclaw",
+      "task_order": 5,
+      "repo_order": 2,
+      "repo_task_order": 2
+    },
+    {
+      "task_id": "gemini-voyager-task-64c72f",
+      "repo": "nagi-ovo/gemini-voyager",
+      "session_id": "swe-together__nagi-ovo__gemini-voyager",
+      "task_order": 6,
+      "repo_order": 3,
+      "repo_task_order": 1
+    },
+    {
+      "task_id": "gemini-voyager-task-f519c2",
+      "repo": "nagi-ovo/gemini-voyager",
+      "session_id": "swe-together__nagi-ovo__gemini-voyager",
+      "task_order": 7,
+      "repo_order": 3,
+      "repo_task_order": 2
+    }
+  ],
+  "created_at": "2026-09-09T01:27:49.090293+08:00"
+}

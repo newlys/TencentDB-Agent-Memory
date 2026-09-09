@@ -1,0 +1,666 @@
+{
+  "variant": "native-baseline",
+  "run_id": "swe-together-baseline-v6",
+  "total_tasks": 7,
+  "completed": 7,
+  "pass": 3,
+  "fail": 4,
+  "infra_error": 0,
+  "current_repo": "",
+  "current_task": "",
+  "current_phase": "completed",
+  "process_started_at": "2026-09-09T14:26:01.924176+08:00",
+  "last_updated_at": "2026-09-09T15:40:32.628976+08:00",
+  "tasks": [
+    {
+      "task_id": "cli-task-0ec2e9",
+      "repo": "entireio/cli",
+      "session_id": "swe-together__entireio__cli",
+      "task_order": 1,
+      "repo_order": 1,
+      "repo_task_order": 1,
+      "status": "FAIL",
+      "current_phase": "verifier",
+      "start_time": "2026-09-09T14:27:11.588483+08:00",
+      "trial_directory": "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\integration\\runs\\swe-together-baseline-v6\\trials\\cli-task-0ec2e9__DTJmTve",
+      "buffer_before": {
+        "session_id": "swe-together__entireio__cli",
+        "exists": true,
+        "path": "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\integration\\runs\\swe-together-baseline-v6\\core-data\\skill_buffer\\usr-cdgx969vst\\team-cdgxm2dzka\\agt-cdgxy3kk5z\\swe-together__entireio__cli",
+        "tool_call_count": 1,
+        "byte_count": 6116,
+        "last_archived_at_ms": 1788925057892,
+        "archive_count": 12,
+        "archives": [
+          "data-1788888839370.jsonl",
+          "data-1788889178215.jsonl",
+          "data-1788889345715.jsonl",
+          "data-1788889551143.jsonl",
+          "data-1788889714582.jsonl",
+          "data-1788892897064.jsonl",
+          "data-1788893159612.jsonl",
+          "data-1788923659041.jsonl",
+          "data-1788924092181.jsonl",
+          "data-1788924360005.jsonl",
+          "data-1788925057892.jsonl",
+          "data-current.jsonl"
+        ]
+      },
+      "end_time": "2026-09-09T14:27:11.866914+08:00",
+      "reward": 0.0,
+      "passed": false,
+      "user_turns": 6,
+      "user_simulator_calls": 6,
+      "user_simulator_real_followups": 5,
+      "tool_calls": 172,
+      "model_calls": 145,
+      "token_usage": {
+        "input_tokens": null,
+        "cache_tokens": null,
+        "output_tokens": null
+      },
+      "agent_latency_seconds": 1801.132621,
+      "verifier_status": "completed",
+      "error_category": null,
+      "error_message": "Agent execution timed out after 1800.0 seconds",
+      "buffer_after": {
+        "session_id": "swe-together__entireio__cli",
+        "exists": true,
+        "path": "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\integration\\runs\\swe-together-baseline-v6\\core-data\\skill_buffer\\usr-cdgx969vst\\team-cdgxm2dzka\\agt-cdgxy3kk5z\\swe-together__entireio__cli",
+        "tool_call_count": 1,
+        "byte_count": 6116,
+        "last_archived_at_ms": 1788925057892,
+        "archive_count": 12,
+        "archives": [
+          "data-1788888839370.jsonl",
+          "data-1788889178215.jsonl",
+          "data-1788889345715.jsonl",
+          "data-1788889551143.jsonl",
+          "data-1788889714582.jsonl",
+          "data-1788892897064.jsonl",
+          "data-1788893159612.jsonl",
+          "data-1788923659041.jsonl",
+          "data-1788924092181.jsonl",
+          "data-1788924360005.jsonl",
+          "data-1788925057892.jsonl",
+          "data-current.jsonl"
+        ]
+      },
+      "skill_activity": {
+        "archive_triggered": false,
+        "archive_count_delta": 0,
+        "extraction_observed_by_task_end": false,
+        "skills_created_or_updated_observed": [],
+        "retrieval_observed": false,
+        "skill_search_calls": 0,
+        "skill_view_calls": 3,
+        "injection_enabled": true
+      }
+    },
+    {
+      "task_id": "cli-task-2f5833",
+      "repo": "entireio/cli",
+      "session_id": "swe-together__entireio__cli",
+      "task_order": 2,
+      "repo_order": 1,
+      "repo_task_order": 2,
+      "status": "PASS",
+      "current_phase": "verifier",
+      "start_time": "2026-09-09T14:27:11.899626+08:00",
+      "trial_directory": "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\integration\\runs\\swe-together-baseline-v6\\trials\\cli-task-2f5833__xT27VP3",
+      "buffer_before": {
+        "session_id": "swe-together__entireio__cli",
+        "exists": true,
+        "path": "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\integration\\runs\\swe-together-baseline-v6\\core-data\\skill_buffer\\usr-cdgx969vst\\team-cdgxm2dzka\\agt-cdgxy3kk5z\\swe-together__entireio__cli",
+        "tool_call_count": 1,
+        "byte_count": 6116,
+        "last_archived_at_ms": 1788925057892,
+        "archive_count": 12,
+        "archives": [
+          "data-1788888839370.jsonl",
+          "data-1788889178215.jsonl",
+          "data-1788889345715.jsonl",
+          "data-1788889551143.jsonl",
+          "data-1788889714582.jsonl",
+          "data-1788892897064.jsonl",
+          "data-1788893159612.jsonl",
+          "data-1788923659041.jsonl",
+          "data-1788924092181.jsonl",
+          "data-1788924360005.jsonl",
+          "data-1788925057892.jsonl",
+          "data-current.jsonl"
+        ]
+      },
+      "end_time": "2026-09-09T14:27:12.006980+08:00",
+      "reward": 0.15,
+      "passed": true,
+      "user_turns": 1,
+      "user_simulator_calls": 0,
+      "user_simulator_real_followups": 0,
+      "tool_calls": 159,
+      "model_calls": 136,
+      "token_usage": {
+        "input_tokens": null,
+        "cache_tokens": null,
+        "output_tokens": null
+      },
+      "agent_latency_seconds": 1813.43511,
+      "verifier_status": "completed",
+      "error_category": null,
+      "error_message": "Agent execution timed out after 1800.0 seconds",
+      "buffer_after": {
+        "session_id": "swe-together__entireio__cli",
+        "exists": true,
+        "path": "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\integration\\runs\\swe-together-baseline-v6\\core-data\\skill_buffer\\usr-cdgx969vst\\team-cdgxm2dzka\\agt-cdgxy3kk5z\\swe-together__entireio__cli",
+        "tool_call_count": 1,
+        "byte_count": 6116,
+        "last_archived_at_ms": 1788925057892,
+        "archive_count": 12,
+        "archives": [
+          "data-1788888839370.jsonl",
+          "data-1788889178215.jsonl",
+          "data-1788889345715.jsonl",
+          "data-1788889551143.jsonl",
+          "data-1788889714582.jsonl",
+          "data-1788892897064.jsonl",
+          "data-1788893159612.jsonl",
+          "data-1788923659041.jsonl",
+          "data-1788924092181.jsonl",
+          "data-1788924360005.jsonl",
+          "data-1788925057892.jsonl",
+          "data-current.jsonl"
+        ]
+      },
+      "skill_activity": {
+        "archive_triggered": false,
+        "archive_count_delta": 0,
+        "extraction_observed_by_task_end": false,
+        "skills_created_or_updated_observed": [],
+        "retrieval_observed": false,
+        "skill_search_calls": 0,
+        "skill_view_calls": 0,
+        "injection_enabled": true
+      }
+    },
+    {
+      "task_id": "cli-task-cd4662",
+      "repo": "entireio/cli",
+      "session_id": "swe-together__entireio__cli",
+      "task_order": 3,
+      "repo_order": 1,
+      "repo_task_order": 3,
+      "status": "FAIL",
+      "current_phase": "verifier",
+      "start_time": "2026-09-09T14:27:12.298932+08:00",
+      "trial_directory": "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\integration\\runs\\swe-together-baseline-v6\\trials\\cli-task-cd4662__BHtEqTn",
+      "buffer_before": {
+        "session_id": "swe-together__entireio__cli",
+        "exists": true,
+        "path": "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\integration\\runs\\swe-together-baseline-v6\\core-data\\skill_buffer\\usr-cdgx969vst\\team-cdgxm2dzka\\agt-cdgxy3kk5z\\swe-together__entireio__cli",
+        "tool_call_count": 1,
+        "byte_count": 6116,
+        "last_archived_at_ms": 1788925057892,
+        "archive_count": 12,
+        "archives": [
+          "data-1788888839370.jsonl",
+          "data-1788889178215.jsonl",
+          "data-1788889345715.jsonl",
+          "data-1788889551143.jsonl",
+          "data-1788889714582.jsonl",
+          "data-1788892897064.jsonl",
+          "data-1788893159612.jsonl",
+          "data-1788923659041.jsonl",
+          "data-1788924092181.jsonl",
+          "data-1788924360005.jsonl",
+          "data-1788925057892.jsonl",
+          "data-current.jsonl"
+        ]
+      },
+      "end_time": "2026-09-09T14:27:12.467557+08:00",
+      "reward": 0.0,
+      "passed": false,
+      "user_turns": 5,
+      "user_simulator_calls": 5,
+      "user_simulator_real_followups": 4,
+      "tool_calls": 74,
+      "model_calls": 80,
+      "token_usage": {
+        "input_tokens": null,
+        "cache_tokens": null,
+        "output_tokens": null
+      },
+      "agent_latency_seconds": 1826.154211,
+      "verifier_status": "completed",
+      "error_category": null,
+      "error_message": "Agent execution timed out after 1800.0 seconds",
+      "buffer_after": {
+        "session_id": "swe-together__entireio__cli",
+        "exists": true,
+        "path": "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\integration\\runs\\swe-together-baseline-v6\\core-data\\skill_buffer\\usr-cdgx969vst\\team-cdgxm2dzka\\agt-cdgxy3kk5z\\swe-together__entireio__cli",
+        "tool_call_count": 1,
+        "byte_count": 6116,
+        "last_archived_at_ms": 1788925057892,
+        "archive_count": 12,
+        "archives": [
+          "data-1788888839370.jsonl",
+          "data-1788889178215.jsonl",
+          "data-1788889345715.jsonl",
+          "data-1788889551143.jsonl",
+          "data-1788889714582.jsonl",
+          "data-1788892897064.jsonl",
+          "data-1788893159612.jsonl",
+          "data-1788923659041.jsonl",
+          "data-1788924092181.jsonl",
+          "data-1788924360005.jsonl",
+          "data-1788925057892.jsonl",
+          "data-current.jsonl"
+        ]
+      },
+      "skill_activity": {
+        "archive_triggered": false,
+        "archive_count_delta": 0,
+        "extraction_observed_by_task_end": false,
+        "skills_created_or_updated_observed": [],
+        "retrieval_observed": false,
+        "skill_search_calls": 0,
+        "skill_view_calls": 1,
+        "injection_enabled": true
+      }
+    },
+    {
+      "task_id": "dataclaw-windows-path-fix",
+      "repo": "peteromallet/dataclaw",
+      "session_id": "swe-together__peteromallet__dataclaw",
+      "task_order": 4,
+      "repo_order": 2,
+      "repo_task_order": 1,
+      "status": "PASS",
+      "current_phase": "verifier",
+      "start_time": "2026-09-09T14:27:12.524816+08:00",
+      "trial_directory": "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\integration\\runs\\swe-together-baseline-v6\\trials\\dataclaw-windows-path-fix__Hpry73x",
+      "buffer_before": {
+        "session_id": "swe-together__peteromallet__dataclaw",
+        "exists": true,
+        "path": "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\integration\\runs\\swe-together-baseline-v6\\core-data\\skill_buffer\\usr-cdgx969vst\\team-cdgxm2dzka\\agt-cdgxy3kk5z\\swe-together__peteromallet__dataclaw",
+        "tool_call_count": 8,
+        "byte_count": 14162,
+        "last_archived_at_ms": 1788914012271,
+        "archive_count": 6,
+        "archives": [
+          "data-1788894278699.jsonl",
+          "data-1788894464099.jsonl",
+          "data-1788912686548.jsonl",
+          "data-1788913150012.jsonl",
+          "data-1788914012271.jsonl",
+          "data-current.jsonl"
+        ]
+      },
+      "end_time": "2026-09-09T14:27:12.767617+08:00",
+      "reward": 0.494,
+      "passed": true,
+      "user_turns": 4,
+      "user_simulator_calls": 7,
+      "user_simulator_real_followups": 3,
+      "tool_calls": 76,
+      "model_calls": 66,
+      "token_usage": {
+        "input_tokens": 6621099,
+        "cache_tokens": 0,
+        "output_tokens": 61205
+      },
+      "agent_latency_seconds": 697.694756,
+      "verifier_status": "completed",
+      "error_category": null,
+      "error_message": null,
+      "buffer_after": {
+        "session_id": "swe-together__peteromallet__dataclaw",
+        "exists": true,
+        "path": "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\integration\\runs\\swe-together-baseline-v6\\core-data\\skill_buffer\\usr-cdgx969vst\\team-cdgxm2dzka\\agt-cdgxy3kk5z\\swe-together__peteromallet__dataclaw",
+        "tool_call_count": 8,
+        "byte_count": 14162,
+        "last_archived_at_ms": 1788914012271,
+        "archive_count": 6,
+        "archives": [
+          "data-1788894278699.jsonl",
+          "data-1788894464099.jsonl",
+          "data-1788912686548.jsonl",
+          "data-1788913150012.jsonl",
+          "data-1788914012271.jsonl",
+          "data-current.jsonl"
+        ]
+      },
+      "skill_activity": {
+        "archive_triggered": false,
+        "archive_count_delta": 0,
+        "extraction_observed_by_task_end": false,
+        "skills_created_or_updated_observed": [],
+        "retrieval_observed": false,
+        "skill_search_calls": 0,
+        "skill_view_calls": 0,
+        "injection_enabled": true
+      }
+    },
+    {
+      "task_id": "dataclaw-anonymizer-tests",
+      "repo": "peteromallet/dataclaw",
+      "session_id": "swe-together__peteromallet__dataclaw",
+      "task_order": 5,
+      "repo_order": 2,
+      "repo_task_order": 2,
+      "status": "PASS",
+      "current_phase": "verifier",
+      "start_time": "2026-09-09T14:27:12.829327+08:00",
+      "trial_directory": "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\integration\\runs\\swe-together-baseline-v6\\trials\\dataclaw-anonymizer-tests__cu6DpAs",
+      "buffer_before": {
+        "session_id": "swe-together__peteromallet__dataclaw",
+        "exists": true,
+        "path": "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\integration\\runs\\swe-together-baseline-v6\\core-data\\skill_buffer\\usr-cdgx969vst\\team-cdgxm2dzka\\agt-cdgxy3kk5z\\swe-together__peteromallet__dataclaw",
+        "tool_call_count": 8,
+        "byte_count": 14162,
+        "last_archived_at_ms": 1788914012271,
+        "archive_count": 6,
+        "archives": [
+          "data-1788894278699.jsonl",
+          "data-1788894464099.jsonl",
+          "data-1788912686548.jsonl",
+          "data-1788913150012.jsonl",
+          "data-1788914012271.jsonl",
+          "data-current.jsonl"
+        ]
+      },
+      "end_time": "2026-09-09T14:27:13.072289+08:00",
+      "reward": 1.0,
+      "passed": true,
+      "user_turns": 1,
+      "user_simulator_calls": 4,
+      "user_simulator_real_followups": 0,
+      "tool_calls": 153,
+      "model_calls": 127,
+      "token_usage": {
+        "input_tokens": 13729605,
+        "cache_tokens": 0,
+        "output_tokens": 118828
+      },
+      "agent_latency_seconds": 1657.187484,
+      "verifier_status": "completed",
+      "error_category": null,
+      "error_message": null,
+      "buffer_after": {
+        "session_id": "swe-together__peteromallet__dataclaw",
+        "exists": true,
+        "path": "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\integration\\runs\\swe-together-baseline-v6\\core-data\\skill_buffer\\usr-cdgx969vst\\team-cdgxm2dzka\\agt-cdgxy3kk5z\\swe-together__peteromallet__dataclaw",
+        "tool_call_count": 8,
+        "byte_count": 14162,
+        "last_archived_at_ms": 1788914012271,
+        "archive_count": 6,
+        "archives": [
+          "data-1788894278699.jsonl",
+          "data-1788894464099.jsonl",
+          "data-1788912686548.jsonl",
+          "data-1788913150012.jsonl",
+          "data-1788914012271.jsonl",
+          "data-current.jsonl"
+        ]
+      },
+      "skill_activity": {
+        "archive_triggered": false,
+        "archive_count_delta": 0,
+        "extraction_observed_by_task_end": false,
+        "skills_created_or_updated_observed": [],
+        "retrieval_observed": false,
+        "skill_search_calls": 0,
+        "skill_view_calls": 1,
+        "injection_enabled": true
+      }
+    },
+    {
+      "task_id": "gemini-voyager-task-64c72f",
+      "repo": "nagi-ovo/gemini-voyager",
+      "session_id": "swe-together__nagi-ovo__gemini-voyager",
+      "task_order": 6,
+      "repo_order": 3,
+      "repo_task_order": 1,
+      "status": "FAIL",
+      "current_phase": "verifier",
+      "start_time": "2026-09-09T14:28:14.249321+08:00",
+      "trial_directory": "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\integration\\runs\\swe-together-baseline-v6\\trials\\gemini-voyager-task-64c72f__HXVHCF2",
+      "buffer_before": {
+        "session_id": "swe-together__nagi-ovo__gemini-voyager",
+        "exists": true,
+        "path": "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\integration\\runs\\swe-together-baseline-v6\\core-data\\skill_buffer\\usr-cdgx969vst\\team-cdgxm2dzka\\agt-cdgxy3kk5z\\swe-together__nagi-ovo__gemini-voyager",
+        "tool_call_count": 0,
+        "byte_count": 18024,
+        "last_archived_at_ms": null,
+        "archive_count": 1,
+        "archives": [
+          "data-current.jsonl"
+        ]
+      },
+      "end_time": "2026-09-09T15:05:25.863326+08:00",
+      "reward": 0.0,
+      "passed": false,
+      "user_turns": 2,
+      "user_simulator_calls": 5,
+      "user_simulator_real_followups": 1,
+      "tool_calls": 115,
+      "model_calls": 108,
+      "token_usage": {
+        "input_tokens": 8208194,
+        "cache_tokens": 7731072,
+        "output_tokens": 115582
+      },
+      "agent_latency_seconds": 1700.622601,
+      "verifier_status": "completed",
+      "error_category": null,
+      "error_message": null,
+      "buffer_after": {
+        "session_id": "swe-together__nagi-ovo__gemini-voyager",
+        "exists": true,
+        "path": "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\integration\\runs\\swe-together-baseline-v6\\core-data\\skill_buffer\\usr-cdgx969vst\\team-cdgxm2dzka\\agt-cdgxy3kk5z\\swe-together__nagi-ovo__gemini-voyager",
+        "tool_call_count": 2,
+        "byte_count": 4154,
+        "last_archived_at_ms": 1788937432470,
+        "archive_count": 4,
+        "archives": [
+          "data-1788936941049.jsonl",
+          "data-1788937091874.jsonl",
+          "data-1788937432470.jsonl",
+          "data-current.jsonl"
+        ]
+      },
+      "skill_activity": {
+        "archive_triggered": true,
+        "archive_count_delta": 3,
+        "extraction_observed_by_task_end": true,
+        "skills_created_or_updated_observed": [
+          {
+            "skill_id": "skl-SxO78kcwZ6d3",
+            "version": 1,
+            "name": "gemini-voyager-timeline-self-mutation-loop",
+            "description": "Diagnosis + fix for the Gemini Voyager timeline module (src/pages/content/timeline/manager.ts) MutationObserver self-triggering feedback loop — turn-marker dots twitch/re-render continuously while hovered and dot clicks are intermittently swallowed. Use when a user reports hovering a timeline node makes it \"twitch\" (抽搐) or clicks sometimes do nothing on the conversation-scroll timeline."
+          }
+        ],
+        "retrieval_observed": false,
+        "skill_search_calls": 0,
+        "skill_view_calls": 0,
+        "injection_enabled": true
+      }
+    },
+    {
+      "task_id": "gemini-voyager-task-f519c2",
+      "repo": "nagi-ovo/gemini-voyager",
+      "session_id": "swe-together__nagi-ovo__gemini-voyager",
+      "task_order": 7,
+      "repo_order": 3,
+      "repo_task_order": 2,
+      "status": "FAIL",
+      "current_phase": "verifier",
+      "start_time": "2026-09-09T15:05:25.865765+08:00",
+      "trial_directory": "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\integration\\runs\\swe-together-baseline-v6\\trials\\gemini-voyager-task-f519c2__3sXHsrT",
+      "buffer_before": {
+        "session_id": "swe-together__nagi-ovo__gemini-voyager",
+        "exists": true,
+        "path": "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\integration\\runs\\swe-together-baseline-v6\\core-data\\skill_buffer\\usr-cdgx969vst\\team-cdgxm2dzka\\agt-cdgxy3kk5z\\swe-together__nagi-ovo__gemini-voyager",
+        "tool_call_count": 2,
+        "byte_count": 4154,
+        "last_archived_at_ms": 1788937432470,
+        "archive_count": 4,
+        "archives": [
+          "data-1788936941049.jsonl",
+          "data-1788937091874.jsonl",
+          "data-1788937432470.jsonl",
+          "data-current.jsonl"
+        ]
+      },
+      "end_time": "2026-09-09T15:40:27.551917+08:00",
+      "reward": 0.0,
+      "passed": false,
+      "user_turns": 3,
+      "user_simulator_calls": 3,
+      "user_simulator_real_followups": 2,
+      "tool_calls": 112,
+      "model_calls": 112,
+      "token_usage": {
+        "input_tokens": null,
+        "cache_tokens": null,
+        "output_tokens": null
+      },
+      "agent_latency_seconds": 1800.804319,
+      "verifier_status": "completed",
+      "error_category": null,
+      "error_message": "Agent execution timed out after 1800.0 seconds",
+      "buffer_after": {
+        "session_id": "swe-together__nagi-ovo__gemini-voyager",
+        "exists": true,
+        "path": "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\integration\\runs\\swe-together-baseline-v6\\core-data\\skill_buffer\\usr-cdgx969vst\\team-cdgxm2dzka\\agt-cdgxy3kk5z\\swe-together__nagi-ovo__gemini-voyager",
+        "tool_call_count": 8,
+        "byte_count": 7588,
+        "last_archived_at_ms": 1788939435046,
+        "archive_count": 6,
+        "archives": [
+          "data-1788936941049.jsonl",
+          "data-1788937091874.jsonl",
+          "data-1788937432470.jsonl",
+          "data-1788938681743.jsonl",
+          "data-1788939435046.jsonl",
+          "data-current.jsonl"
+        ]
+      },
+      "skill_activity": {
+        "archive_triggered": true,
+        "archive_count_delta": 2,
+        "extraction_observed_by_task_end": true,
+        "skills_created_or_updated_observed": [
+          {
+            "skill_id": "skl-nhZBd7pkNXzr",
+            "version": 2,
+            "name": "gemini-voyager-folder-drag-drop-triage",
+            "description": "Diagnosis + fix for Gemini Voyager folder drag-and-drop (src/pages/content/folder/manager.ts) — use when a user reports a conversation can only be dropped exactly ON the folder row/title and not into an expanded folder's conversation list, when Recent (native sidebar) conversations won't drag into a folder, when the folder area turns/stays blue (drop-target style) after a drop and nothing happens, OR when the drop succeeds but always lands at the END of the folder instead of the chosen row position."
+          }
+        ],
+        "retrieval_observed": false,
+        "skill_search_calls": 0,
+        "skill_view_calls": 0,
+        "injection_enabled": true
+      }
+    }
+  ],
+  "status": "COMPLETED",
+  "ports": {
+    "core": 49420,
+    "proxy": 49096,
+    "session_adapter": 49097
+  },
+  "service_mode": "resumed",
+  "runner": {
+    "command": [
+      "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\.venv\\Scripts\\python.exe",
+      "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\src\\run_eval.py",
+      "--model",
+      "deepseek/deepseek-v4-flash",
+      "--user-model",
+      "deepseek/deepseek-v4-flash",
+      "--tag",
+      "swe-together-baseline-v6",
+      "--agent-type",
+      "claude-code",
+      "--env-type",
+      "docker",
+      "--workers",
+      "1",
+      "--agent-timeout",
+      "1800",
+      "--tasks",
+      "cli-task-0ec2e9,cli-task-2f5833,cli-task-cd4662,dataclaw-windows-path-fix,dataclaw-anonymizer-tests,gemini-voyager-task-64c72f,gemini-voyager-task-f519c2",
+      "--trials-dir",
+      "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\integration\\runs\\swe-together-baseline-v6\\trials",
+      "--agent-proxy-descriptor",
+      "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\integration\\runs\\swe-together-baseline-v6\\private\\agent-proxy.json",
+      "--repo-sessions",
+      "--skip-existing"
+    ],
+    "stdout": "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\integration\\runs\\swe-together-baseline-v6\\runner.stdout.log",
+    "stderr": "D:\\Desktop\\TencentDB-Agent-Memory\\SWE-Together\\integration\\runs\\swe-together-baseline-v6\\runner.stderr.log",
+    "preexisting_trials_ignored_unless_verified": 13,
+    "pid": 33092,
+    "started_at": "2026-09-09T14:27:11.563160+08:00",
+    "exit_code": 0,
+    "ended_at": "2026-09-09T15:40:32.588871+08:00"
+  },
+  "usage_guard": {
+    "input_token_budget": 8000000,
+    "min_cache_hit_ratio": 0.6,
+    "cache_check_after_requests": 6,
+    "baseline": {
+      "total_input_tokens": 61021796,
+      "total_cache_read_tokens": 8879360,
+      "requests": 721,
+      "cache_hit_requests": 101,
+      "cache_hit_ratio": 0.14008321775312066,
+      "cache_hit_token_ratio": 0.12702736990501273,
+      "provider_402_errors": 17
+    },
+    "status": "MONITORING",
+    "new_requests": 237,
+    "uncached_input_tokens": 1992343,
+    "cache_read_input_tokens": 19390080,
+    "cache_hit_token_ratio": 0.9068233286751459,
+    "new_provider_402": false,
+    "budget_exceeded": false,
+    "cache_ratio_failed": false,
+    "updated_at": "2026-09-09T15:40:27.581313+08:00"
+  },
+  "end_time": "2026-09-09T15:40:32.623977+08:00",
+  "final_skill_heads": [
+    {
+      "skill_id": "skl-AEBSNfaaSZdM",
+      "version": 8,
+      "name": "dataclaw-windows-support",
+      "description": "Windows-compatibility audit findings, implemented fixes, and remaining verification for the banodoco/dataclaw Python CLI (parses Claude/Codex/Gemini/OpenCode/Kimi session logs, anonymizes, exports to Hugging Face). Use when asked what changes are needed to support Windows on this repo, when implementing/verifying those fixes, or when editing parser/cli/config text I/O or path logic for cross-platform safety."
+    },
+    {
+      "skill_id": "skl-AjPZ99d67eQ3",
+      "version": 5,
+      "name": "entire-cli-checkpoint-id-lifecycle",
+      "description": "Map of the Entire CLI (github.com/entireio/cli) checkpoint-ID lifecycle in the manual-commit shadow-branch strategy — use when a user reports two consecutive commits (manual or agent) sharing the same Entire-Checkpoint trailer/id, or when tracing how PrepareCommitMsg/PostCommit mint vs. reuse checkpoint IDs."
+    },
+    {
+      "skill_id": "skl-qQNUOcZI96Pb",
+      "version": 6,
+      "name": "entire-cli-opencode-save-step-flow",
+      "description": "Map of the Entire CLI (github.com/entireio/cli) opencode agent integration and the shadow-branch SaveStep checkpoint flow — use when debugging why no shadow branch / checkpoint is created for an agent session, or when asked to trace hooks → lifecycle → strategy."
+    },
+    {
+      "skill_id": "skl-nhZBd7pkNXzr",
+      "version": 2,
+      "name": "gemini-voyager-folder-drag-drop-triage",
+      "description": "Diagnosis + fix for Gemini Voyager folder drag-and-drop (src/pages/content/folder/manager.ts) — use when a user reports a conversation can only be dropped exactly ON the folder row/title and not into an expanded folder's conversation list, when Recent (native sidebar) conversations won't drag into a folder, when the folder area turns/stays blue (drop-target style) after a drop and nothing happens, OR when the drop succeeds but always lands at the END of the folder instead of the chosen row position."
+    },
+    {
+      "skill_id": "skl-SxO78kcwZ6d3",
+      "version": 1,
+      "name": "gemini-voyager-timeline-self-mutation-loop",
+      "description": "Diagnosis + fix for the Gemini Voyager timeline module (src/pages/content/timeline/manager.ts) MutationObserver self-triggering feedback loop — turn-marker dots twitch/re-render continuously while hovered and dot clicks are intermittently swallowed. Use when a user reports hovering a timeline node makes it \"twitch\" (抽搐) or clicks sometimes do nothing on the conversation-scroll timeline."
+    }
+  ]
+}

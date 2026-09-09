@@ -1,371 +1,368 @@
+# 基于 Task 优化 Skill 链路
 
-<div align="center">
+> 本仓库基于 [TencentCloud/TencentDB-Agent-Memory](https://github.com/TencentCloud/TencentDB-Agent-Memory) 开展实验性优化。代码仓库：<https://github.com/newlys/TencentDB-Agent-Memory>。
 
-<img src="./assets/images/logo.png" alt="TencentDB Agent Memory" width="880" />
-
-### Agents remember. Humans innovate.
-
-<a href="https://trendshift.io/repositories/29310?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-29310" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/repositories/29310" alt="TencentCloud%2FTencentDB-Agent-Memory | Trendshift" width="250" height="55"/></a>
-
-[![npm](https://img.shields.io/npm/v/@tencentdb-agent-memory/memory-tencentdb?color=blue)](https://www.npmjs.com/package/@tencentdb-agent-memory/memory-tencentdb)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
-[![Node](https://img.shields.io/badge/node-%3E=22.16-brightgreen)](https://nodejs.org/)
-[![OpenClaw](https://img.shields.io/badge/OpenClaw-%3E=2026.3.13-orange)](https://github.com/openclaw/openclaw)
-[![Hermes](https://img.shields.io/badge/Hermes-Gateway-7B61FF)](https://hermes-agent.nousresearch.com/docs/)
-[![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/dJQM6mKMF)
-
-[Installation](#installation) · [Supported Agents](#all-agents-share-the-same-memory-server) · [What is it?](#what-is-tencentdb-agent-memory) · [Team Play](#one-play-style-build-a-growing-agent-team-for-a-one-person-company) · [Technical Implementation](#technical-implementation) · [Benchmark](#benchmark) · [Roadmap](#roadmap)
-
-[**English**](./README.md) · [简体中文](./README_CN.md)
-
-</div>
-
----
-
-> **Latest:** Team Memory Beta is evolving quickly — install it and start exploring in minutes.
-
-<td>
-   <video src="https://github.com/user-attachments/assets/efb1a808-1f86-4cfe-802c-f7453f7ca938" width="100%" controls autoplay loop muted playsinline></video>
-</td>
-
-# Installation
-
-Start all three services in one go (`memory-core` + `memory-hub` + `proxy`):
-
-```bash
-git clone https://github.com/Tencent/TencentDB-Agent-Memory.git
-cd TencentDB-Agent-Memory/deploy/global-images
-cp .env.example .env
-$EDITOR .env       # Fill in two sets of LLM parameters (memory group + proxy group)
-./start-all.sh     # Launch everything with one command; when finished, it prints a one-liner you can paste directly into Claude
-```
-
-Open the panel: [http://localhost:8125](http://localhost:8125).
-
-Complete installation documentation (standalone Memory Hub deployment, Proxy + Claude Code / CodeBuddy usage, stop and cleanup, port reference, etc.) is available in [**INSTALL.md**](./INSTALL.md) (中文: [INSTALL_CN.md](./INSTALL_CN.md)).
-
-### Migrating data from an older version
-
-If you're already on an older release (v1.x / v0.x) and want to bring your existing data over to v2.0.0+, we provide a migration tool:
-
-See [**Data Migration Tool (v2 → v3)**](./MemoryCore/scripts/migrate-v2-to-v3/README.md) for full usage and flags. New installations can skip this.
-
-## All Agents Share the Same Memory Server
-
-One Proxy, unchanged protocol, zero-code integration — point the Agent's base URL to the Proxy and it's done. No plugin, hook, or MCP server is required.
-
-<table>
-<tr>
-<td align="center" width="140"><a href="./INSTALL.md#using-proxy-with-deepseek-harness-dsh"><img src="./assets/images/agents/dsh.png" width="48" height="48" /><br /><sub><b>DeepSeek Harness</b></sub></a></td>
-<td align="center" width="140"><a href="./INSTALL.md#using-proxy-with-claude-code"><img src="./assets/images/agents/claude-code.png" width="48" height="48" /><br /><sub><b>Claude Code</b></sub></a></td>
-<td align="center" width="140"><a href="./INSTALL.md#using-proxy-with-codex"><img src="./assets/images/agents/codex.png" width="48" height="48" /><br /><sub><b>Codex</b></sub></a></td>
-<td align="center" width="140"><a href="./INSTALL.md#using-proxy-with-codebuddy"><img src="./assets/images/agents/codebuddy.png" width="48" height="48" /><br /><sub><b>CodeBuddy</b></sub></a></td>
-</tr>
-<tr>
-<td align="center" width="140"><a href="./INSTALL.md#using-proxy-with-workbuddy"><img src="./assets/images/agents/workbuddy.png" width="48" height="48" /><br /><sub><b>WorkBuddy</b></sub></a></td>
-<td align="center" width="140"><a href="./INSTALL.md#using-proxy-with-hermes"><img src="./assets/images/agents/hermes.png" width="48" height="48" /><br /><sub><b>Hermes</b></sub></a></td>
-<td align="center" width="140"><a href="./INSTALL.md#using-proxy-with-openclaw"><img src="./assets/images/agents/openclaw.png" width="48" height="48" /><br /><sub><b>OpenClaw</b></sub></a></td>
-<td align="center" width="140"><a href="./INSTALL.md#using-proxy-with-other-platforms-generic"><sub><b>More frameworks coming soon...</b></sub></a></td>
-</tr>
-</table>
-
-See [**INSTALL.md**](./INSTALL.md) for the exact configuration steps of each client.
-
-Don't see your favorite Agent? You can try adapting it yourself with the [Generic integration guide](./INSTALL.md#using-proxy-with-other-platforms-generic) — and we'd love a PR adding native support for it. See [**CONTRIBUTING.md**](./CONTRIBUTING.md) to get started.
-
-# What is TencentDB Agent Memory?
-
-We started from a practical question: **How do you reduce repetitive work when using Agents?**
-
-If project context has already been explained, it shouldn't need to be repeated in a new session. If documents have already been read, every Agent shouldn't have to start again from page one. A workflow that already works shouldn't have to be rediscovered next time.
-
-Memory here means more than just "remembering conversations." **Any information that helps the next Agent avoid reinventing the wheel should be saved, organized, and reused.**
+本工作研究 **Task-aware Skill**：在持续 Coding Session 中先识别可独立完成的 Task，再围绕 Task 提取、检索和注入可执行 SOP。目标不是保存更多 Skill，而是减少多个目标混入同一 Skill，并让后续真正匹配的任务在开始探索前获得可复用流程。
 
 ```text
-Existing information → Reusable memory assets → Fewer turns → Less rework → More stable results and higher efficiency
+连续用户交互
+    ↓
+Task Boundary
+    ↓
+Task-scoped SOP Extraction
+    ↓
+Skill Store
+    ↓
+新 Task 到来
+    ↓
+Task-scoped Retrieval / Selection
+    ↓
+Pre-agent Skill Materialization
+    ↓
+Coding Agent
 ```
 
-### Let experience accumulate, flow, and pass on to the next Agent
+## 1. 方法
 
-**Memory Hub** for Agent teams closes the loop across the entire experience lifecycle: work produces assets, assets circulate through the team, and new members can load the team's save file on day one.
+最终方法只围绕 Skill 链路增加三项 Task-aware 能力，原生 Skill 存储、异步 Worker 和工具接口继续复用 TencentDB-Agent-Memory。
 
-1. **Automatic asset extraction**: Extract Chat Memory and Skills from conversations and tasks; convert documents and code into Wiki and CodeGraph; then manage, review, and route them consistently.
-2. **Portable & multi-Agent compatible**: Memory assets are decoupled from Agent frameworks — they can move across frameworks and be shared and maintained by multiple Agents and team members.
-3. **Cold-start friendly**: Import existing documents, codebases, and Agent conversation sessions. New Agent teams can start from existing experience instead of learning from scratch.
+### 1.1 Query-only Task Boundary
 
-### 🧠 A brain that remembers people and context
-
-- **Chat Memory** retains preferences, facts, decisions, and interaction history.
-- Each Agent automatically gets its own memory when created — no need to re-introduce yourself next time.
-- L0 Conversation → L1 Atom → L2 Scenario → L3 Persona — raw conversations are distilled layer by layer.
-
-<img width="" src="assets/images/chat_memory.png" alt="image.png" />
-
-> "Don't refactor the old auth module — mobile is still using it." — Context this costly shouldn't depend on humans repeating it every time.
-
-### ⚡ A Skill library that accumulates expertise
-
-- After completing complex work, Agents can extract and manage reusable Skills from conversations and tool calls, and import them into the context of a designated Agent when needed.
-- A Skill isn't just a prompt snippet; it has versions, resource files, trigger boundaries, execution steps, and validation rules.
-- Personal Skills are private by default; after review, they can be shared with the team and assigned to other Agents.
-
-<img width="" src="assets/images/skill.png" alt="image.png" />
-
-> Troubleshooting, code review, release checklists — learn it once, and the whole team can use it.
-
-### 📖 A knowledge map that reads both docs and code
-
-- **Wiki** turns product docs, design specs, and ops runbooks into structured pages with a link graph. (Inspired by Karpathy's LLM knowledge base.)
-
-<img src="./assets/images/wiki.png" alt="image.png" />
-
-- **CodeGraph** indexes code symbols, files, call relationships, and impact paths.
-<img width="" src="assets/images/codegraph.png" alt="image.png" />
-
-- Agents can search, read, inspect callers/callees, and perform impact analysis before modifying code.
-
-> Wiki keeps Agents from reading every file list before getting to work. CodeGraph doesn't just tell them "the code is here" — it tells them "changing this might affect those."
-
-### 🛡️ A team memory panel controlled by humans
-
-- Create teams and Agents in Memory Hub; review, share, and equip memory assets.
-- Manage ownership, versions, status, visibility, usage counts, and Agent bindings in one place.
-- `private` belongs strictly to the Owner; `team` is visible to all team members; `restricted` grants precise access via User / Role / Agent ACLs.
-- Two role layers: **global System Admin** manages users and teams (creating teams, adding members) and can also use Wiki, CodeGraph, Skill, and other asset management features; **Team-level roles** include Admin (team manager) and Member (regular member), responsible for asset collaboration and access control within a team. Asset ownership is tracked via Owner — the Owner automatically has management permissions for their assets.
-
-<img width="" src="assets/images/asset.png" alt="image.png" />
-
-
-## Cold Start: Load the Save File, Then Get to Work
-
-Most Agents' first task is re-learning your project. TencentDB Agent Memory turns the learning cost you've already paid into a save file:
-
-<img alt="Cold Start: import codebase, docs, and history into Memory Hub" src="assets/images/flowchart3.png" />
-
-Specifically, these existing assets can be imported directly and processed automatically in the panel:
-
-- **Codebases**: Import existing repositories — **CodeGraph** automatically indexes symbols, files, call relationships, and impact paths.
-- **Documents & files**: Import relevant docs and files — **Wiki** automatically generates structured pages with a link graph.
-- **Conversation sessions**: Import past Agent conversation sessions — **Skills and Chat Memory** are automatically extracted as reusable assets.
-
-> Stop retraining every Agent. Give it the save file.
-
-## One Play Style: Build a Growing Agent Team for a One-Person Company
-
-Open Memory Hub and create a team:
+Task-aware 模式根据用户 Query 判断：
 
 ```text
-Tiny but Serious Inc.
-├── 👤 You · Set goals / Make decisions
-├── 🔭 Scout · Research / Find opportunities
-├── 🛠 Builder · Write code / Build products
-├── 🧪 Reviewer · Test / Find issues
-└── 🧠 Agent Memory · Preserve the team's experience
+当前 Task 最近的 User Queries + 当前 User Query
+→ same_task / new_task
 ```
 
-You're not opening four disconnected chat windows — you're assembling a squad with different roles that can inherit the team's accumulated experience.
+`new_task` 时异步归档上一 Task；`same_task` 时继续累计。Boundary 不接收 benchmark task ID、grader、Gold patch、SOP family 或 Assistant/Tool 轨迹。
 
-### Recruit first, then equip
+主要实现：
+
+- [`MemoryCore/src/offload_server/prompts/task-boundary-prompt.ts`](MemoryCore/src/offload_server/prompts/task-boundary-prompt.ts)
+- [`MemoryCore/src/offload_server/parsers/task-boundary-parser.ts`](MemoryCore/src/offload_server/parsers/task-boundary-parser.ts)
+- [`experiments/query-boundary-l15-v1/live-query-boundary.ts`](experiments/query-boundary-l15-v1/live-query-boundary.ts)
+
+### 1.2 Task-scoped SOP Extraction
+
+每次 Reviewer 面向一个预测 Task 的完整轨迹及 anchor query，只提取未来 Agent 可以执行和复用的 SOP/workflow。Skill 应描述：
 
 ```text
-🔭 Scout
-   ├── User interview Chat Memory
-   ├── Market research Wiki
-   └── Competitive analysis Skill
-
-🛠 Builder
-   ├── Product Wiki
-   ├── Project CodeGraph
-   └── Feature Delivery Skill
-
-🧪 Reviewer
-   ├── Historical incident Chat Memory
-   ├── Project CodeGraph
-   └── Release Checklist Skill
+Applicability / Preconditions
+→ Ordered Workflow
+→ Decision Rules
+→ Validation
+→ Failure Handling / Rollback
 ```
 
-Different roles, different loadouts. Less noise — give each Agent the memory assets it actually needs to get work done.
+仓库背景和用户偏好暂不考虑为 Skill；只有直接约束 SOP 时才作为上下文保留。Skill 身份由：
 
-**The company can be tiny. Experience can compound forever.**
+```text
+intended outcome + applicability + core workflow
+```
 
-## Memory Assets, Not a Chat Log Warehouse
+决定，而不是 Repository、Framework、Task ID、文件名或一次故障。创建前检查既有 Skill；同 SOP 优先 UPDATE；单个预测 Task 最多一次主要 Skill mutation；一次性局部修改返回 `Nothing to save`。
 
-RAG answers "what can be found?" Team Memory also answers "who can use it, which version is valid, and which Agent should receive it."
+主要实现：
 
-| | Chat History | Standard RAG | TencentDB Agent Memory |
-| :--- | :---: | :---: | :---: |
-| Cross-session user understanding | △ | △ | ✅ Chat Memory |
-| Distilled executable experience | — | — | ✅ Skill |
-| Document structure & relationships | — | △ Chunk retrieval | ✅ Wiki + Link Graph |
-| Code call graphs & impact scope | — | △ Text match | ✅ CodeGraph |
-| Ownership / Version / Status | — | — | ✅ |
-| Team sharing & Agent loadout | — | — | ✅ |
-| Private / Team / ACL | — | △ | ✅ |
+- [`MemoryCore/src/core/skill/prompts/skill-review-prompt-task-sop-v2.ts`](MemoryCore/src/core/skill/prompts/skill-review-prompt-task-sop-v2.ts)
+- [`MemoryCore/src/core/skill/skill-extractor.ts`](MemoryCore/src/core/skill/skill-extractor.ts)
+- [`MemoryCore/src/core/skill/skill-config.ts`](MemoryCore/src/core/skill/skill-config.ts)
+- [`MemoryCore/src/core/tdai-core.ts`](MemoryCore/src/core/tdai-core.ts)
 
-## Memory Hub Is Not a Display Board — It's a Control Panel
+### 1.3 Task-scoped Skill Consumption
 
-| Play Style | What you do in the Hub |
-| :--- | :--- |
-| **Team Up** | Create teams, add people and Agents, define sharing boundaries |
-| **Asset Library** | Browse, search, review, and manage Chat Memory, Skills, Wiki, and CodeGraph |
-| **Agent Loadout** | Bind different memory assets to different Agents; adjust priority and usage mode |
-| **Knowledge Workshop** | Build Wiki and CodeGraph; monitor processing status and asset metadata |
-| **Access Control** | Switch between private, team, and ACL-based access; revoke sharing when needed |
+原生 Baseline 在 Session 上下文中暴露可用 Skill，由 Agent 自主 `skill_view`。最终方法将 listing 生命周期缩小到当前 Task：
 
-When you open an asset, what matters is not just "what it says," but also "where it came from, which version it is, who it's assigned to, and whether it's been used recently."
+```text
+Current Task Anchor
+→ BM25 Top-3
+→ Task-only Selector
+→ 最多选择一个 Skill
+→ 读取完整 Skill
+→ 压缩 Workflow / Decision / Validation
+→ Agent 首次仓库操作前注入
+```
 
-## Every Loop Gains Experience
+这解决了早期版本中“检索正确但 Agent 没有调用 `skill_view`”的问题。Task-aware 模式通过兼容配置关闭 Session 初始 `<available_skills>` / `<skill_tools>`，不自动修改其他变体。
 
-<img alt="Every Loop Gains Experience: continuous accumulation, making every use smarter" src="assets/images/flowchart4.png" />
+主要实现：
 
-Memory doesn't run the Agent loop; it ensures the next iteration inherits the previous one's results: valuable interactions stay in Chat Memory, proven workflows are distilled into Skills, and document/code changes are updated through Wiki ingest and CodeGraph sync.
+- [`MemoryProxy/src/config.ts`](MemoryProxy/src/config.ts)
+- [`MemoryProxy/src/injection/index.ts`](MemoryProxy/src/injection/index.ts)
+- [`experiments/longitudinal-benchmark/longitudinal_driver.py`](experiments/longitudinal-benchmark/longitudinal_driver.py)
+- [`benchmarks/swe-together/overlay/integration/ours_v3_controller.py`](benchmarks/swe-together/overlay/integration/ours_v3_controller.py)
 
-**Without Memory, loops may just repeat faster. With inherited memory, each iteration has the chance to be better than the last.**
+### 1.4 版本演进
 
-## One Agent Team: Shared Experience, Not Shared Privacy
+文档版本与实验目录中的历史名称对应如下：
 
-New Chat Memory and Skills are private by default. Sharing is an explicit action, not a default leak.
+| 报告版本 | 核心变化 |
+|---|---|
+| Ours_v0 |  | Boundary 切分 Task；在边界异步归档；仍依赖 Agent 主动 search/view。 |
+| Ours_v1 | 增加 SOP-only Reviewer、机制级命名、单 Task 主要写入限制和 Task-scoped listing。 |
+| Ours_v2 |  | 增加消费控制器：Driver 检索、轻量选择、物化并在 Agent 工作前注入，不再依赖 Agent 主动 view。 |
 
-| Visibility | Semantics |
-| :--- | :--- |
-| `private` | Only the Owner can read — not even team admins |
-| `team` | Team members can read; the Owner / Admin can manage |
-| `restricted` | Precise access via User / Role / Agent ACL |
-| `agent` | For targeted equipping of Agents within the same team |
+更完整的实现和复现说明：
 
-You can assign the "Release Skill" to the Release Agent, the "Architecture Wiki" to all development Agents, and CodeGraph to Coder and Reviewer.
+- [方法说明](benchmarks/METHOD.md)
+- [Benchmark 总入口](benchmarks/README.md)
 
-## Technical Implementation
+## 2. 测评集合
 
-TencentDB Agent Memory doesn't aim to "store everything." It solves three problems: **what's worth keeping, who can use it, and how to retrieve less while retrieving the right things next time.**
+### 2.1 测评集 A：Custom Longitudinal SOP Benchmark
 
-<img alt="Technical overview: layering (L0–L3), Memory Assets, Memory Hub, identity-based assembly for Agents" src="assets/images/flowchart5.png" />
+自建测评集用于定向检查 Boundary、SOP 提取和跨 Task/跨 Repository 复用：
 
-### 1. Memory isn't flat records — it grows in layers
+| 项目 | 数量 |
+|---|---:|
+| Repository | 3（Click、Flask、FastAPI） |
+| 正式 Task | 18 |
+| SOP Task | 15 |
+| 人工预期 SOP Family | 7 |
+| 具有前序复用机会的 Transfer Task | 8 |
+| Non-SOP Task | 3 |
+| Noise / contextual events | 8 |
 
-Conversations are first saved as L0, then refined by an async pipeline into multiple levels of granularity:
+每个 Task 固定：
 
-| Layer | What it stores | Primary use |
-| :--- | :--- | :--- |
-| **L0 Conversation** | Raw conversations with full context | Verify exact wording, timestamps, and sources |
-| **L1 Atom** | Facts, preferences, constraints, and events extracted from conversations | Precise recall of actionable information |
-| **L2 Scenario** | Knowledge blocks organized around projects or scenarios | Quickly restore a working context |
-| **L3 Core / Persona** | Long-term profiles, stable patterns, and high-level cognition | Let Agents rapidly enter a user's and team's context |
+```text
+Pinned Base Commit
+→ Damage Patch
+→ Initial Query
+→ Agent
+→ Hidden Grader
+→ Oracle Feedback（若仍可继续）
+→ PASS / FAIL
+```
 
-Both generation and retrieval are layered: normally, L2/L3 provide a quick context bootstrap; when specific facts are needed, BM25 + vector retrieval + RRF fall back to L1/L0. Results are further capped by item count, character budget, and timeout limits to prevent memory from overwhelming the context window.
+Gold Patch 只用于验证 `Broken FAIL → Gold PASS → Reset FAIL`，不提供给 Agent、Boundary、Reviewer 或检索器。不同 Task 的工作树独立恢复，Memory/Skill Session 按 Repository 连续。
 
-### 2. Memory isn't a global prompt — it's the Agent's loadout
+详见 [Custom Benchmark](benchmarks/custom-platform/README.md)。
 
-Chat Memory, Skills, Wiki, and CodeGraph are all registered uniformly as Memory Assets. Memory Hub uses **Fixed Binding + ACL** to determine which assets a given Agent can use: first narrow the permission scope by Team, User, Agent, and visibility, then retrieve based on the current query.
+### 2.2 测评集 B：SWE-Together
 
-This lets teams share experience without exposing all their private information; switching Agents or frameworks only requires re-equipping, not retraining.
+盲测使用 SWE-Together 的冻结子集：
 
-### 3. Knowledge isn't injected wholesale — it's called on demand
+| 项目 | 数量 |
+|---|---:|
+| Repository | 3（entireio/cli、peteromallet/dataclaw、nagi-ovo/gemini-voyager） |
+| Task | 7 |
 
-Documents are organized into searchable Wiki pages that support link-graph drill-down; codebases are indexed into CodeGraph assets containing files, symbols, and call relationships. Agents first discover capabilities via `/v3/tools/list`, then use `/v3/tools/call` to read relevant pages, source code, or impact paths.
+原始 Instruction、Docker、Base Commit、User Simulator 和 Verifier 均保持不变。Claude Code 经 TencentDB-Agent-Memory Proxy 调用上游模型；User Simulator 独立调用模型，不读取实验组 Skill。
 
-This makes documents and code part of memory as well — but they remain available tools that only enter context when truly needed.
+选择 SWE-Together 而不是仅使用 SWE-bench 类静态 Issue-to-Patch 数据，是因为本研究需要观察真实的多轮用户 turn 、需求追加和 Task切换。SWE-Together 的 User Simulator 能在 Agent执行过程中自动生成后续用户回复。
 
-## Benchmark
+这 7 题按 Repository 连续运行，但它们只是探索性主题分组，**不是人工 Gold 标注的同 SOP transfer families**。
 
-| Benchmark | Without TencentDB Agent Memory | With it enabled | Relative improvement |
-| :--- | :---: | :---: | :---: |
-| **PersonaMem** | 48% | **76%** | **+59%** |
+详见 [SWE-Together Integration](benchmarks/swe-together/README.md)。
 
-PersonaMem tests whether an Agent can correctly understand and apply user information after extended interactions.
+## 3. 实验协议与公平性
 
-## Notes
+### 3.1 统一调用链
 
-- Wiki and CodeGraph are built asynchronously; allow some processing time before they reach `ready` status.
-- CodeGraph currently prioritizes public HTTPS repositories; support for private repositories and SSH credentials is still being refined.
-- The Hub supports manual asset binding; fully automated memory routing is still under iteration.
+```text
+Benchmark → Claude Code CLI → MemoryProxy → deepseek-v4-flash
 
-## Related Documentation
+SWE-Together User Simulator → deepseek-v4-flash（独立链路）
+```
 
-- [Roadmap](./ROADMAP.md) (what we're building next)
-- [Full Installation Guide](./INSTALL.md) (Memory Core + Hub + Proxy one-click deployment)
-- [Roadmap](./ROADMAP.md) (what we're building next; 中文: [ROADMAP_CN.md](./ROADMAP_CN.md))
-- [Data Migration Tool (v2 → v3)](./MemoryCore/scripts/migrate-v2-to-v3/README.md) (if you're on an older release and want to migrate existing data)
-- [Knowledge OpenAPI](./MemoryKnowledge/openapi.yaml)
-- [Contributing Guide](./CONTRIBUTING.md)
+### 3.2 Session 与环境
 
-Agent Memory doesn't have a settled standard yet. Bug reports, documentation, benchmarks, new framework adapters, and more creative Memory Hub use cases are all welcome.
+- 不同 Repository 使用不同 Proxy/Memory logical session。
+- 同一 Repository 的多个 Task 共享 Proxy/Memory session，使 Buffer 能自然累计。
+- Custom Benchmark 中，一个 Repository 内的 Claude Code 对话使用同一 session ID，后续 Turn 通过 `--resume` 连续。
+- SWE-Together 保留官方独立 Trial/Docker；跨 Task 只共享 Repo 级 Proxy/Memory session，不合并物理代码环境。
+- 每个 Task 使用自己的固定 Base Commit/容器或执行 reset；前一 Task 的代码修改不污染后一 Task。
+- Gold Task Boundary 不发送给 Agent 或 Memory 系统。
+
+### 3.3 Claude Code 隔离
+
+实验使用隔离容器、禁用 MCP 与外部 settings source，并使用实验专属 Session目录；不读取用户机器上的全局 Claude 配置或跨实验持久化 Memory。
+
+### 3.4 成本口径
+
+- `Agent non-cache token = input_tokens + output_tokens`。
+- `Method overhead = Boundary + Extraction + Retrieval/Selector`。
+- “含蒸馏总 Token”使用 Agent non-cache 加 Method overhead。
+- `cache_read_input_tokens` 单独报告，不与新计算 Token 按同一成本直接相加。
+
+## 4. 实验结果
+
+### 4.1 Custom Longitudinal Benchmark（18 Task）
+
+最终严格对比采用：
+
+- Baseline：`long-baseline-extraction-audit-20260909-v1`；
+- Ours：`long-ours-v3-final-r5-20260909`。
+- 轻量结果产物：[Baseline](benchmarks/results/custom-longitudinal/baseline/result.json) / [Ours_v3](benchmarks/results/custom-longitudinal/ours-v3/result.json)。
+
+No-Skill pilot 完成了链路验证，但没有形成与当前换题后18题完全一致的一次完整 run，因此不将不完整结果混入严格总表。
+
+| 指标 | 优化方向 |  | Baseline | Ours |
+|---|---:|---:|---:|---:|
+| 最终任务通过率 | ↑ |  | 18/18（100%） | 18/18（100%） |
+| 首轮 Pass@1 | ↑ |  | **18/18（100%）** | 17/18（94.4%，SK06-T01 多 1 个 User Turn，该题无 Skill 候选，非 Skill 优化直接导致） |
+| 平均 User Turn | ↓ | **1.00** | 1.06 |
+| 平均 Agent Internal Turn | ↓ |  | **26.56** | 38.67 |
+| 平均 Agent non-cache Token | ↓ |  | **93,822** | 127,879 |
+| 平均含蒸馏总 Token | ↓ |  | **167,373** | 180,877 |
+| 平均 Tool Calls | ↓ |  | **25.28** | 38.00 |
+| 最终独立 Skill | 适中 |  | 3 个 Repo级聚合 Skill | 4 个机制级 SOP Skill |
+| 有效 Task提取事件 | 适中 |  | 非 Task口径 | 6/15 SOP Task（4 CREATE、2 UPDATE） |
+| 预期复用任务 Top-3 Recall | ↑ |  | 0 | 5/8（62.5%） |
+| 预期复用任务实际物化 | ↑ |  | 0 | 2/8（25.0%） |
+| 已提取 Skill 后续被物化 | ↑ |  | 0/3 | 2/4（50.0%） |
+
+Skill 机制链路开销对比
+Baseline 原生 Reviewer 的15次可恢复调用共消耗1,323,909 Token；而Ours_v3 在 Task-aware 方法链路上的额外开销为 953,965 Token，其中包括 Boundary 判断、Task-scoped Skill 提取和 Skill 检索：
+
+```text
+Ours Boundary       15,844
+Ours Extraction    926,735
+Ours Retrieval      11,386
+合计                953,965
+```
+
+这里统计的是 Skill 方法侧开销，不包含 Coding Agent 解题 Token。与 Baseline 原生 Skill 提取相比，Ours_v3 的方法侧开销减少 369,944 Token，下降约 27.9%。但 Ours_v3 的 Coding Agent 调用更多，因此将 Agent 解题和方法开销合并后，Ours_v3 的非缓存 Token 并未整体下降。
+
+#### Task Boundary
+
+| 指标 | 结果 |
+|---|---:|
+| 评价事件 | 27 |
+| Boundary Accuracy | 100%（27/27） |
+| Precision | 100% |
+| Recall | 100% |
+| 过切率 | 0%（0/9 same-task events） |
+| 漏切率 | 0%（0/18 new-task events） |
+| Boundary LLM调用 | 24（每个 Repo 首 Query 直接初始化） |
+| 平均 Token / LLM decision | 660 |
+| 平均延迟 / LLM decision | 1.96 s |
+
+早期在 SWE-Together Boundary 样本上探索过向量相似度和硬字段。收益不稳定：同一 Task 的排错、修改、验证 Query 可能语义距离很远，不同 Task 又可能因 Repository和关键词相同而高度相似；硬字段对表达形式敏感，增加复杂度但没有带来稳定增益。因此最终采用 Query-only 目标连续性判断，并通过 Prompt约束而不是向量阈值做决策。
+
+#### Skill 提取质量
+
+Baseline 最终形成：
+
+```text
+click-source-bug-triage
+flask-source-bug-triage
+fastapi-source-bug-triage
+```
+
+原生 SkillExtractor 没有强制添加仓库名；这些名称来自原生 Reviewer 允许 project-specific Skill，且缺少针对跨仓库 SOP 的抽象约束。
+
+Ours 最终形成：
+
+```text
+layered-input-precedence
+all-path-resource-cleanup
+sequence-multivalue-collection
+final-matching-release-cleanup
+```
+
+Ours 将 Repository作为案例证据，而以目标、适用性和 workflow 作为 Skill身份；同机制跨仓库任务可 UPDATE 同一个 Skill。
+
+#### Skill 检索、消费与局部收益
+
+8个预期复用任务中，正确 Skill 进入 Top-3 为5/8，最终在 Agent仓库操作前注入为2/8。主要瓶颈从“Agent不调用 view”转移为“Selector 对跨 Framework候选仍偏保守”。
+
+明确的正向案例 `FL-SK01-T02 → layered-input-precedence`：
+
+| 指标 | Baseline | Ours | 变化 |
+|---|---:|---:|---:|
+| Internal Turns | 29 | 16 | -44.8% |
+| 耗时 | 192 s | 91 s | -52.8% |
+| Agent non-cache input + output | 49.2K | 34.7K | -29.5% |
+
+### 4.2 SWE-Together（3 Repo / 7 Task）
+
+轻量结果产物：[Baseline v6](benchmarks/results/swe-together/baseline-v6/summary.json) / [Ours_v3 r6](benchmarks/results/swe-together/ours-v3-r6/summary.json) / [生成的分析报告](benchmarks/results/swe-together/ours-v3-r6/analysis.md)。
+
+| 指标 | Baseline v6 | Ours_v3 r6 | 变化 |
+|---|---:|---:|---:|
+| PASS | 3/7（42.9%） | **4/7（57.1%）** | +14.3 pp |
+| Reward总和 | 1.644 | **2.410** | +0.766 |
+| 平均 Reward | 0.2349 | **0.3443** | +46.6% |
+| 平均 User Turn | **3.14** | 3.86 | +22.7% |
+| 平均 Model Calls | **110.57** | 118.57 | +7.2% |
+| 平均 Tool Calls | **123.00** | 131.71 | +7.1% |
+| 平均 Agent耗时 | 1,613.9 s | **1,582.1 s** | -2.0% |
+| 平均非缓存 Token |  ——| 约 1.08M/Task | 由于测评环境早期不稳定，存在断点重跑的情况，导致记录丢失 |
+
+Ours 的 Task链路记录：
+
+| 指标 | 结果 |
+|---|---:|
+| 观察 Query | 27 |
+| 预测 Task | 7 |
+| `same_task` | 20 |
+| Boundary Token | 23,261 |
+| Reviewer generations | 8 |
+| Extraction Token | 1,674,392 |
+| 最终机制级 Skill | 4 |
+| Task检索 | 7 |
+| 有候选的检索 | 3 |
+| Selector调用/Token | 3 / 1,189 |
+|  |
+
+最终 Skill包括：
+
+```text
+change-detection-git-status-fallback
+cross-platform-compat-retrofit
+case-insensitive-regex-presence-prefilter
+break-mutation-observer-feedback-loop
+```
+
+Token方面，Baseline v6 由多次在测评平台刚搭建时测评不稳定，丢失了部分 token 数据，部分入选 Trial 运行于缓存修复前且缺少终态 usage；Ours 是缓存健康的新 run。
+
+## 5. 结论与局限
+
+本工作完成了：
+
+```text
+Task Boundary
+→ Task-scoped SOP Extraction
+→ Mechanism-level Skill Identity
+→ Task-scoped Retrieval
+→ Pre-agent Materialization
+```
+
+现有证据支持：
+
+1. 不泄露 Gold边界时，Query-only task 分割可在自建连续轨迹中准确识别 Task切换；
+2. Task-scoped Reviewer 相比 Baseline 更容易产生机制级、跨仓库可复用的 SOP；
+3. 正确 Skill被及时注入时，个别高匹配任务的 Turn、时间和 non-cache Token显著下降；
+
+主要局限：
+
+- 自建集只有18题，Agent轨迹随机性仍会显著影响总体指标；
+- Ours 在 `SK06-T01` 多用了一个 Oracle Turn，真实结果予以保留；
+- 当前 Selector偏保守，正确 Top-3候选并不总能转化为消费；
+- SWE-Together 冻结7题不是 Gold同 SOP transfer set，且 Baseline历史 Trial存在缓存状态混杂；
+- 当前研究集中于 Coding SOP，尚未系统覆盖偏好、长期用户记忆和一般事实性 Memory。
+
+后续需要在更大、明确具有跨 Task SOP复用机会的连续任务集上重复运行，并将缓存健康、异步 Skill可见时间和完整成本采集固定为实验协议。
+
+## 6. 复现
+
+- [Benchmark 总入口](benchmarks/README.md)
+- [方法说明](benchmarks/METHOD.md)
+- [Custom Benchmark 一键入口](benchmarks/custom-platform/README.md)
+- [SWE-Together 一键入口](benchmarks/swe-together/README.md)
+
+核心方法配置：
+
+```text
+variant = ours_v3
+boundary_profile = query_only_l15
+extraction_profile = task_scoped_sop_v2
+retrieval_profile = task_scoped_skill_consumption_v3
+```
 
 ---
-## Roadmap
 
-Current release is **v2.0.0**. Next up (**v2.0.1**): zero-config cold start, faster Wiki generation, user/team custom prompts, Skill export, and Codex (IDE Plan mode) support.
-
-👉 See the full plan in [**ROADMAP.md**](./ROADMAP.md) (中文: [ROADMAP_CN.md](./ROADMAP_CN.md)).
-
----
-## Acknowledgements
-
-TencentDB Agent Memory stands on the shoulders of the open-source community:
-
-- [**CodeGraph**](https://github.com/colbymchenry/codegraph) — our CodeGraph asset module **uses code from this project**. Its design of a pre-indexed code graph is the foundation of our implementation.
-- [**Hermes Agent**](https://github.com/nousresearch/hermes-agent) (Nous Research) — our Skill asset management **uses part of the Skill-related code from Hermes Agent and builds further optimizations base on it**.
-- [**"LLM Wiki"** by Andrej Karpathy](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) — the idea of treating documentation as an LLM-maintained, incrementally growing knowledge artifact directly informed how our Wiki layer is built and kept up to date.
-
-We are grateful to the authors and contributors of these projects.
-
----
-## Community & Contributing
-
-We welcome contributions of all kinds — bug reports, feature suggestions, documentation fixes, benchmark reproductions, ecosystem integrations, or pull requests. Agent memory is far from settled, and we hope to build it together with the community.
-
-- 🐞 **Found a bug or have a question?** Open an issue in [GitHub Issues](https://github.com/Tencent/TencentDB-Agent-Memory/issues) — we respond within 24 hours.
-- 💡 **Have an idea to share?** Start a thread in [GitHub Discussions](https://github.com/Tencent/TencentDB-Agent-Memory/discussions).
-- 🛠️ **Want to contribute code?** Please read [CONTRIBUTING.md](./CONTRIBUTING.md) first.
-- 💬 **Want to chat with us?** Join our [Discord community](https://discord.gg/dJQM6mKMF) and talk to the core developers directly.
-
----
-
-<p align="center">
- Let the path the team has walked become the next Agent's starting line.
-</p>
-
----
-
-## ✨ Contributors
-
-> 💡 Thanks to the following contributors building with us — you make TencentDB Agent Memory better.
-
-<div align="center">
-  <a href="https://github.com/TencentCloud/TencentDB-Agent-Memory/graphs/contributors">
-    <img src="https://contrib.rocks/image?repo=TencentCloud/TencentDB-Agent-Memory&columns=12&anon=1" />
-  </a>
-
-  <br /><br />
-<a href="https://github.com/TencentCloud/TencentDB-Agent-Memory/issues">
-  <img src="https://img.shields.io/badge/Contributions_Welcome-006eff?style=for-the-badge&logo=github&logoColor=white" alt="Contributions Welcome" />
-</a>
-
-</div>
-
-
-<table width="100%">
-  <tr>
-    <td width="68%">
-      <b>If TencentDB Agent Memory has been helpful to you, please consider starring the project.</b><br />
-      If you have any suggestions, feel free to open an issue for discussion.
-    </td>
-    <td width="32%" align="right">
-      <img src="./assets/images/star-helper.png" alt="Star TencentDB Agent Memory" width="260" />
-    </td>
-  </tr>
-</table>
-
----
-
-## Star History
-
-<p align="center">
-  <a href="https://www.star-history.com/#Tencent/TencentDB-Agent-Memory&Date">
-    <img src="https://github.com/user-attachments/assets/16753a90-8bc9-471b-819e-311947ed94f7" alt="Star History Chart" width="600" />
-  </a>
-</p>
-
----
-
-[MIT](./LICENSE) © TencentDB Agent Memory Team
+原项目版权和许可证遵循 [MIT License](LICENSE)；感谢 TencentDB Agent Memory 与 SWE-Together 的开源工作。

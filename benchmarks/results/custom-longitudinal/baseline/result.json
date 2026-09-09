@@ -1,0 +1,541 @@
+{
+  "schema_version": 1,
+  "experiment_run_id": "long-baseline-extraction-audit-20260909-v1",
+  "experiment_id": "click-flask-fastapi-longitudinal-v1",
+  "variant": "baseline",
+  "method_revision": null,
+  "status": "COMPLETED",
+  "started_at": "2026-09-09T11:38:41.789461+00:00",
+  "plan": {
+    "schema_version": 1,
+    "experiment_id": "click-flask-fastapi-longitudinal-v1",
+    "variant": "baseline",
+    "description": "Three repository sessions sharing one unmodified native TencentDB-Agent-Memory Skill store.",
+    "session_policy": {
+      "fresh_claude_session_per_repo": true,
+      "resume_only_inside_repo_session": true,
+      "shared_native_memory_service_across_repos": true,
+      "gold_task_boundaries_not_sent_to_agent_or_memory": true,
+      "wait_for_extraction_only_after_final_session": true,
+      "language": "en"
+    },
+    "sessions": [
+      {
+        "session_ordinal": 1,
+        "repo": "click",
+        "suite_root": "D:\\Desktop\\TencentDB-Agent-Memory\\experiments\\click-benchmark",
+        "benchmark_id": "click-v1",
+        "base_commit": "36baa15ff831b939a22bc527cd76ce653ef6f66d",
+        "tasks": 6,
+        "events": 9,
+        "model": "deepseek-v4-flash",
+        "agent_image_id": "sha256:dd5037e9b0680cd2caa92e9edb940b057800131b29d6ef7e4cf6a514be9a9bdb",
+        "claude_cli_image": "click-pilot-claude:local",
+        "claude_cli_version": null
+      },
+      {
+        "session_ordinal": 2,
+        "repo": "flask",
+        "suite_root": "D:\\Desktop\\TencentDB-Agent-Memory\\experiments\\flask-benchmark",
+        "benchmark_id": "flask-crossrepo-v1",
+        "base_commit": "d318b683471101618febed18996405ad26462110",
+        "tasks": 6,
+        "events": 9,
+        "model": "deepseek-v4-flash",
+        "agent_image_id": "sha256:cfbbf22d6a4ff822c0e03a0f73835e19277485e2778db535e954d672161eaef9",
+        "claude_cli_image": "flask-pilot-claude:local",
+        "claude_cli_version": null
+      },
+      {
+        "session_ordinal": 3,
+        "repo": "fastapi",
+        "suite_root": "D:\\Desktop\\TencentDB-Agent-Memory\\experiments\\fastapi-benchmark",
+        "benchmark_id": "fastapi-crossrepo-v1",
+        "base_commit": "50113da16fec53b66b80d75e80a89296de4fa5a5",
+        "tasks": 6,
+        "events": 8,
+        "model": "deepseek-v4-flash",
+        "agent_image_id": "sha256:793984899e6ec889873d6897071509d140ee4eaf2021ba7666ebbfe61ade03b1",
+        "claude_cli_image": "fastapi-pilot-claude:local",
+        "claude_cli_version": null
+      }
+    ],
+    "plan_path": "D:\\Desktop\\TencentDB-Agent-Memory\\experiments\\longitudinal-benchmark\\plans\\click-flask-fastapi-baseline.json"
+  },
+  "driver_sha256": "1408851557581123015a028f5f230f4e23d0a4daad53981dcf84a5931c979f94",
+  "observability_mode": "local-only",
+  "sessions": [
+    {
+      "session_ordinal": 1,
+      "repo": "click",
+      "benchmark_id": "click-v1",
+      "suite_root": "D:\\Desktop\\TencentDB-Agent-Memory\\experiments\\click-benchmark",
+      "base_commit": "36baa15ff831b939a22bc527cd76ce653ef6f66d",
+      "child_run_id": "long-baseline-extraction-audit-20260909-v1-s01-click",
+      "child_report": "D:\\Desktop\\TencentDB-Agent-Memory\\experiments\\click-benchmark\\reports\\long-baseline-extraction-audit-20260909-v1-s01-click.json",
+      "status": "COMPLETED",
+      "started_at": "2026-09-09T11:39:37.119997+00:00",
+      "progress": {
+        "phase": "COMPLETED",
+        "updated_at": "2026-09-09T11:57:23.922373+00:00"
+      },
+      "claude_session_id": "68161c47-9eef-44aa-8ed5-e4cb907984ff",
+      "langfuse_session_id": "68161c47-9eef-44aa-8ed5-e4cb907984ff",
+      "metrics": {
+        "user_turns": 6,
+        "agent_internal_turns": 160,
+        "model_calls": 159,
+        "tool_calls": 151,
+        "agent_elapsed_seconds": 892.984,
+        "usage": {
+          "input_tokens": 537792,
+          "output_tokens": 59157,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 8181504
+        },
+        "boundary_infrastructure": {
+          "agent_internal_turns": 0,
+          "model_calls": 0,
+          "tool_calls": 0,
+          "agent_elapsed_seconds": 0,
+          "usage": {
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0
+          }
+        },
+        "cost_breakdown": {
+          "agent": {
+            "input_tokens": 537792,
+            "output_tokens": 59157,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 8181504
+          },
+          "boundary": {},
+          "extraction": {},
+          "retrieval": {
+            "input": 0,
+            "output": 0,
+            "total": 0
+          },
+          "retrieval_tool_calls": 0,
+          "retrieval_instruction_chars": 0
+        },
+        "total_llm_tokens": 8778453
+      },
+      "checkpoint": {
+        "safe_to_resume": true,
+        "phase": "EVENT_BOUNDARY_COMMITTED",
+        "recorded_at": "2026-09-09T11:57:17.077417+00:00",
+        "claude_session_id": "68161c47-9eef-44aa-8ed5-e4cb907984ff",
+        "completed_turns": 9,
+        "event_id": "NS-01",
+        "task_id": "NS-01",
+        "next_event_id": null,
+        "workspace_sha256": "0a78bb989ccfe51a4b2b4a7f032a80e85528079d03ef32103cb0d87d4d345ea5"
+      },
+      "ended_at": "2026-09-09T11:57:24.964171+00:00",
+      "metrics_completeness": {
+        "agent_stream_grader_reset": "COMPLETE",
+        "skill_snapshots": "COMPLETE",
+        "langfuse": "DISABLED",
+        "local_trajectory": "COMPLETE",
+        "local_extraction_audit": "NOT_APPLICABLE",
+        "ours_extension": "NOT_APPLICABLE",
+        "skill_consumption": "NOT_APPLICABLE",
+        "extraction_cost": "NOT_APPLICABLE"
+      },
+      "observability": {
+        "status": "DISABLED",
+        "session_id": "68161c47-9eef-44aa-8ed5-e4cb907984ff"
+      },
+      "exit_code": 0
+    },
+    {
+      "session_ordinal": 2,
+      "repo": "flask",
+      "benchmark_id": "flask-crossrepo-v1",
+      "suite_root": "D:\\Desktop\\TencentDB-Agent-Memory\\experiments\\flask-benchmark",
+      "base_commit": "d318b683471101618febed18996405ad26462110",
+      "child_run_id": "long-baseline-extraction-audit-20260909-v1-s02-flask",
+      "child_report": "D:\\Desktop\\TencentDB-Agent-Memory\\experiments\\flask-benchmark\\reports\\long-baseline-extraction-audit-20260909-v1-s02-flask.json",
+      "status": "COMPLETED",
+      "started_at": "2026-09-09T11:57:26.566775+00:00",
+      "progress": {
+        "phase": "COMPLETED",
+        "updated_at": "2026-09-09T12:20:22.802419+00:00"
+      },
+      "claude_session_id": "70b72c00-a7f5-469d-b34f-fbfb02dfb188",
+      "langfuse_session_id": "70b72c00-a7f5-469d-b34f-fbfb02dfb188",
+      "metrics": {
+        "user_turns": 6,
+        "agent_internal_turns": 148,
+        "model_calls": 141,
+        "tool_calls": 139,
+        "agent_elapsed_seconds": 1106.517,
+        "usage": {
+          "input_tokens": 482240,
+          "output_tokens": 58362,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 6668416
+        },
+        "boundary_infrastructure": {
+          "agent_internal_turns": 0,
+          "model_calls": 0,
+          "tool_calls": 0,
+          "agent_elapsed_seconds": 0,
+          "usage": {
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0
+          }
+        },
+        "cost_breakdown": {
+          "agent": {
+            "input_tokens": 482240,
+            "output_tokens": 58362,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 6668416
+          },
+          "boundary": {},
+          "extraction": {},
+          "retrieval": {
+            "input": 0,
+            "output": 0,
+            "total": 0
+          },
+          "retrieval_tool_calls": 0,
+          "retrieval_instruction_chars": 0
+        },
+        "total_llm_tokens": 7209018
+      },
+      "checkpoint": {
+        "safe_to_resume": true,
+        "phase": "EVENT_BOUNDARY_COMMITTED",
+        "recorded_at": "2026-09-09T12:20:11.764436+00:00",
+        "claude_session_id": "70b72c00-a7f5-469d-b34f-fbfb02dfb188",
+        "completed_turns": 9,
+        "event_id": "FL-NS-01",
+        "task_id": "FL-NS-01",
+        "next_event_id": null,
+        "workspace_sha256": "840361fb8add1fa55b9717a1ad856cb6634b9ac77c3c4620ca3ac62c9fe29ac5"
+      },
+      "ended_at": "2026-09-09T12:20:23.380149+00:00",
+      "metrics_completeness": {
+        "agent_stream_grader_reset": "COMPLETE",
+        "skill_snapshots": "COMPLETE",
+        "langfuse": "DISABLED",
+        "local_trajectory": "COMPLETE",
+        "local_extraction_audit": "NOT_APPLICABLE",
+        "ours_extension": "NOT_APPLICABLE",
+        "skill_consumption": "NOT_APPLICABLE",
+        "extraction_cost": "NOT_APPLICABLE"
+      },
+      "observability": {
+        "status": "DISABLED",
+        "session_id": "70b72c00-a7f5-469d-b34f-fbfb02dfb188"
+      },
+      "exit_code": 0
+    },
+    {
+      "session_ordinal": 3,
+      "repo": "fastapi",
+      "benchmark_id": "fastapi-crossrepo-v1",
+      "suite_root": "D:\\Desktop\\TencentDB-Agent-Memory\\experiments\\fastapi-benchmark",
+      "base_commit": "50113da16fec53b66b80d75e80a89296de4fa5a5",
+      "child_run_id": "long-baseline-extraction-audit-20260909-v1-s03-fastapi",
+      "child_report": "D:\\Desktop\\TencentDB-Agent-Memory\\experiments\\fastapi-benchmark\\reports\\long-baseline-extraction-audit-20260909-v1-s03-fastapi.json",
+      "status": "COMPLETED",
+      "started_at": "2026-09-09T12:20:24.522208+00:00",
+      "progress": {
+        "phase": "COMPLETED",
+        "updated_at": "2026-09-09T13:43:26.172141+00:00"
+      },
+      "claude_session_id": "c28bf444-7d1f-4918-8fe5-68a25689153e",
+      "langfuse_session_id": "c28bf444-7d1f-4918-8fe5-68a25689153e",
+      "metrics": {
+        "user_turns": 6,
+        "agent_internal_turns": 170,
+        "model_calls": 156,
+        "tool_calls": 165,
+        "agent_elapsed_seconds": 2815.688,
+        "usage": {
+          "input_tokens": 455302,
+          "output_tokens": 95944,
+          "cache_creation_input_tokens": 0,
+          "cache_read_input_tokens": 9148160
+        },
+        "boundary_infrastructure": {
+          "agent_internal_turns": 0,
+          "model_calls": 0,
+          "tool_calls": 0,
+          "agent_elapsed_seconds": 0,
+          "usage": {
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 0
+          }
+        },
+        "cost_breakdown": {
+          "agent": {
+            "input_tokens": 455302,
+            "output_tokens": 95944,
+            "cache_creation_input_tokens": 0,
+            "cache_read_input_tokens": 9148160
+          },
+          "boundary": {},
+          "extraction": {},
+          "retrieval": {
+            "input": 0,
+            "output": 0,
+            "total": 0
+          },
+          "retrieval_tool_calls": 0,
+          "retrieval_instruction_chars": 0
+        },
+        "total_llm_tokens": 9699406
+      },
+      "checkpoint": {
+        "safe_to_resume": true,
+        "phase": "EVENT_BOUNDARY_COMMITTED",
+        "recorded_at": "2026-09-09T13:41:29.149457+00:00",
+        "claude_session_id": "c28bf444-7d1f-4918-8fe5-68a25689153e",
+        "completed_turns": 8,
+        "event_id": "FA-NS-01",
+        "task_id": "FA-NS-01",
+        "next_event_id": null,
+        "workspace_sha256": "f2b6e5632606cce15da307a3bf45eac54e1b2914e40c809621b6ecf596c5d665"
+      },
+      "ended_at": "2026-09-09T13:43:27.239797+00:00",
+      "metrics_completeness": {
+        "agent_stream_grader_reset": "COMPLETE",
+        "skill_snapshots": "COMPLETE",
+        "langfuse": "DISABLED",
+        "local_trajectory": "COMPLETE",
+        "local_extraction_audit": "NOT_APPLICABLE",
+        "ours_extension": "NOT_APPLICABLE",
+        "skill_consumption": "NOT_APPLICABLE",
+        "extraction_cost": "NOT_APPLICABLE"
+      },
+      "observability": {
+        "status": "DISABLED",
+        "session_id": "c28bf444-7d1f-4918-8fe5-68a25689153e"
+      },
+      "exit_code": 0
+    }
+  ],
+  "progress": {
+    "phase": "COMPLETED",
+    "updated_at": "2026-09-09T13:43:27.258783+00:00"
+  },
+  "baseline": {
+    "scope": "experiment",
+    "shared_across_repo_sessions": true,
+    "native_async_extraction": true,
+    "forced_task_boundary": false,
+    "native_auto_archive": true,
+    "skill_listing_lifecycle": "session",
+    "skill_tools_lifecycle": "session",
+    "proxy_port": 28096,
+    "core_port": 28420,
+    "method_revision": null
+  },
+  "metrics": {
+    "user_turns": 18,
+    "agent_internal_turns": 478,
+    "model_calls": 456,
+    "tool_calls": 455,
+    "agent_elapsed_seconds": 4815.189,
+    "usage": {
+      "input_tokens": 1475334,
+      "output_tokens": 213463,
+      "cache_creation_input_tokens": 0,
+      "cache_read_input_tokens": 23998080
+    },
+    "total_llm_tokens": 27010786,
+    "cost_breakdown": {
+      "agent": {
+        "input_tokens": 1475334,
+        "output_tokens": 213463,
+        "cache_creation_input_tokens": 0,
+        "cache_read_input_tokens": 23998080
+      },
+      "extraction": {
+        "input": 1246470,
+        "output": 77439,
+        "total": 1323909
+      }
+    }
+  },
+  "ended_at": "2026-09-09T13:43:28.159078+00:00",
+  "native_extraction_audit": {
+    "status": "COMPLETE",
+    "source": "memorycore-local-native-audit",
+    "log_path": "D:\\Desktop\\TencentDB-Agent-Memory\\experiments\\longitudinal-benchmark\\runs\\long-baseline-extraction-audit-20260909-v1\\baseline\\core-logs\\observability.log",
+    "generation_count": 15,
+    "usage": {
+      "input": 1246470,
+      "output": 77439,
+      "total": 1323909
+    },
+    "calls": [
+      {
+        "event": "extract",
+        "task_id": "skill-extract-task-c24d90ca",
+        "usage": {
+          "input": 56616,
+          "output": 4294,
+          "total": 60910
+        },
+        "duration_ms": 35542
+      },
+      {
+        "event": "extract",
+        "task_id": "skill-extract-task-e39aa6f7",
+        "usage": {
+          "input": 37794,
+          "output": 4767,
+          "total": 42561
+        },
+        "duration_ms": 34488
+      },
+      {
+        "event": "extract",
+        "task_id": "skill-extract-task-2cf880ec",
+        "usage": {
+          "input": 41486,
+          "output": 4671,
+          "total": 46157
+        },
+        "duration_ms": 32317
+      },
+      {
+        "event": "extract",
+        "task_id": "skill-extract-task-7f61528c",
+        "usage": {
+          "input": 134760,
+          "output": 4969,
+          "total": 139729
+        },
+        "duration_ms": 35602
+      },
+      {
+        "event": "extract",
+        "task_id": "skill-extract-task-dd899a75",
+        "usage": {
+          "input": 102452,
+          "output": 5674,
+          "total": 108126
+        },
+        "duration_ms": 40355
+      },
+      {
+        "event": "extract",
+        "task_id": "skill-extract-task-287f3c01",
+        "usage": {
+          "input": 126578,
+          "output": 7001,
+          "total": 133579
+        },
+        "duration_ms": 51464
+      },
+      {
+        "event": "extract",
+        "task_id": "skill-extract-task-40c2f5a1",
+        "usage": {
+          "input": 63191,
+          "output": 4709,
+          "total": 67900
+        },
+        "duration_ms": 33465
+      },
+      {
+        "event": "extract",
+        "task_id": "skill-extract-task-023c6be2",
+        "usage": {
+          "input": 86344,
+          "output": 7103,
+          "total": 93447
+        },
+        "duration_ms": 48945
+      },
+      {
+        "event": "extract",
+        "task_id": "skill-extract-task-fcc97f6a",
+        "usage": {
+          "input": 57347,
+          "output": 4600,
+          "total": 61947
+        },
+        "duration_ms": 33073
+      },
+      {
+        "event": "extract",
+        "task_id": "skill-extract-task-44395d6b",
+        "usage": {
+          "input": 139965,
+          "output": 3747,
+          "total": 143712
+        },
+        "duration_ms": 26598
+      },
+      {
+        "event": "extract",
+        "task_id": "skill-extract-task-8c413e1c",
+        "usage": {
+          "input": 109908,
+          "output": 4381,
+          "total": 114289
+        },
+        "duration_ms": 32089
+      },
+      {
+        "event": "extract",
+        "task_id": "skill-extract-task-bc95b6f5",
+        "usage": {
+          "input": 118240,
+          "output": 8992,
+          "total": 127232
+        },
+        "duration_ms": 63106
+      },
+      {
+        "event": "extract",
+        "task_id": "skill-extract-task-5fbe0067",
+        "usage": {
+          "input": 44031,
+          "output": 4754,
+          "total": 48785
+        },
+        "duration_ms": 36075
+      },
+      {
+        "event": "extract",
+        "task_id": "skill-extract-task-834f40a6",
+        "usage": {
+          "input": 44433,
+          "output": 3518,
+          "total": 47951
+        },
+        "duration_ms": 26602
+      },
+      {
+        "event": "extract",
+        "task_id": "skill-extract-task-8f70e089",
+        "usage": {
+          "input": 83325,
+          "output": 4259,
+          "total": 87584
+        },
+        "duration_ms": 30461
+      }
+    ]
+  },
+  "metrics_completeness": {
+    "agent_stream_grader_reset": "COMPLETE",
+    "native_extraction_cost": "COMPLETE"
+  }
+}

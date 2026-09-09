@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "experiment_id": "click-flask-fastapi-longitudinal-v3",
+  "variant": "ours_v3",
+  "method_revision": "task-skill-consumption-controller-r5",
+  "description": "Three repository sessions using the Ours_v2 boundary and SOP extraction with task-scoped Skill selection: relevant candidates are viewed before repository work, while clearly unrelated candidates may be skipped.",
+  "profiles": {
+    "boundary_profile": "query_only_l15",
+    "extraction_profile": "task_scoped_sop_v2",
+    "retrieval_profile": "task_scoped_skill_consumption_v3"
+  },
+  "session_policy": {
+    "fresh_claude_session_per_repo": true,
+    "resume_only_inside_repo_session": true,
+    "shared_native_memory_service_across_repos": true,
+    "gold_task_boundaries_not_sent_to_agent_or_memory": true,
+    "asynchronous_extraction_without_inter_task_wait": true,
+    "session_available_skills_disabled": true,
+    "session_skill_tools_disabled": true,
+    "task_skill_search_top_k": 3,
+    "task_skill_block_char_budget": 4800,
+    "task_skill_gate": "view_relevant_or_skip",
+    "view_transient_retry_limit": 1,
+    "final_local_extraction_reconcile_after_global_drain": true,
+    "langfuse_enabled": false,
+    "language": "en"
+  },
+  "sessions": [
+    {
+      "session_ordinal": 1,
+      "repo": "click",
+      "suite_root": "D:\\Desktop\\TencentDB-Agent-Memory\\experiments\\click-benchmark",
+      "benchmark_id": "click-v1",
+      "base_commit": "36baa15ff831b939a22bc527cd76ce653ef6f66d",
+      "tasks": 6,
+      "events": 9,
+      "model": "deepseek-v4-flash",
+      "agent_image_id": "sha256:dd5037e9b0680cd2caa92e9edb940b057800131b29d6ef7e4cf6a514be9a9bdb",
+      "claude_cli_image": "click-pilot-claude:local",
+      "claude_cli_version": null
+    },
+    {
+      "session_ordinal": 2,
+      "repo": "flask",
+      "suite_root": "D:\\Desktop\\TencentDB-Agent-Memory\\experiments\\flask-benchmark",
+      "benchmark_id": "flask-crossrepo-v1",
+      "base_commit": "d318b683471101618febed18996405ad26462110",
+      "tasks": 6,
+      "events": 9,
+      "model": "deepseek-v4-flash",
+      "agent_image_id": "sha256:cfbbf22d6a4ff822c0e03a0f73835e19277485e2778db535e954d672161eaef9",
+      "claude_cli_image": "flask-pilot-claude:local",
+      "claude_cli_version": null
+    },
+    {
+      "session_ordinal": 3,
+      "repo": "fastapi",
+      "suite_root": "D:\\Desktop\\TencentDB-Agent-Memory\\experiments\\fastapi-benchmark",
+      "benchmark_id": "fastapi-crossrepo-v1",
+      "base_commit": "50113da16fec53b66b80d75e80a89296de4fa5a5",
+      "tasks": 6,
+      "events": 8,
+      "model": "deepseek-v4-flash",
+      "agent_image_id": "sha256:793984899e6ec889873d6897071509d140ee4eaf2021ba7666ebbfe61ade03b1",
+      "claude_cli_image": "fastapi-pilot-claude:local",
+      "claude_cli_version": null
+    }
+  ],
+  "plan_path": "D:\\Desktop\\TencentDB-Agent-Memory\\experiments\\longitudinal-benchmark\\plans\\click-flask-fastapi-ours-v3.json"
+}
