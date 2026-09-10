@@ -26,7 +26,7 @@ Coding Agent
 
 最终方法只围绕 Skill 链路增加三项 Task-aware 能力，原生 Skill 存储、异步 Worker 和工具接口继续复用 TencentDB-Agent-Memory。
 
-### 1.1 Query-only Task Boundary
+### 1.1 Query-only Task Boundary （skill 触发时机）
 
 Task-aware 模式根据用户 Query 判断：
 
@@ -43,7 +43,7 @@ Task-aware 模式根据用户 Query 判断：
 - [`MemoryCore/src/offload_server/parsers/task-boundary-parser.ts`](MemoryCore/src/offload_server/parsers/task-boundary-parser.ts)
 - [`experiments/query-boundary-l15-v1/live-query-boundary.ts`](experiments/query-boundary-l15-v1/live-query-boundary.ts)
 
-### 1.2 Task-scoped SOP Extraction
+### 1.2 Task-scoped SOP Extraction （skill 提取）
 
 每次 Reviewer 面向一个预测 Task 的完整轨迹及 anchor query，只提取未来 Agent 可以执行和复用的 SOP/workflow。Skill 应描述：
 
@@ -70,7 +70,7 @@ intended outcome + applicability + core workflow
 - [`MemoryCore/src/core/skill/skill-config.ts`](MemoryCore/src/core/skill/skill-config.ts)
 - [`MemoryCore/src/core/tdai-core.ts`](MemoryCore/src/core/tdai-core.ts)
 
-### 1.3 Task-scoped Skill Consumption
+### 1.3 Task-scoped Skill Consumption （skill 注入）
 
 原生 Baseline 在 Session 上下文中暴露可用 Skill，由 Agent 自主 `skill_view`。最终方法将 listing 生命周期缩小到当前 Task：
 
@@ -95,13 +95,11 @@ Current Task Anchor
 
 ### 1.4 版本演进
 
-文档版本与实验目录中的历史名称对应如下：
-
 | 报告版本 | 核心变化 |
 |---|---|
 | Ours_v0 | Boundary 切分 Task；在边界异步归档；仍依赖 Agent 主动 search/view。 |
 | Ours_v1 | 增加 SOP-only Reviewer、机制级命名、单 Task 主要写入限制和 Task-scoped listing。 |
-| Ours_v2 | 增加消费控制器：Driver 检索、轻量选择、物化并在 Agent 工作前注入，不再依赖 Agent 主动 view。 |
+| Ours_v2 | 增加消费控制器：Driver 检索、轻量选择、注入并在 Agent 工作前注入，不再依赖 Agent 主动 view。 |
 
 更完整的实现和复现说明：
 
@@ -195,7 +193,7 @@ SWE-Together User Simulator → deepseek-v4-flash（独立链路）
 
 - Baseline：`long-baseline-extraction-audit-20260909-v1`；
 - Ours：`long-ours-v3-final-r5-20260909`。
-- 轻量结果产物：[Baseline](benchmarks/results/custom-longitudinal/baseline/result.json) / [Ours_v3](benchmarks/results/custom-longitudinal/ours-v3/result.json)。
+- 结果产物：[Baseline](benchmarks/results/custom-longitudinal/baseline/result.json) / [Ours_v3](benchmarks/results/custom-longitudinal/ours-v3/result.json)。
 
 No-Skill pilot 完成了链路验证，但没有形成与当前换题后18题完全一致的一次完整 run，因此不将不完整结果混入严格总表。
 
@@ -208,11 +206,11 @@ No-Skill pilot 完成了链路验证，但没有形成与当前换题后18题完
 | 平均 Agent non-cache Token | ↓ | **93,822** | 127,879 |
 | 平均含蒸馏总 Token | ↓ | **167,373** | 180,877 |
 | 平均 Tool Calls | ↓ | **25.28** | 38.00 |
-| 最终独立 Skill | 适中 | 3 个 Repo级聚合 Skill | 4 个机制级 SOP Skill |
-| 有效 Task提取事件 | 适中 | 非 Task口径 | 6/15 SOP Task（4 CREATE、2 UPDATE） |
-| 预期复用任务 Top-3 Recall | ↑ | 0 | 5/8（62.5%） |
-| 预期复用任务实际物化 | ↑ | 0 | 2/8（25.0%） |
-| 已提取 Skill 后续被物化 | ↑ | 0/3 | 2/4（50.0%） |
+| 最终独立 Skill | 适中 | 3 个 Repo级聚合 Skill | **4 个机制级 SOP Skill** |
+| 有效 Task提取事件 | 适中 | 非 Task口径 | **6/15 SOP Task（4 CREATE、2 UPDATE）** |
+| 预期复用任务 Top-3 Recall | ↑ | 0 | **5/8（62.5%）** |
+| 预期复用任务实际注入 | ↑ | 0 | **2/8（25.0%）** |
+| 已提取 Skill 后续被注入 | ↑ | 0/3 | **2/4（50.0%）** |
 
 #### Skill 机制链路开销对比
 Baseline 原生 Reviewer 的15次可恢复调用共消耗1,323,909 Token；而Ours_v3 在 Task-aware 方法链路上的额外开销为 953,965 Token，其中包括 Boundary 判断、Task-scoped Skill 提取和 Skill 检索：
@@ -231,12 +229,12 @@ Ours Retrieval      11,386
 | 指标 | 结果 |
 |---|---:|
 | 评价事件 | 27 |
-| Boundary Accuracy | 100%（27/27） |
-| Precision | 100% |
-| Recall | 100% |
-| 过切率 | 0%（0/9 same-task events） |
-| 漏切率 | 0%（0/18 new-task events） |
-| Boundary LLM调用 | 24（每个 Repo 首 Query 直接初始化） |
+| Boundary Accuracy | **100%（27/27）** |
+| Precision | **100%** |
+| Recall | **100%**|
+| 过切率 | **0%（0/9 same-task events）** |
+| 漏切率 | **0%（0/18 new-task events）** |
+| Boundary LLM调用 | 24（每个 Repo 首 Query 为独立的 session 无需调用）|
 | 平均 Token / LLM decision | 660 |
 | 平均延迟 / LLM decision | 1.96 s |
 
@@ -273,9 +271,9 @@ Ours 将 Repository作为案例证据，而以目标、适用性和 workflow 作
 
 | 指标 | Baseline | Ours | 变化 |
 |---|---:|---:|---:|
-| Internal Turns | 29 | 16 | -44.8% |
-| 耗时 | 192 s | 91 s | -52.8% |
-| Agent non-cache input + output | 49.2K | 34.7K | -29.5% |
+| Internal Turns | 29 | 16 | **-44.8%** |
+| 耗时 | 192 s | 91 s | **-52.8%** |
+| Agent non-cache input + output | 49.2K | 34.7K | **-29.5%** |
 
 ### 4.2 SWE-Together（3 Repo / 7 Task）
 
@@ -290,14 +288,14 @@ Ours 将 Repository作为案例证据，而以目标、适用性和 workflow 作
 | 平均 Model Calls | **110.57** | 118.57 | +7.2% |
 | 平均 Tool Calls | **123.00** | 131.71 | +7.1% |
 | 平均 Agent耗时 | 1,613.9 s | **1,582.1 s** | -2.0% |
-| 平均非缓存 Token |  ——| 约 1.08M/Task | 由于测评环境早期不稳定，存在断点重跑的情况，导致记录丢失 |
+| 平均非缓存 Token | —— | 约 1.08M/Task | baseline 由于早期测评问题，存在大量cache穿透 |
 
 Ours 的 Task链路记录：
 
 | 指标 | 结果 |
 |---|---:|
 | 观察 Query | 27 |
-| 预测 Task | 7 |
+| 预测 Task | **7** |
 | `same_task` | 20 |
 | Boundary Token | 23,261 |
 | Reviewer generations | 8 |
@@ -306,7 +304,6 @@ Ours 的 Task链路记录：
 | Task检索 | 7 |
 | 有候选的检索 | 3 |
 | Selector调用/Token | 3 / 1,189 |
-|  |
 
 最终 Skill包括：
 
@@ -339,10 +336,10 @@ Task Boundary
 
 主要局限：
 
-- 自建集只有18题，Agent轨迹随机性仍会显著影响总体指标；
+- 由于机器和时间问题，测评量较小，Agent轨迹随机性仍会显著影响总体指标，同时 skill 仅在数个 task 中存在收益，token 降幅不明显；
 - Ours 在 `SK06-T01` 多用了一个 Oracle Turn，真实结果予以保留；
 - 当前 Selector偏保守，正确 Top-3候选并不总能转化为消费；
-- SWE-Together 冻结7题不是 Gold同 SOP transfer set，且 Baseline历史 Trial存在缓存状态混杂；
+- SWE-Together 冻结7题不是 Gold同 SOP transfer set，且 Baseline 历史 Trial 存在缓存状态混杂；
 - 当前研究集中于 Coding SOP，尚未系统覆盖偏好、长期用户记忆和一般事实性 Memory。
 
 后续需要在更大、明确具有跨 Task SOP复用机会的连续任务集上重复运行，并将缓存健康、异步 Skill可见时间和完整成本采集固定为实验协议。
