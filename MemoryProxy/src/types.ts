@@ -351,12 +351,35 @@ export interface SkillRuntimeConfig {
    */
   allowLlmWrite: boolean;
 
+  /**
+   * Optional task-aware Skill lifecycle. Disabled by default so the native
+   * session-scoped Baseline remains byte-for-byte compatible.
+   *
+   * When enabled, the Proxy classifies fresh human turns, force-archives the
+   * previous task through Core, searches/selects one reusable SOP for the new
+   * task, materializes it through Core, and keeps the task-scoped block in the
+   * upstream system context for every request in that task.
+   */
+  taskAware: TaskAwareSkillRuntimeConfig;
+
   // 历史字段 (已删除):
   //   extractToolCallThreshold / maxBucketCount:
   //     老链路 SkillExtractTrigger 用来控制 proxy 自动 fire /v3/skill/extract 的阈值。
   //     老链路整体已下线, core 侧接管归档时机 (自己按 tool_call ≥ 10 或 bytes ≥ 40KB 判)。
   //   conversationAddEnabled:
   //     曾经用作新老链路互斥灰度开关。现在永远走新链路 conversation/add, 该开关废弃。
+}
+
+export interface TaskAwareSkillRuntimeConfig {
+  enabled: boolean;
+  /** OpenAI-compatible endpoint used by the L1.5 boundary and selector. */
+  llmBaseUrl: string;
+  apiKey: string;
+  model: string;
+  timeoutMs: number;
+  searchTopK: number;
+  contextCharBudget: number;
+  maxRecentQueries: number;
 }
 
 /**
@@ -842,6 +865,11 @@ export interface RawYamlConfig {
     injectSessionAvailableSkills?: boolean;
     injectSkillTools?: boolean;
     allowLlmWrite?: boolean;
+    taskAware?: Partial<TaskAwareSkillRuntimeConfig>;
+  };
+  memCommand?: {
+    enabled?: boolean;
+    allowedCommands?: string[];
   };
   auth?: {
     enabled?: boolean;
@@ -861,6 +889,7 @@ export interface RequestLogEntry {
   modelId: string;
   keyId: string; // SHA-256(apiKey).slice(0, 8)
   sessionKey?: string; // conversationId || keyId — per-conversation isolation key
+  traceId?: string;
   upstreamUrl: string;
   stream: boolean;
   temperature?: number;

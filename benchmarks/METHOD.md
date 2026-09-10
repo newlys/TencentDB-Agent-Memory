@@ -48,8 +48,13 @@ skillRuntime:
 
 `reviewPromptProfile` defaults to `legacy_v2`, and `maxPrimaryWrites` defaults
 to `0` (unlimited).  Therefore a normal upstream configuration retains native
-Baseline behavior.  Only the Ours driver enables `task_sop_v2`, one primary
-write, unreachable native archive thresholds, and task-scoped consumption.
+Baseline behavior. The published measurements use the Ours driver to enable
+`task_sop_v2`, one primary write, unreachable native archive thresholds, and
+task-scoped consumption. The same lifecycle is now also available in the
+normal Proxy request path through the default-off `skillRuntime.taskAware`
+configuration; see
+[`product-task-aware/README.md`](product-task-aware/README.md). Baseline remains
+unchanged unless that switch is explicitly enabled.
 
 ## Cost and reliability instrumentation
 

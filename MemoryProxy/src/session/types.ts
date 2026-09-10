@@ -74,6 +74,19 @@ export interface SessionInitState {
    * 但 agentDetail/taskDetail 为 null，后续请求只 strip 不 inject。
    */
   bypassed?: boolean;
+  /** Persisted state for the opt-in task-aware Skill lifecycle. */
+  taskAwareSkill?: {
+    activeAnchor: string;
+    recentQueries: string[];
+    lastProcessedTurnSeq: number;
+    activeSkillBlock: string;
+    selectedSkill?: {
+      skillId?: string;
+      name: string;
+      version?: number;
+    };
+    updatedAt: number;
+  };
   /**
    * codex 客户端专属分页页码（0-based），只在 agentSource="codex" 场景写入。
    *

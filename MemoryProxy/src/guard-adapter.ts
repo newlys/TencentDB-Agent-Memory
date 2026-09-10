@@ -365,13 +365,47 @@ export function resolveLatestUserQuery(
   body: Record<string, unknown>,
   messages: unknown[],
 ): string {
-  if (!resolveAgentProfileFn) return "";
+  if (!resolveAgentProfileFn) return fallbackLatestUserQuery(messages);
   try {
     const profile = resolveAgentProfileFn({ headers, path, body }, config.costGuard.agentProfile);
-    return profile.latestUserQuery(messages) || "";
+    return profile.latestUserQuery(messages) || fallbackLatestUserQuery(messages);
   } catch {
-    return "";
+    return fallbackLatestUserQuery(messages);
   }
+}
+
+/**
+ * Public fallback used when the optional private routing extension is absent.
+ * It intentionally handles only the invariant shared by OpenAI and Anthropic:
+ * the last message must be a user message containing real text. A pure
+ * tool_result continuation returns "", so task-aware work runs once per human
+ * turn rather than once per agentic tool call.
+ */
+export function fallbackLatestUserQuery(messages: unknown[]): string {
+  const last = messages[messages.length - 1];
+  if (!last || typeof last !== "object" || Array.isArray(last)) return "";
+  const message = last as Record<string, unknown>;
+  if (message.role !== "user") return "";
+  const content = message.content;
+  let text = "";
+  if (typeof content === "string") {
+    text = content;
+  } else if (Array.isArray(content)) {
+    const blocks = content.filter(
+      (block): block is Record<string, unknown> => Boolean(block) && typeof block === "object" && !Array.isArray(block),
+    );
+    const hasToolResult = blocks.some((block) => block.type === "tool_result");
+    const textParts = blocks
+      .filter((block) => block.type === "text" && typeof block.text === "string")
+      .map((block) => String(block.text));
+    if (hasToolResult && textParts.length === 0) return "";
+    text = textParts.join("\n");
+  }
+  return text
+    .replace(/<system-reminder>[\s\S]*?<\/system-reminder>/gi, " ")
+    .replace(/<environment_details>[\s\S]*?<\/environment_details>/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 /**

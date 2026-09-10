@@ -1,0 +1,27 @@
+# Merge with MemoryProxy/config.example.yaml (partial configuration).
+injection:
+  enabled: true
+  injectors: [skill]
+  externalGatewayUrl: "http://127.0.0.1:8096"
+
+skill:
+  endpoint: "http://127.0.0.1:8420"
+  serviceToken: ""
+  serviceId: "default"
+  timeoutMs: 30000
+  routingProfile: "static"
+
+skillRuntime:
+  # Required isolation from native Baseline session-scoped listings/tools.
+  injectSessionAvailableSkills: false
+  injectSkillTools: false
+  allowLlmWrite: false
+  taskAware:
+    enabled: true
+    llmBaseUrl: "https://api.deepseek.com"
+    apiKey: "${DEEPSEEK_API_KEY}"
+    model: "deepseek-v4-flash"
+    timeoutMs: 35000
+    searchTopK: 3
+    contextCharBudget: 3200
+    maxRecentQueries: 6

@@ -614,6 +614,18 @@ skillRuntime:
                                  #          /skill-bridge 拒绝写操作返回 403
                                  #   true:  <skill_tools> 注入全部工具（含写操作 create/update/delete 等）
                                  #          /skill-bridge 放行写操作
+  # 默认关闭。开启后，真实 Proxy 请求会执行：Task Boundary → 归档旧 Task →
+  # BM25 检索 → 轻量选择 → Core 物化 → task-scoped system 注入。
+  # 开启时必须同时把上面的两个 inject* 字段设为 false。
+  taskAware:
+    enabled: false
+    llmBaseUrl: "https://api.deepseek.com"
+    apiKey: "${DEEPSEEK_API_KEY}"  # enabled=true 时必填，支持环境变量展开
+    model: "deepseek-v4-flash"
+    timeoutMs: 35000
+    searchTopK: 3
+    contextCharBudget: 3200
+    maxRecentQueries: 6
 
 
 # ── mem: 特殊命令 ──────────────────────────────────────────────────────────

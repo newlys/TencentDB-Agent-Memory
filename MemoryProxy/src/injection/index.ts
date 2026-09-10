@@ -73,6 +73,7 @@ export { AnthropicAdapter } from "./adapters/anthropic.js";
 // Injectors
 export { SkillInjector } from "./injectors/skill-injector.js";
 export { SkillToolsInjector } from "./injectors/skill-tools-injector.js";
+export { TaskAwareSkillInjector, renderTaskSkillContext } from "./injectors/task-aware-skill-injector.js";
 export { TdaiL1RecallInjector } from "./injectors/tdai-l1-recall-injector.js";
 export { TdaiProfileMemoryInjector } from "./injectors/tdai-profile-memory-injector.js";
 export { TdaiToolsInjector } from "./injectors/tdai-tools-injector.js";
@@ -108,6 +109,7 @@ import { OpenAIAdapter } from "./adapters/openai.js";
 import { AnthropicAdapter } from "./adapters/anthropic.js";
 import { SkillInjector } from "./injectors/skill-injector.js";
 import { SkillToolsInjector } from "./injectors/skill-tools-injector.js";
+import { TaskAwareSkillInjector } from "./injectors/task-aware-skill-injector.js";
 import { TdaiProfileMemoryInjector } from "./injectors/tdai-profile-memory-injector.js";
 import { TdaiToolsInjector } from "./injectors/tdai-tools-injector.js";
 import { KnowledgeToolsInjector } from "./injectors/knowledge-tools-injector.js";
@@ -216,6 +218,9 @@ function buildPipelineBundle(config: ProxyConfig): PipelineBundle {
   // Register configured injectors. Each injector reads its own kernel config
   // (`coreSkill`, `tdai`, ...); there is no shared external endpoint anymore.
   const injectors = config.injection?.injectors ?? [];
+  if (config.skillRuntime.taskAware?.enabled && !injectors.includes("skill")) {
+    throw new Error("task-aware Skill lifecycle requires injection.injectors to include 'skill'");
+  }
 
   // proxyBaseUrl 在 skill-tools-injector 和 tdai-tools-injector 之间共享。
   //
@@ -276,6 +281,18 @@ function buildPipelineBundle(config: ProxyConfig): PipelineBundle {
     if (shouldRegisterSkillTools(config)) {
       const allowLlmWrite = config.skillRuntime?.allowLlmWrite ?? false;
       registry.register(new SkillToolsInjector({ proxyBaseUrl: proxyBaseUrl!, allowLlmWrite }));
+    }
+
+    if (config.skillRuntime.taskAware?.enabled) {
+      if (config.skillRuntime.injectSessionAvailableSkills || config.skillRuntime.injectSkillTools) {
+        throw new Error(
+          "task-aware Skill lifecycle requires injectSessionAvailableSkills=false and injectSkillTools=false",
+        );
+      }
+      registry.register(new TaskAwareSkillInjector({
+        coreSkill: config.coreSkill,
+        runtime: config.skillRuntime.taskAware,
+      }));
     }
   }
 

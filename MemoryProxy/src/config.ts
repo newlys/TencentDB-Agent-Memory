@@ -134,6 +134,16 @@ export const DEFAULT_CONFIG: ProxyConfig = {
     injectSessionAvailableSkills: true,
     injectSkillTools: true,
     allowLlmWrite: false,
+    taskAware: {
+      enabled: false,
+      llmBaseUrl: "https://api.deepseek.com",
+      apiKey: "",
+      model: "deepseek-v4-flash",
+      timeoutMs: 35_000,
+      searchTopK: 3,
+      contextCharBudget: 3_200,
+      maxRecentQueries: 6,
+    },
   },
   auth: {
     enabled: false,
@@ -472,6 +482,33 @@ export function buildConfig(overrides: CliOverrides = {}): ProxyConfig {
       allowLlmWrite:
         yaml.skillRuntime?.allowLlmWrite ??
         DEFAULT_CONFIG.skillRuntime.allowLlmWrite,
+      taskAware: {
+        enabled:
+          yaml.skillRuntime?.taskAware?.enabled ??
+          DEFAULT_CONFIG.skillRuntime.taskAware.enabled,
+        llmBaseUrl:
+          yaml.skillRuntime?.taskAware?.llmBaseUrl ??
+          DEFAULT_CONFIG.skillRuntime.taskAware.llmBaseUrl,
+        apiKey: expandEnv(
+          yaml.skillRuntime?.taskAware?.apiKey ??
+          DEFAULT_CONFIG.skillRuntime.taskAware.apiKey,
+        ),
+        model:
+          yaml.skillRuntime?.taskAware?.model ??
+          DEFAULT_CONFIG.skillRuntime.taskAware.model,
+        timeoutMs:
+          yaml.skillRuntime?.taskAware?.timeoutMs ??
+          DEFAULT_CONFIG.skillRuntime.taskAware.timeoutMs,
+        searchTopK:
+          yaml.skillRuntime?.taskAware?.searchTopK ??
+          DEFAULT_CONFIG.skillRuntime.taskAware.searchTopK,
+        contextCharBudget:
+          yaml.skillRuntime?.taskAware?.contextCharBudget ??
+          DEFAULT_CONFIG.skillRuntime.taskAware.contextCharBudget,
+        maxRecentQueries:
+          yaml.skillRuntime?.taskAware?.maxRecentQueries ??
+          DEFAULT_CONFIG.skillRuntime.taskAware.maxRecentQueries,
+      },
     },
     auth: {
       enabled: yaml.auth?.enabled ?? DEFAULT_CONFIG.auth.enabled,

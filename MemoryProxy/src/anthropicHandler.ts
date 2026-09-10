@@ -564,7 +564,11 @@ export async function handleAnthropicMessages(
     ? _pathPartsEarly[0] : undefined;
   const agentAdapter = resolveAgentAdapter(_agentFromPathEarly ?? "claude-code");
   const ccRoutingEnabled = config.ccRequestRouting?.enabled === true;
-  const requestKind: CcRequestKind = ccRoutingEnabled ? agentAdapter.classifyRequest(body) : "main";
+  const classifiedKind = ccRoutingEnabled ? agentAdapter.classifyRequest(body) : "main";
+  // Anthropic's legacy downstream type predates the generic adapter's
+  // "auxiliary" category. Auxiliary calls have the same no-side-effect
+  // behavior as sidequeries on this path.
+  const requestKind: CcRequestKind = classifiedKind === "auxiliary" ? "sidequery" : classifiedKind;
 
   // ── Model gate: reject requests whose `model` is not a registered display name ──
   // 价目表已配置时，客户端 `model` 必须匹配某条 entry 的 `modelName`（展示名，
@@ -1014,6 +1018,10 @@ export async function handleAnthropicMessages(
         userKey: callerUserKey,
       });
   const tdaiUserMessage = extractLatestUserMessage(messages);
+  // Non-empty only on a fresh human turn; tool-loop requests resolve to "".
+  // TaskAwareSkillInjector uses this signal to avoid re-running boundary and
+  // retrieval while still re-injecting the active task block on every request.
+  const taskAnchor = resolveLatestUserQuery(config, lcHeaders, c.req.path, body, messages);
 
   // ── Context injection (before cost guard) ────────────────────────────────
   // CC 分流：
@@ -1041,7 +1049,12 @@ export async function handleAnthropicMessages(
         // 透传原始请求路径 —— AssetReflectionInjector 用它判断 `/analyse` marker。
         // 其它 injector 不依赖此字段。
         requestPath: c.req.path,
-        custom: sessionInfo ? { session: sessionInfo, userKey: callerUserKey ?? undefined, assetCapabilities } : undefined,
+        custom: sessionInfo ? {
+          session: sessionInfo,
+          userKey: callerUserKey ?? undefined,
+          assetCapabilities,
+          taskAnchor,
+        } : undefined,
         readOnly: requestKind === "fork",
       });
       body = injectedBody;
@@ -1126,7 +1139,7 @@ export async function handleAnthropicMessages(
     sessionId: sessionKey,
     tags: traceTags,
     routeTags: [],
-    userQuery: resolveLatestUserQuery(config, lcHeaders, c.req.path, body, messages),
+    userQuery: taskAnchor,
   };
 
   // ── Langfuse debug metadata (only when config.langfuse.debug=true) ────────

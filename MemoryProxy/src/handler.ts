@@ -1050,6 +1050,7 @@ export async function handleChatCompletions(
         sessionKey,
       });
   const tdaiUserMessage = extractLatestUserMessage(messages);
+  const taskAnchor = resolveLatestUserQuery(config, lcHeaders, c.req.path, body, messages);
 
   // ── Context injection (before cost guard) ──────────────────────────────
   if (!injectedSkipped && config.injection?.enabled && config.injection.injectors.length > 0) {
@@ -1076,6 +1077,7 @@ export async function handleChatCompletions(
               session: sessionInfo,
               assetCapabilities,
               userKey: apiKey || undefined,
+              taskAnchor,
             }
           : undefined,
       });
@@ -1158,7 +1160,7 @@ export async function handleChatCompletions(
     sessionId: sessionKey,
     tags: traceTags,
     routeTags: [],
-    userQuery: resolveLatestUserQuery(config, lcHeaders, c.req.path, body, messages),
+    userQuery: taskAnchor,
   };
 
   // ── Langfuse debug metadata (only when config.langfuse.debug=true) ────────

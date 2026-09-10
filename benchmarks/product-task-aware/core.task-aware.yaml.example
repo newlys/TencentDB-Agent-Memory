@@ -1,0 +1,17 @@
+# Merge with MemoryCore/tdai-gateway.yaml (partial configuration).
+skill:
+  enabled: true
+  routing:
+    mode: bm25
+  extraction:
+    enabled: true
+    # Disable native size/tool thresholds; task-aware Proxy calls force-archive.
+    toolCallThreshold: 2147483647
+    archiveBytes: 2147483647
+    trigger:
+      profile: legacy
+    valueGate:
+      profile: legacy
+    reviewPromptProfile: task_sop_v2
+    maxPrimaryWrites: 1
+    maxIterations: 16
