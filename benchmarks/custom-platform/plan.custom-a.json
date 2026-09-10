@@ -2,7 +2,7 @@
   "schema_version": 1,
   "experiment_id": "custom-a-click-flask-fastapi-v1",
   "variant": "ours_v3",
-  "method_revision": "task-skill-consumption-controller-r5",
+  "method_revision": "task-skill-consumption-controller-r6",
   "profiles": {
     "boundary_profile": "query_only_l15",
     "extraction_profile": "task_scoped_sop_v2",

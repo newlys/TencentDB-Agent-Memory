@@ -20,7 +20,7 @@ import urllib.request
 import uuid
 import bench
 
-LF_DEFAULT = Path('D:/cc-proxy-smoke/langfuse-20260904/langfuse.private.json')
+LF_DEFAULT = Path(os.environ.get('BENCHMARK_LANGFUSE_CONFIG', 'langfuse.private.json'))
 TOOLS = 'Read,Edit,Write,Bash,Glob,Grep'
 SYSTEM_COMMON = ('Work only in /workspace. This is a sequence of independent coding requests in one conversation. '
           'Before each new request inspect the current files; the workspace may have been refreshed externally. '
@@ -48,9 +48,12 @@ OURS_PROFILES = OURS_V1_PROFILES
 OURS_V2_SEARCH_TOP_K = 3
 OURS_V2_SKILL_BLOCK_CHAR_BUDGET = 4800
 OURS_V2_METHOD_REVISION = 'task-sop-mandatory-view-r1'
-OURS_V3_METHOD_REVISION = 'task-skill-consumption-controller-r5'
+OURS_V3_METHOD_REVISION = 'task-skill-consumption-controller-r6'
 SKILL_GATE_HELPER = Path(__file__).with_name('skill_gate.mjs')
-OURS_V3_SELECTOR_MODEL = 'deepseek-v4-flash'
+OURS_V3_SELECTOR_MODEL = os.environ.get('BENCHMARK_SELECTOR_MODEL', 'deepseek-v4-flash')
+OPENAI_COMPATIBLE_BASE_URL = os.environ.get(
+    'BENCHMARK_OPENAI_BASE_URL', 'https://api.deepseek.com'
+).rstrip('/')
 OURS_V3_SKILL_CONTEXT_CHAR_BUDGET = 3200
 OURS_RETRIEVAL_BLOCK = '''
 <task_skill_retrieval>
@@ -95,12 +98,13 @@ A skill must describe a workflow that a future agent can apply to another task.
 
 Include relevant applicability, preconditions, constraints, ordered actions,
 decision points, expected outputs, and validation or rollback steps.
-Use the narrowest reusable applicability category, not concrete source-pair or
-API names. When a later task has the same intended outcome and core workflow
-but proves a new input surface, UPDATE the existing Skill to broaden its honest
-applicability. Successful precedence, multivalue, all-path cleanup, lookup,
-migration, or invariant-preserving workflows are reusable even when their edits
-are framework-specific.
+Use the narrowest reusable applicability category, not a concrete source pair,
+API surface, framework, file, or incident. When a later task has the same
+intended outcome and core workflow but proves a new implementation surface,
+UPDATE the existing Skill when both cases fit one honest applicability boundary.
+A successful implementation is reusable only when it demonstrates a transferable
+control-flow, data-flow, state-management, validation, compatibility,
+resource-lifecycle, or transformation procedure with ordered decisions.
 
 Repository background and user preferences are not standalone skills.
 Include them only when they directly constrain when or how the procedure runs.
@@ -775,9 +779,15 @@ def classify_task_boundary(active_queries, current_query):
             'usage':{'input':0,'output':0,'total':0}, 'model':None,
             'first_turn_policy':'new_task_without_llm',
         }
-    node = Path('C:/Users/cheng/.workbuddy/binaries/node/versions/22.22.2/node.exe')
+    node = Path(os.environ.get('BENCHMARK_NODE') or shutil.which('node') or '')
     if not node.is_file() or not BOUNDARY_RUNNER.is_file():
-        raise RuntimeError('Pinned Node or live L1.5 boundary runner is unavailable')
+        return {
+            'schema_version':'query_boundary_live/1.0', 'decision':'same_task',
+            'taskBoundary':False, 'recent_queries':_bounded_active_queries(active_queries),
+            'current_query':current_query, 'llm_called':False, 'llm_attempts':0,
+            'llm_latency_ms':0, 'usage':{'input':0,'output':0,'total':0},
+            'model':None, 'recovery_policy':'same_task_boundary_runtime_unavailable',
+        }
     payload = {'recentQueries':_bounded_active_queries(active_queries),'currentQuery':current_query}
     transport_errors = []
     retry_delays = (2, 5, 10)
@@ -805,9 +815,15 @@ def classify_task_boundary(active_queries, current_query):
         ))
         transport_errors.append({'attempt': transport_attempt, 'error': detail})
         if not transient or transport_attempt > len(retry_delays):
-            raise RuntimeError(
-                f'L1.5 boundary failed after {transport_attempt} transport attempts: {detail}'
-            )
+            return {
+                'schema_version':'query_boundary_live/1.0', 'decision':'same_task',
+                'taskBoundary':False, 'recent_queries':_bounded_active_queries(active_queries),
+                'current_query':current_query, 'llm_called':True,
+                'llm_attempts':transport_attempt, 'llm_latency_ms':0,
+                'usage':{'input':0,'output':0,'total':0}, 'model':None,
+                'recovery_policy':'same_task_boundary_failed_open',
+                'transport_retry_errors':transport_errors,
+            }
         time.sleep(retry_delays[transport_attempt - 1])
     raise AssertionError('unreachable boundary retry state')
 
@@ -975,15 +991,12 @@ def search_task_skills(service, anchor_query, top_k=OURS_V2_SEARCH_TOP_K):
 OURS_V3_SELECTOR_SYSTEM = '''Select whether one retrieved Skill contains a reusable
 workflow for the current coding task. Compare intended outcome, applicability, and
 core workflow at the mechanism level; repository/framework differences alone are not
-mismatches. Different concrete input surfaces can share one workflow: explicit request,
-API, CLI, environment, and configuration values can instantiate the same source-
-precedence SOP. Different teardown primitives can share an all-path cleanup SOP when
-the required outcome is to continue cleanup and preserve the original error. Do not,
-however, stretch a representation-specific workflow (for example splitting one
-delimited string) to a different representation (for example repeated native fields)
-when its ordered actions do not apply. Select at most one candidate. Prefer selection
-when the workflow is plausibly reusable; reject lexical overlap without workflow
-overlap. Return JSON only:
+mismatches. Select a candidate only when its intended outcome, applicability or
+preconditions, ordered decisions, and validation semantics can be applied to the
+current task without changing the essential workflow. Implementation surface,
+framework, repository, language, and file names are weak evidence. Select at most one
+candidate. Prefer a plausible transferable decision procedure, but reject lexical
+overlap without workflow overlap. Return JSON only:
 {"decision":"view","rank":1,"reason":"short reason"} or
 {"decision":"none","rank":null,"reason":"short reason"}.'''
 
@@ -1041,7 +1054,7 @@ def select_task_skill(anchor_query, candidates):
         if delay:
             time.sleep(delay)
         request = urllib.request.Request(
-            'https://api.deepseek.com/chat/completions',
+            f'{OPENAI_COMPATIBLE_BASE_URL}/chat/completions',
             json.dumps(payload, ensure_ascii=False).encode('utf-8'),
             {'Content-Type': 'application/json', 'Authorization': f'Bearer {api_key}'},
         )
@@ -1175,26 +1188,26 @@ def render_materialized_skill_context(consumption):
         sections[match.group(1).strip().lower()] = body[match.end():end].strip()
     chosen = []
     for heading, limit in (
-        ('when to use', 600), ('workflow', 1350),
-        ('decision rules', 650), ('validation', 500),
+        ('when to use', 450), ('when not to use', 300),
+        ('required inputs', 300), ('workflow', 1150),
+        ('decision rules', 450), ('validation', 350),
+        ('failure handling / rollback', 300),
     ):
         text = sections.get(heading)
         if text:
-            chosen.append(f'### {heading.title()}\n{_one_line(text, limit)}')
-    compact = '\n'.join(chosen) if chosen else _one_line(body, 2400)
+            chosen.append(f'### {heading.title()}\n{_truncate_structured(text, limit)}')
+    compact = '\n\n'.join(chosen) if chosen else _truncate_structured(body, 2400)
     max_content = max(0, OURS_V3_SKILL_CONTEXT_CHAR_BUDGET - 650)
-    compact = compact[:max_content]
+    compact = _truncate_structured(compact, max_content)
     consumption['injected_content_chars'] = len(compact)
     consumption['injected_content_sha256'] = hashlib.sha256(
         compact.encode('utf-8')
     ).hexdigest()
     return (
         '<task_skill_context>\n'
-        'A task-scoped selector found this reusable workflow relevant to the current request.\n'
-        'Apply it efficiently: make one targeted search for the implicated resolution/cleanup\n'
-        'point, inspect the minimum relevant code, make the smallest invariant-preserving change,\n'
-        'then run targeted tests. Avoid broad repository archaeology or repeated full-suite runs\n'
-        'unless the focused fix fails. Verify every step against the current repository.\n'
+        'The following reusable workflow was retrieved for the current task.\n'
+        'Apply it only when its assumptions match the repository state, and verify its steps\n'
+        'against the current code before making changes.\n'
         f'Skill: {_one_line(selected.get("name"), 180)}\n'
         f'{compact}\n'
         '</task_skill_context>'
@@ -1212,6 +1225,25 @@ def _one_line(value, limit):
     if len(text) <= limit:
         return text
     return text[:max(0, limit - 1)] + '…'
+
+
+def _truncate_structured(value, limit):
+    """Bound prose while preserving Markdown headings, lists and decision structure."""
+    text = str(value or '').replace('\r\n', '\n').replace('\r', '\n').strip()
+    text = re.sub(r'[ \t]+$', '', text, flags=re.MULTILINE)
+    text = re.sub(r'\n{3,}', '\n\n', text)
+    if len(text) <= limit:
+        return text
+    if limit <= 1:
+        return '…'[:limit]
+    window = text[:limit - 1]
+    # Prefer a complete paragraph or list item; otherwise retain the bounded text.
+    cuts = [window.rfind('\n\n'), window.rfind('\n- '), window.rfind('\n1. '),
+            window.rfind('. '), window.rfind('; ')]
+    cut = max(cuts)
+    if cut >= max(80, int(limit * 0.55)):
+        window = window[:cut].rstrip()
+    return window.rstrip() + '…'
 
 
 def render_task_skill_block(
@@ -1607,7 +1639,7 @@ observability:
 {core_langfuse}
 ''', encoding='utf-8')
     core_env = os.environ.copy()
-    core_env.update(TDAI_GATEWAY_CONFIG=str(core_config),TDAI_GATEWAY_API_KEY='',TDAI_LLM_API_KEY=os.environ['DEEPSEEK_API_KEY'],TDAI_LLM_BASE_URL='https://api.deepseek.com',TDAI_LLM_MODEL='deepseek-v4-flash',TDAI_DATA_DIR=str(directory/'core-data'),LOG_PATH=str(directory/'core-logs'))
+    core_env.update(TDAI_GATEWAY_CONFIG=str(core_config),TDAI_GATEWAY_API_KEY='',TDAI_LLM_API_KEY=os.environ['DEEPSEEK_API_KEY'],TDAI_LLM_BASE_URL=OPENAI_COMPATIBLE_BASE_URL,TDAI_LLM_MODEL=os.environ.get('BENCHMARK_EXTRACTION_MODEL', 'deepseek-v4-flash'),TDAI_DATA_DIR=str(directory/'core-data'),LOG_PATH=str(directory/'core-logs'))
     flags = subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
     handles = []
     processes = []
@@ -1654,7 +1686,7 @@ observability:
   port: {proxy_port}
   forwardTimeoutMs: 600000
 upstream:
-  url: https://api.deepseek.com/anthropic/v1
+  url: {os.environ.get('BENCHMARK_ANTHROPIC_BASE_URL', 'https://api.deepseek.com/anthropic/v1')}
   apiKey: {json.dumps(os.environ['DEEPSEEK_API_KEY'])}
 log:
   file: {posix(directory/'proxy-logs')}

@@ -1,0 +1,57 @@
+{
+  "schema_version": "benchmark_skill_export/1.0",
+  "source_run": "long-ours-v3-final-r5-20260909",
+  "source_database_files": {
+    "vectors.db": {
+      "bytes": 503808,
+      "sha256": "36455414356cfa7648e72b7e95cb65324dcffd619259dd3c043293b9ee00a729"
+    },
+    "vectors.db-wal": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "vectors.db-shm": {
+      "bytes": 32768,
+      "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb"
+    }
+  },
+  "skill_count": 4,
+  "skills": [
+    {
+      "skill_id": "skl-MY3sG4xTEMyt",
+      "version": 1,
+      "name": "all-path-resource-cleanup",
+      "description": "Make registered cleanup callbacks / resource teardown (exit stacks, with-resource scopes, call-on-close registries) run on every exit path — normal completion, reported error, abort, and early exit — instead of only when a scope exits without an exception, while preserving outward behavior such as exit codes and error messages.",
+      "stored_content_hash": "0f2d2c09c01240a2c8fb72f4ef441cd0",
+      "exported_sha256": "5a06378f3e7ec049c67777177f5ef0e8b26e9b18d1e1a268d8e5d21592da52f0",
+      "path": "all-path-resource-cleanup/SKILL.md"
+    },
+    {
+      "skill_id": "skl-KQgVlcF6b3nt",
+      "version": 1,
+      "name": "final-matching-release-cleanup",
+      "description": "Make teardown/cleanup for an object that can be acquired (pushed) more than once run exactly once, at the final matching release that clears the outstanding-owner count, so intermediate releases leave the resource active for outer owners and single-acquire behavior stays unchanged.",
+      "stored_content_hash": "658b45707c564c0e5adf9cc3bc23df1e",
+      "exported_sha256": "edc465f2be8aabfe5ab456dc9f00f00976be080ab0fa9ceb052c16355a4f3968",
+      "path": "final-matching-release-cleanup/SKILL.md"
+    },
+    {
+      "skill_id": "skl-3bcUhcO3oDsQ",
+      "version": 3,
+      "name": "layered-input-precedence",
+      "description": "Restore or preserve precedence among layered input sources for a value, so an explicit higher-priority source (user-supplied CLI argument, direct render_template keyword, per-request/per-instance override) is never overwritten by an implicit fallback source (environment variable, config map, app-wide config, declared default, context-processor injection), while keeping each fallback live when the higher-priority source is absent.",
+      "stored_content_hash": "bb6f56936cc8dacf556b31f3111d744f",
+      "exported_sha256": "f31963c13acc1dba4516808e28f80e6a46df20215c0a2d14c0973cadc30a5fa5",
+      "path": "layered-input-precedence/SKILL.md"
+    },
+    {
+      "skill_id": "skl-y483NheE5w8J",
+      "version": 1,
+      "name": "sequence-multivalue-collection",
+      "description": "Restore collection of every repeated occurrence of a parameter into its declared sequence shape (list, tuple, set, frozenset, deque) when the field annotation is a sequence, while leaving scalar-typed fields on the original single-value read path so scalar semantics, defaults, and missing-value validation stay byte-for-byte unchanged.",
+      "stored_content_hash": "39bf199580ce881ff9fe09404a2da851",
+      "exported_sha256": "80b2b83999262537f139b105cfd2cebdb3013d40f0c70ce5651f810c6a0ca8be",
+      "path": "sequence-multivalue-collection/SKILL.md"
+    }
+  ]
+}

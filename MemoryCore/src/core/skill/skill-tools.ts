@@ -57,6 +57,7 @@ export function createSkillTools(opts: CreateSkillToolsOptions) {
   const { core, user_id, team_id, agent_id, task_id, auditSink, logger } = opts;
   const maxPrimaryWrites = opts.maxPrimaryWrites ?? 0;
   let primaryWrites = 0;
+  let primarySkillId: string | undefined;
   const primaryWriteLimitError = (): string | null => {
     if (maxPrimaryWrites <= 0 || primaryWrites < maxPrimaryWrites) return null;
     return JSON.stringify({
@@ -146,6 +147,7 @@ export function createSkillTools(opts: CreateSkillToolsOptions) {
         try {
           const r = await core.create({ ...writeIds, name, content });
           primaryWrites += 1;
+          primarySkillId = r.skill_id;
           auditSink.push({ action: "create", name, skill_id: r.skill_id, version: r.version, description: r.description });
           logger?.info(`[skill-tools] created ${r.skill_id}`);
           return JSON.stringify({ ok: true, skill_id: r.skill_id, version: r.version });
@@ -170,6 +172,7 @@ export function createSkillTools(opts: CreateSkillToolsOptions) {
         try {
           const r = await core.update({ ...writeIds, skill_id, content, expected_version });
           primaryWrites += 1;
+          primarySkillId = skill_id;
           auditSink.push({ action: "update", name: r.name, skill_id, version: r.version });
           return JSON.stringify({ ok: true, version: r.version });
         } catch (e) { return jsonError(e); }
@@ -198,6 +201,7 @@ export function createSkillTools(opts: CreateSkillToolsOptions) {
         try {
           const r = await core.patch({ ...writeIds, skill_id, old_string, new_string, replace_all, expected_version });
           primaryWrites += 1;
+          primarySkillId = skill_id;
           auditSink.push({ action: "patch", name: r.name, skill_id, version: r.version });
           return JSON.stringify({ ok: true, version: r.version });
         } catch (e) { return jsonError(e); }
@@ -224,6 +228,14 @@ export function createSkillTools(opts: CreateSkillToolsOptions) {
         required: ["skill_id", "path", "content", "expected_version"],
       }),
       execute: async ({ skill_id, path, content, encoding, mime_type, is_executable, expected_version }) => {
+        if (maxPrimaryWrites > 0 && primarySkillId !== skill_id) {
+          return JSON.stringify({
+            error: "SUPPORTING_FILE_SKILL_MISMATCH",
+            message: primarySkillId
+              ? `Supporting files may only be written to the primary skill mutated by this extraction (${primarySkillId}).`
+              : "Create, update, or patch the primary skill before writing supporting files.",
+          });
+        }
         try {
           const r = await core.writeFiles({
             ...writeIds, skill_id, expected_version,

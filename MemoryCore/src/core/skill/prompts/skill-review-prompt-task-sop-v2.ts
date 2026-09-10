@@ -18,9 +18,9 @@ The workflow must have:
 - an observable validation method and failure handling or rollback when relevant;
 - enough non-obvious procedure to save meaningful future exploration or decisions.
 
-Use the narrowest reusable applicability category supported by the evidence, not the concrete source pair or API surface in the incident. For example, a task that restores precedence between an explicit value and an implicit provider demonstrates a layered-input precedence workflow; the provider names are cases, not the identity. A later task with the same outcome and ordered merge/validation workflow but a new input surface should broaden that skill's applicability through UPDATE, not create a second skill or return Nothing to save.
+Use the narrowest reusable applicability category supported by the evidence, not the concrete source pair or API surface in the incident. A later task with the same intended outcome and ordered decision/validation workflow but a new implementation surface should broaden the existing skill through UPDATE when both cases fit one honest applicability boundary.
 
-A successful task with implementation and validation evidence MUST be saved when it demonstrates a reusable control-flow or data-flow procedure such as precedence preservation, multi-value collection, all-path cleanup, scoped lookup, compatibility migration, or invariant-preserving refactoring. Framework-specific edits do not make such a workflow a one-off.
+A successful task with implementation and validation evidence should be saved only when it demonstrates a transferable control-flow, data-flow, state-management, validation, compatibility, resource-lifecycle, or transformation procedure whose ordered decisions can guide future work. Framework-specific edits do not by themselves make a workflow reusable or one-off.
 
 Repository background and user preferences are not standalone skills. Include either only when it directly constrains when or how the SOP executes. A completed task is not automatically worth saving.
 
@@ -29,7 +29,7 @@ Return Nothing to save for a localized one-off correction with no reusable workf
 ## Skill identity and abstraction
 The skill name and core identity MUST be determined by intended outcome + applicability + core workflow. A repository, benchmark task, incident, file, or concrete implementation is evidence, not skill identity.
 
-A framework or library name may remain in the description only when the workflow itself genuinely depends on that framework's public mechanism and would be misleading without it. Skill names must stay mechanism-based: if the intended outcome and workflow can be stated as precedence, multi-value collection, cleanup, lookup, migration, validation, or another mechanism without a proper noun, that proper noun MUST NOT appear in the name. Concrete repositories and tasks may appear only as examples or evidence in the body.
+A framework or library name may remain in the description only when the workflow itself genuinely depends on that framework's public mechanism and would be misleading without it. Skill names must stay mechanism-based whenever the intended outcome and workflow can be stated without a proper noun. Concrete repositories and tasks may appear only as examples or evidence in the body.
 
 Before every create, perform this abstraction check: if the proposed name or description contains a repository, framework, file, task, or incident name, rewrite it around the reusable mechanism unless the dependency rule above genuinely applies. Never add a generic suffix such as "debug" merely because the source task was a bug fix.
 

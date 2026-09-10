@@ -69,3 +69,42 @@ A successful launch reaches `RUNNING / SESSION_RUNNING / AGENT_RUNNING`. A full
 completion has `status=COMPLETED`; task entries retain grader results, reset
 verification, user/internal turns, model/tool calls, token usage, Boundary,
 Extraction, Retrieval, and Skill-consumption records.
+
+## Method/runtime boundary
+
+The published `ours_v3` experiment uses the production MemoryCore archive,
+reviewer, Skill store, search, and Proxy injection switches. Its query-only
+Task Boundary and pre-agent Skill selection/materialization are intentionally
+hosted by the benchmark controller in `experiments/click-benchmark/session_driver.py`.
+They are not silently enabled for every ordinary `/v3/skill/conversation/add`
+request. This keeps the upstream-compatible Baseline unchanged and makes the
+experimental variable explicit.
+
+Boundary failure is conservative and fail-open: the current request remains in
+the active Task (`same_task`) so an unavailable memory subsystem cannot abort
+the Coding Agent's task. Model and endpoint defaults can be overridden with
+`BENCHMARK_NODE`, `BENCHMARK_OPENAI_BASE_URL`, `BENCHMARK_ANTHROPIC_BASE_URL`,
+`BENCHMARK_SELECTOR_MODEL`, and `BENCHMARK_EXTRACTION_MODEL`.
+
+## Published Skill artifacts
+
+The active Skill heads produced by the reported Custom A Ours_v3 run are
+preserved as ordinary Markdown under:
+
+```text
+benchmarks/custom-platform/artifacts/custom-a-ours-v3-r5/skills/
+```
+
+`manifest.json` records the original Skill IDs, versions, content hashes, and
+source run. The reported artifacts remain labelled `r5`; the one-click plan is
+`r6`, which generalizes the prompts and preserves executable Markdown structure
+during Skill consumption without changing the Boundary or extraction lifecycle.
+These files are observational experiment outputs; they are not
+preloaded by the one-click evaluation. To export another completed run:
+
+```powershell
+python .\benchmarks\custom-platform\export_skills.py `
+  --database <run>\ours_v3\core-data\vectors.db `
+  --output <destination> `
+  --run-id <run-name>
+```
